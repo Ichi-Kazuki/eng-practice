@@ -16,7 +16,7 @@ export function AppNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex items-center gap-0.5 sm:gap-1">
+    <nav className="flex flex-wrap items-center gap-0.5 sm:gap-1">
       {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
         const isActive = pathname === href || pathname.startsWith(`${href}/`);
         return (
@@ -25,7 +25,7 @@ export function AppNav() {
             href={href}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "flex items-center gap-1.5 rounded-md px-2 py-2 text-xs transition-colors sm:px-3 sm:py-1.5 sm:text-sm",
+              "flex shrink-0 items-center gap-1.5 rounded-md px-2 py-2 text-xs whitespace-nowrap transition-colors sm:px-3 sm:py-1.5 sm:text-sm",
               isActive
                 ? "bg-primary/10 font-medium text-primary"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
