@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
-  if (!user) redirect("/?login_required=1");
+  if (!user) redirect("/api/auth/login");
 
   const { env } = getCloudflareContext();
   if (user.email !== env.ADMIN_EMAIL) {

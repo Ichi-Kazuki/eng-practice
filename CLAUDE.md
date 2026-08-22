@@ -9,7 +9,7 @@ This repo has two parts:
 - `docs/` — product and design planning documents. These are the source of truth for scope and design decisions; read them before making product or visual changes.
   - `toefl-itp-prd.md` — PRD (problem statement, goals/non-goals, v1 requirements, decided open questions)
   - `toefl-itp-engineering-tasks.md` — engineering breakdown of the PRD into epics with a recommended build order
-  - `design-plan.md` — design tokens (color, type, dial values) and layout rules for the public marketing page (LP), based on the `design-taste-frontend` skill
+  - `design-plan.md` — design tokens (color, type, dial values) shared across the app. Originally written for a public marketing page (LP) at `/`, which was later removed (see Architecture below) — the color/type token table is still current, but its LP-specific layout section is historical
   - `design-plan-app.md` — design plan for the logged-in app screens (practice, mock test, review notebook, score dashboard), based on the `frontend-design` skill. Explicitly out of scope for `design-taste-frontend`; extends the same color/font tokens with its own layout metaphor
 - `web/` — the actual Next.js application. All commands below run from `web/`.
 
@@ -48,7 +48,6 @@ No test runner is configured yet. CI (`.github/workflows/ci.yml`) runs `npm run 
 **Fonts** (`src/app/layout.tsx` + `src/lib/fonts.ts`), loaded per-route rather than all globally:
 - Noto Sans JP — default Japanese UI text (mapped to Tailwind's `font-sans`), loaded root-wide since the UI language is Japanese
 - Geist / Geist Mono — English button labels / numeric displays (timer, scores); Geist Mono is `font-mono`
-- Zen Kaku Gothic New (`src/lib/fonts.ts`) — LP headings only, not loaded globally
 - Literata (`src/lib/fonts.ts`) — English reading-passage body text only, not loaded globally
 
 **Product scope (v1, from the PRD)**: only Structure and Written Expression / Reading sections; Listening is deferred to a future phase (design data models so it can be added without reshaping the section model). Auth is Google-only. Score conversion is an unofficial estimate and must be labeled as such in the UI wherever shown.

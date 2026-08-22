@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
-  if (!user) redirect("/?login_required=1");
+  if (!user) redirect("/api/auth/login");
 
   const db = getDb();
   const rows = await db
