@@ -9,23 +9,35 @@ import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
+type SectionChoice = "both" | SectionSlug;
+
+function countPresets(available: number, officialCount: number): { value: number; label: string }[] {
+  const candidates = [10, 20, officialCount, available].filter((n) => n > 0 && n <= available);
+  const unique = Array.from(new Set(candidates)).sort((a, b) => a - b);
+  return unique.map((n) => {
+    if (n === available) return { value: n, label: `${n}問(全問)` };
+    if (n === officialCount) return { value: n, label: `${n}問(本番相当)` };
+    return { value: n, label: `${n}問` };
+  });
+}
+
 async function startMockTest(formData: FormData) {
   "use server";
   const identity = await getOrCreateActiveIdentity();
 
-  const requests: MockSectionRequest[] = [];
-  for (const slug of MOCK_SECTION_ORDER) {
-    if (formData.get(`include_${slug}`) !== "on") continue;
+  const sectionChoiceRaw = formData.get("sectionChoice");
+  const sectionChoice: SectionChoice =
+    sectionChoiceRaw === "structure" || sectionChoiceRaw === "reading" ? sectionChoiceRaw : "both";
+
+  const includedSlugs: SectionSlug[] =
+    sectionChoice === "both" ? MOCK_SECTION_ORDER : MOCK_SECTION_ORDER.filter((s) => s === sectionChoice);
+
+  const requests: MockSectionRequest[] = includedSlugs.map((slug) => {
     const rawCount = Number(formData.get(`count_${slug}`));
-    const count = Number.isFinite(rawCount) && rawCount > 0 ? Math.round(rawCount) : SECTION_META[slug].mockOfficialQuestionCount;
-    requests.push({ sectionSlug: slug, count });
-  }
-  // どちらも選ばれなかった場合は両方(デフォルト問題数)にフォールバックする
-  if (requests.length === 0) {
-    for (const slug of MOCK_SECTION_ORDER) {
-      requests.push({ sectionSlug: slug, count: SECTION_META[slug].mockOfficialQuestionCount });
-    }
-  }
+    const count =
+      Number.isFinite(rawCount) && rawCount > 0 ? Math.round(rawCount) : SECTION_META[slug].mockOfficialQuestionCount;
+    return { sectionSlug: slug, count };
+  });
 
   const timeMode: MockTimeMode = formData.get("timeMode") === "stopwatch" ? "stopwatch" : "fixed";
 
@@ -64,37 +76,52 @@ export default async function MockIntroPage() {
       </p>
 
       <form action={startMockTest} className="mt-6 space-y-6">
-        <fieldset className="space-y-3">
+        <fieldset className="space-y-2">
           <legend className="text-sm font-medium text-foreground">セクション</legend>
-          {MOCK_SECTION_ORDER.map((slug) => {
-            const available = availableBySection[slug] ?? 0;
-            const defaultCount = Math.min(SECTION_META[slug].mockOfficialQuestionCount, available || 1);
-            return (
-              <div key={slug} className="rounded-md border border-border p-4">
-                <label className="flex items-center gap-2 text-sm font-medium text-foreground">
-                  <input type="checkbox" name={`include_${slug}`} defaultChecked className="size-4" />
-                  {SECTION_META[slug].nameJa}
-                  <span className="font-normal text-muted-foreground">({available}問公開中)</span>
-                </label>
-                <label className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
-                  問題数
-                  <input
-                    type="number"
-                    name={`count_${slug}`}
-                    min={1}
-                    max={available || 1}
-                    defaultValue={defaultCount}
-                    className="w-20 rounded-md border border-border bg-background px-2 py-1 text-sm text-foreground"
-                  />
-                  <span>
-                    問(本番は{SECTION_META[slug].mockOfficialQuestionCount}問 /{" "}
-                    {SECTION_META[slug].mockTimeLimitSec / 60}分)
-                  </span>
-                </label>
-              </div>
-            );
-          })}
+          <label className="flex items-center gap-2 text-sm text-foreground">
+            <input type="radio" name="sectionChoice" value="both" defaultChecked className="size-4" />
+            両方(Structure and Written Expression + Reading)
+          </label>
+          <label className="flex items-center gap-2 text-sm text-foreground">
+            <input type="radio" name="sectionChoice" value="structure" className="size-4" />
+            Structure and Written Expressionのみ
+          </label>
+          <label className="flex items-center gap-2 text-sm text-foreground">
+            <input type="radio" name="sectionChoice" value="reading" className="size-4" />
+            Readingのみ
+          </label>
         </fieldset>
+
+        {MOCK_SECTION_ORDER.map((slug) => {
+          const available = availableBySection[slug] ?? 0;
+          const presets = countPresets(available, SECTION_META[slug].mockOfficialQuestionCount);
+          const defaultValue = presets.find((p) => p.value === SECTION_META[slug].mockOfficialQuestionCount)
+            ? SECTION_META[slug].mockOfficialQuestionCount
+            : presets[presets.length - 1]?.value;
+          return (
+            <fieldset key={slug} className="space-y-2 rounded-md border border-border p-4">
+              <legend className="text-sm font-medium text-foreground">
+                {SECTION_META[slug].nameJa}の問題数
+                <span className="ml-1 font-normal text-muted-foreground">({available}問公開中)</span>
+              </legend>
+              {presets.map((preset) => (
+                <label key={preset.value} className="flex items-center gap-2 text-sm text-foreground">
+                  <input
+                    type="radio"
+                    name={`count_${slug}`}
+                    value={preset.value}
+                    defaultChecked={preset.value === defaultValue}
+                    className="size-4"
+                  />
+                  {preset.label}
+                </label>
+              ))}
+              <p className="text-xs text-muted-foreground">
+                本番は{SECTION_META[slug].mockOfficialQuestionCount}問 / {SECTION_META[slug].mockTimeLimitSec / 60}分
+              </p>
+            </fieldset>
+          );
+        })}
 
         <fieldset className="space-y-2">
           <legend className="text-sm font-medium text-foreground">時間の測り方</legend>
