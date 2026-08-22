@@ -1,7 +1,7 @@
 import { and, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db";
 import { questions } from "@/db/schema";
-import { MOCK_SECTION_ORDER, SECTION_META } from "@/lib/section-meta";
+import { MOCK_SECTION_ORDER, SECTION_META, type SectionSlug } from "@/lib/section-meta";
 import type { MockSectionConfig } from "@/db/schema";
 
 function shuffle<T>(arr: T[]): T[] {
@@ -13,20 +13,45 @@ function shuffle<T>(arr: T[]): T[] {
   return copy;
 }
 
-export async function buildMockSections(): Promise<MockSectionConfig[]> {
+export type MockSectionRequest = {
+  sectionSlug: SectionSlug;
+  count: number;
+};
+
+export type MockTimeMode = "fixed" | "stopwatch";
+
+export async function buildMockSections(
+  requests: MockSectionRequest[],
+  timeMode: MockTimeMode
+): Promise<MockSectionConfig[]> {
   const db = getDb();
   const sections: MockSectionConfig[] = [];
 
-  for (const sectionSlug of MOCK_SECTION_ORDER) {
+  // 本番の出題順(Structure→Reading)を保ったまま、選択されたセクションだけを残す
+  const ordered = MOCK_SECTION_ORDER.map((slug) => requests.find((r) => r.sectionSlug === slug)).filter(
+    (r): r is MockSectionRequest => !!r
+  );
+
+  for (const { sectionSlug, count } of ordered) {
     const published = await db
       .select({ id: questions.id })
       .from(questions)
       .where(and(eq(questions.sectionSlug, sectionSlug), eq(questions.status, "published")));
 
+    const shuffled = shuffle(published.map((q) => q.id));
+    const clampedCount = Math.max(1, Math.min(Math.round(count) || 1, shuffled.length || 1));
+    const selectedIds = shuffled.slice(0, clampedCount);
+
+    const timeLimitSec =
+      timeMode === "stopwatch"
+        ? null
+        : Math.round(selectedIds.length * SECTION_META[sectionSlug].mockPerQuestionSec);
+
     sections.push({
       sectionSlug,
-      questionIds: shuffle(published.map((q) => q.id)),
-      timeLimitSec: SECTION_META[sectionSlug].mockTimeLimitSec,
+      questionIds: selectedIds,
+      timeLimitSec,
+      timeMode,
       startedAt: null,
       submittedAt: null,
     });

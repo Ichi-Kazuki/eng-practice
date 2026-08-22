@@ -39,7 +39,10 @@ export default async function MockSessionPage({
         </p>
         <h1 className="mt-1 text-xl font-bold text-foreground">{sectionMeta.nameJa}</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          制限時間は{sectionMeta.mockTimeLimitSec / 60}分、全{current.questionIds.length}問です。開始すると時間の計測が始まります。
+          {current.timeLimitSec !== null
+            ? `制限時間は${Math.round(current.timeLimitSec / 60)}分、`
+            : "時間の制限はなく、経過時間の計測のみ、"}
+          全{current.questionIds.length}問です。開始すると時間の計測が始まります。
         </p>
         <form
           action={async () => {

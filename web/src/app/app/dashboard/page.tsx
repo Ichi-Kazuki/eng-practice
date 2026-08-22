@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { attempts, questions } from "@/db/schema";
@@ -6,12 +5,17 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { SECTION_META, QUESTION_TYPE_LABEL_JA, type SectionSlug } from "@/lib/section-meta";
 import { percentToScaledScore, estimateProvisionalTotalScore } from "@/lib/mock-scoring";
 import { Card } from "@/components/ui/card";
+import { LoginRequired } from "@/components/login-required";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
-  if (!user) redirect("/api/auth/login");
+  if (!user) {
+    return (
+      <LoginRequired message="スコアダッシュボードは演習履歴をアカウントに保存して表示するため、ログインが必要です。" />
+    );
+  }
 
   const db = getDb();
   const rows = await db

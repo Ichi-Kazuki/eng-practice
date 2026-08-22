@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "npm run cf-typegen",
     "dev": "next dev",
+    "prebuild": "npm run cf-typegen",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

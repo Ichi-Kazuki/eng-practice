@@ -37,7 +37,7 @@ No test runner is configured yet. CI (`.github/workflows/ci.yml`) runs `npm run 
 
 **Stack**: Next.js 16 (App Router, `src/app`) + Tailwind v4 + shadcn/ui, deployed to Cloudflare via `@opennextjs/cloudflare` (not the older `@cloudflare/next-on-pages`, which doesn't support Next.js 16).
 
-- **Cloudflare bindings** are declared in `wrangler.jsonc` (D1 database `DB`, static `ASSETS`, a self-reference service binding) and typed via `npm run cf-typegen` into `cloudflare-env.d.ts`. Re-run typegen after editing bindings.
+- **Cloudflare bindings** are declared in `wrangler.jsonc` (D1 database `DB`, static `ASSETS`, a self-reference service binding) and typed via `npm run cf-typegen` into `cloudflare-env.d.ts`. That file is gitignored (it's a generated artifact, regenerated from `wrangler.jsonc` + `.dev.vars` each time) — `npm run build` and `npm run dev` both have `pre*` npm-lifecycle hooks that run `cf-typegen` automatically first, so a fresh clone or CI checkout (which won't have `cloudflare-env.d.ts` committed) still builds correctly. If you ever see `Property 'DB' does not exist on type 'CloudflareEnv'`, that's this file missing or stale — run `npm run cf-typegen` (or just `npm run build`, which does it for you) rather than hand-editing the type. `src/env.d.ts` separately augments the same global `CloudflareEnv` interface with the secret bindings (`GOOGLE_CLIENT_ID` etc.) that aren't in `wrangler.jsonc`.
 - `next.config.ts` calls `initOpenNextCloudflareForDev()` so `next dev` can read Cloudflare bindings locally.
 - `open-next.config.ts` currently uses the default (no R2) incremental cache. Switch to the R2-backed cache override once an R2 bucket is provisioned.
 

@@ -35,18 +35,20 @@ export function MockSectionRunner({
 }: {
   sessionId: string;
   sectionLabel: string;
-  timeLimitSec: number;
+  timeLimitSec: number | null;
   startedAtMs: number;
   questions: MockRunnerQuestion[];
   initialAnswers: Record<string, number>;
 }) {
+  const isStopwatch = timeLimitSec === null;
   const router = useRouter();
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>(initialAnswers);
   const [flagged, setFlagged] = useState<Set<string>>(new Set());
-  const [remainingSec, setRemainingSec] = useState(() =>
-    Math.max(0, timeLimitSec - Math.floor((Date.now() - startedAtMs) / 1000))
-  );
+  const [displaySec, setDisplaySec] = useState(() => {
+    const elapsed = Math.floor((Date.now() - startedAtMs) / 1000);
+    return isStopwatch ? elapsed : Math.max(0, timeLimitSec - elapsed);
+  });
   const submittingRef = useRef(false);
 
   const handleSubmit = useCallback(async () => {
@@ -63,15 +65,20 @@ export function MockSectionRunner({
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const remaining = Math.max(0, timeLimitSec - Math.floor((Date.now() - startedAtMs) / 1000));
-      setRemainingSec(remaining);
+      const elapsed = Math.floor((Date.now() - startedAtMs) / 1000);
+      if (isStopwatch) {
+        setDisplaySec(elapsed);
+        return;
+      }
+      const remaining = Math.max(0, timeLimitSec - elapsed);
+      setDisplaySec(remaining);
       if (remaining <= 0) {
         clearInterval(interval);
         void handleSubmit();
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [handleSubmit, startedAtMs, timeLimitSec]);
+  }, [handleSubmit, isStopwatch, startedAtMs, timeLimitSec]);
 
   const current = questions[index];
 
@@ -103,7 +110,7 @@ export function MockSectionRunner({
     <div>
       <div className="sticky top-0 z-10 -mx-6 mb-6 flex items-center justify-between border-b border-border bg-background px-6 py-3">
         <span className="font-[family-name:var(--font-geist-mono)] text-lg font-bold text-foreground">
-          残り {formatTime(remainingSec)}
+          {isStopwatch ? "経過" : "残り"} {formatTime(displaySec)}
         </span>
         <span className="text-sm text-muted-foreground">{sectionLabel}</span>
       </div>

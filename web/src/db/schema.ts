@@ -72,7 +72,8 @@ export const attempts = sqliteTable("attempts", {
 export type MockSectionConfig = {
   sectionSlug: string;
   questionIds: string[];
-  timeLimitSec: number;
+  timeLimitSec: number | null; // null = 時間を測るだけ(制限時間なし)
+  timeMode: "fixed" | "stopwatch";
   startedAt: number | null;
   submittedAt: number | null;
 };

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { desc, eq, sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import { attempts, questions, passages } from "@/db/schema";
@@ -7,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { SECTION_META, QUESTION_TYPE_LABEL_JA, type SectionSlug } from "@/lib/section-meta";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { LoginRequired } from "@/components/login-required";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +24,9 @@ export default async function NotebookPage({
 }) {
   const { section, range } = await searchParams;
   const user = await getCurrentUser();
-  if (!user) redirect("/api/auth/login");
+  if (!user) {
+    return <LoginRequired message="復習ノートは誤答をアカウントに記録して表示するため、ログインが必要です。" />;
+  }
 
   const db = getDb();
   const rows = await db
