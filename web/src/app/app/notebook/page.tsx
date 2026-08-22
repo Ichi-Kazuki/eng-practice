@@ -35,7 +35,7 @@ export default async function NotebookPage({
     <div>
       <JaHeading className="text-xl font-bold text-foreground" text="復習ノート" />
       <p className="mt-1 text-sm text-muted-foreground">
-        最新の解答が不正解だった問題を表示しています。正解すると自動的にここから外れます。
+        一度でも間違えた問題を表示しています。連続2回正解すると習得済みとして自動的にここから外れます。
       </p>
 
       <div className="mt-6 flex flex-wrap items-center gap-2">
@@ -87,13 +87,26 @@ export default async function NotebookPage({
 
           <div className="mt-4 space-y-3">
             {mistakes.map((row) => (
-              <Card key={row.questions.id} className="border-l-4 border-l-destructive p-4">
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>{SECTION_META[row.questions.sectionSlug as SectionSlug].nameJa}</span>
-                  <span>·</span>
-                  <span>
-                    {QUESTION_TYPE_LABEL_JA[row.questions.questionType] ?? row.questions.questionType}
-                  </span>
+              <Card
+                key={row.questions.id}
+                className={cn(
+                  "border-l-4 p-4",
+                  row.pendingMastery ? "border-l-amber-500" : "border-l-destructive"
+                )}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span>{SECTION_META[row.questions.sectionSlug as SectionSlug].nameJa}</span>
+                    <span>·</span>
+                    <span>
+                      {QUESTION_TYPE_LABEL_JA[row.questions.questionType] ?? row.questions.questionType}
+                    </span>
+                  </div>
+                  {row.pendingMastery && (
+                    <span className="shrink-0 rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-600 dark:text-amber-400">
+                      あと1回正解で習得済み
+                    </span>
+                  )}
                 </div>
                 <p className="mt-2 text-sm text-foreground">{row.questions.stem}</p>
               </Card>
