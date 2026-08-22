@@ -1,4 +1,5 @@
 import { eq } from "drizzle-orm";
+import { PencilSimpleLineIcon, BookOpenIcon, HeadphonesIcon } from "@phosphor-icons/react/ssr";
 import { getDb } from "@/db";
 import { attempts, questions } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -9,8 +10,15 @@ import { LoginRequired } from "@/components/login-required";
 import { ScoreDisclaimerBadge } from "@/components/score-disclaimer-badge";
 import { AccuracyBar } from "@/components/accuracy-bar";
 import { JaHeading } from "@/components/ja-heading";
+import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+
+const SECTION_ICON: Record<SectionSlug, { icon: typeof PencilSimpleLineIcon; color: string }> = {
+  structure: { icon: PencilSimpleLineIcon, color: "text-primary" },
+  reading: { icon: BookOpenIcon, color: "text-sky-600 dark:text-sky-400" },
+  listening: { icon: HeadphonesIcon, color: "text-emerald-600 dark:text-emerald-400" },
+};
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -84,14 +92,20 @@ export default async function DashboardPage() {
         </div>
 
         <div className="mt-5 grid grid-cols-3 gap-4 border-t border-border pt-5 text-center">
-          {(["structure", "reading", "listening"] as SectionSlug[]).map((s) => (
-            <div key={s}>
-              <p className="text-xs text-muted-foreground">{SECTION_META[s].nameEn}</p>
-              <p className="mt-1 font-[family-name:var(--font-geist-mono)] text-2xl font-bold text-foreground">
-                {s === "listening" ? "準備中" : (sectionScaled[s] ?? "-")}
-              </p>
-            </div>
-          ))}
+          {(["structure", "reading", "listening"] as SectionSlug[]).map((s) => {
+            const { icon: Icon, color } = SECTION_ICON[s];
+            return (
+              <div key={s}>
+                <p className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
+                  <Icon className={cn("size-3.5", color)} weight="bold" />
+                  {SECTION_META[s].nameEn}
+                </p>
+                <p className="mt-1 font-[family-name:var(--font-geist-mono)] text-2xl font-bold text-foreground">
+                  {s === "listening" ? "準備中" : (sectionScaled[s] ?? "-")}
+                </p>
+              </div>
+            );
+          })}
         </div>
 
         <div className="mt-5 flex items-center justify-between border-t border-border pt-4">

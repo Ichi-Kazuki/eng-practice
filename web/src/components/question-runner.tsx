@@ -112,9 +112,9 @@ export function QuestionRunner({
           </div>
         )}
 
-        <div>
+        <div className={cn(!current.passage && "mx-auto w-full max-w-2xl")}>
           <QuestionStem
-            className="text-base leading-relaxed text-foreground"
+            className="text-base leading-relaxed font-medium text-foreground"
             stem={current.question.stem}
             choices={current.question.choices}
             questionType={current.question.questionType}
@@ -133,8 +133,8 @@ export function QuestionRunner({
                   disabled={hasAnswered}
                   onClick={() => handleSelect(i)}
                   className={cn(
-                    "flex w-full items-start gap-3 rounded-md border px-4 py-3 text-left text-sm transition-colors",
-                    !hasAnswered && "border-border hover:border-primary hover:bg-secondary/40",
+                    "flex w-full items-start gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-colors",
+                    !hasAnswered && "cursor-pointer border-border hover:border-primary hover:bg-secondary/40",
                     hasAnswered && isCorrectChoice && "border-success bg-success/10",
                     hasAnswered && isSelected && !isCorrectChoice && "border-destructive bg-destructive/10",
                     hasAnswered && !isSelected && !isCorrectChoice && "border-border opacity-60"

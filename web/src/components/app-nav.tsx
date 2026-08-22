@@ -23,17 +23,16 @@ export function AppNav() {
           <Link
             key={href}
             href={href}
-            aria-label={label}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm sm:px-3",
+              "flex items-center gap-1.5 rounded-md px-2 py-2 text-xs transition-colors sm:px-3 sm:py-1.5 sm:text-sm",
               isActive
-                ? "bg-muted text-foreground"
+                ? "bg-primary/10 font-medium text-primary"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
-            <Icon className="size-4" />
-            <span className="hidden sm:inline">{label}</span>
+            <Icon className="size-4" weight={isActive ? "fill" : "regular"} />
+            <span>{label}</span>
           </Link>
         );
       })}

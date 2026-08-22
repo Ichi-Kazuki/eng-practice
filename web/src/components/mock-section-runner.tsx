@@ -169,7 +169,7 @@ export function MockSectionRunner({
               aria-label={ariaLabel}
               aria-current={isCurrent ? "true" : undefined}
               className={cn(
-                "relative flex aspect-square items-center justify-center rounded border font-[family-name:var(--font-geist-mono)] text-xs",
+                "relative flex aspect-square cursor-pointer items-center justify-center rounded border font-[family-name:var(--font-geist-mono)] text-xs transition-colors hover:border-primary/50",
                 isCurrent ? "border-primary ring-2 ring-primary/40" : "border-border",
                 isAnswered && "bg-primary/10"
               )}
@@ -210,7 +210,7 @@ export function MockSectionRunner({
           </div>
         )}
 
-        <div>
+        <div className={cn(!current.passage && "mx-auto w-full max-w-2xl")}>
           <div className="mb-3 flex items-center justify-between">
             <span className="font-[family-name:var(--font-geist-mono)] text-sm text-muted-foreground">
               問題 {index + 1} / {questions.length}
@@ -220,7 +220,7 @@ export function MockSectionRunner({
               onClick={() => void toggleFlag()}
               aria-pressed={flagged.has(current.id)}
               className={cn(
-                "flex items-center gap-1 text-xs",
+                "flex cursor-pointer items-center gap-1 text-xs",
                 flagged.has(current.id) ? "text-primary" : "text-muted-foreground"
               )}
             >
@@ -230,7 +230,7 @@ export function MockSectionRunner({
           </div>
 
           <QuestionStem
-            className="text-base leading-relaxed text-foreground"
+            className="text-base leading-relaxed font-medium text-foreground"
             stem={current.stem}
             choices={current.choices}
             questionType={current.questionType}
@@ -245,7 +245,7 @@ export function MockSectionRunner({
                 aria-checked={answers[current.id] === i}
                 onClick={() => handleSelect(i)}
                 className={cn(
-                  "flex w-full items-start gap-3 rounded-md border px-4 py-3 text-left text-sm transition-colors",
+                  "flex w-full cursor-pointer items-start gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-colors",
                   answers[current.id] === i
                     ? "border-primary bg-primary/10"
                     : "border-border hover:border-primary hover:bg-secondary/40"
