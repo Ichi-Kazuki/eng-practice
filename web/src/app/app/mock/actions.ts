@@ -1,10 +1,49 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db";
 import { mockSessions, attempts, questions } from "@/db/schema";
 import { getOrCreateActiveIdentity } from "@/lib/auth/active-identity";
+import { buildMockSections, type MockSectionRequest, type MockTimeMode } from "@/lib/mock-session";
+import { SECTION_META, MOCK_SECTION_ORDER, type SectionSlug } from "@/lib/section-meta";
 import type { MockSectionConfig } from "@/db/schema";
+
+type SectionChoice = "both" | SectionSlug;
+
+export async function startMockTest(formData: FormData) {
+  const identity = await getOrCreateActiveIdentity();
+
+  const sectionChoiceRaw = formData.get("sectionChoice");
+  const sectionChoice: SectionChoice =
+    sectionChoiceRaw === "structure" || sectionChoiceRaw === "reading" ? sectionChoiceRaw : "both";
+
+  const includedSlugs: SectionSlug[] =
+    sectionChoice === "both" ? MOCK_SECTION_ORDER : MOCK_SECTION_ORDER.filter((s) => s === sectionChoice);
+
+  const requests: MockSectionRequest[] = includedSlugs.map((slug) => {
+    const rawCount = Number(formData.get(`count_${slug}`));
+    const count =
+      Number.isFinite(rawCount) && rawCount > 0 ? Math.round(rawCount) : SECTION_META[slug].mockOfficialQuestionCount;
+    return { sectionSlug: slug, count };
+  });
+
+  const timeMode: MockTimeMode = formData.get("timeMode") === "stopwatch" ? "stopwatch" : "fixed";
+
+  const db = getDb();
+  const sections = await buildMockSections(requests, timeMode);
+  const id = crypto.randomUUID();
+  await db.insert(mockSessions).values({
+    id,
+    userId: identity.userId,
+    status: "in_progress",
+    sections,
+    currentSectionIndex: 0,
+    answers: {},
+  });
+
+  redirect(`/app/mock/${id}`);
+}
 
 async function loadOwnedSession(sessionId: string) {
   const identity = await getOrCreateActiveIdentity();

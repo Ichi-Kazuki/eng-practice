@@ -12,8 +12,8 @@ export const SECTION_META: Record<
   }
 > = {
   structure: {
-    nameJa: "Structure and Written Expression",
-    nameEn: "Structure",
+    nameJa: "Grammar",
+    nameEn: "Grammar",
     mockTimeLimitSec: 25 * 60,
     mockOfficialQuestionCount: 40,
     mockPerQuestionSec: (25 * 60) / 40, // 本番相当ペース(1問あたり37.5秒)

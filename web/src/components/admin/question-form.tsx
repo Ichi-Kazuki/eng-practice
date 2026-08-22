@@ -32,7 +32,7 @@ export function QuestionForm({
             defaultValue={initial?.sectionSlug ?? "structure"}
             className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
           >
-            <option value="structure">Structure and Written Expression</option>
+            <option value="structure">Grammar</option>
             <option value="reading">Reading</option>
             <option value="listening">Listening</option>
           </select>

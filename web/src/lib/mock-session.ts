@@ -20,6 +20,16 @@ export type MockSectionRequest = {
 
 export type MockTimeMode = "fixed" | "stopwatch";
 
+export function countPresets(available: number, officialCount: number): { value: number; label: string }[] {
+  const candidates = [10, 20, officialCount].filter((n) => n > 0 && n <= available);
+  const unique = Array.from(new Set(candidates)).sort((a, b) => a - b);
+  if (unique.length === 0 && available > 0) unique.push(available);
+  return unique.map((n) => {
+    if (n === officialCount) return { value: n, label: `${n}問(本番相当)` };
+    return { value: n, label: `${n}問` };
+  });
+}
+
 export async function buildMockSections(
   requests: MockSectionRequest[],
   timeMode: MockTimeMode

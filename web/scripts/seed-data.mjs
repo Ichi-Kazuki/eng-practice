@@ -7,7 +7,7 @@ import { readingPassagesBatchA, readingQuestionsBatchA } from "./seed-data-readi
 import { readingPassagesBatchB, readingQuestionsBatchB } from "./seed-data-reading-batch-b.mjs";
 
 export const sections = [
-  { slug: "structure", nameJa: "Structure and Written Expression", sortOrder: 1 },
+  { slug: "structure", nameJa: "Grammar", sortOrder: 1 },
   { slug: "reading", nameJa: "Reading", sortOrder: 2 },
   { slug: "listening", nameJa: "Listening", sortOrder: 3 },
 ];
