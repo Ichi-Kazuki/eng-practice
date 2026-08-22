@@ -120,7 +120,7 @@ export const readingQuestionsBatchB = [
       "The difference between carbon dioxide and methane",
     ],
     1,
-    "The passage explains how thawing permafrost releases carbon dioxide and methane, creating a feedback loop that accelerates warming."
+    "本文は、永久凍土の融解が二酸化炭素とメタンを放出し、温暖化を加速させるフィードバックループを生み出す仕組みを説明しています。"
   ),
   reading(
     "q-read-permafrost-2",
@@ -133,7 +133,7 @@ export const readingQuestionsBatchB = [
       "It was chemically preserved by high salt content",
     ],
     1,
-    "The passage states decay was prevented because cold temperatures stopped decomposing microorganisms from functioning."
+    "本文には、低温によって分解を担う微生物の働きが妨げられていたため、有機物の分解が止まっていたとあります。"
   ),
   reading(
     "q-read-permafrost-3",
@@ -141,7 +141,7 @@ export const readingQuestionsBatchB = [
     "The word \"dormant\" in the passage is closest in meaning to",
     ["inactive", "toxic", "abundant", "fragile"],
     0,
-    "\"Long-dormant organic material\" describes material that had been inactive/undecomposed for a long time."
+    "「Long-dormant organic material」は、長期間活動を停止した(=分解が進んでいない)物質を表しています。"
   ),
   reading(
     "q-read-permafrost-4",
@@ -154,7 +154,7 @@ export const readingQuestionsBatchB = [
       "permafrost only exists in uninhabited regions",
     ],
     1,
-    "The passage notes this newly released carbon \"was previously locked away and not accounted for in earlier climate projections.\""
+    "本文には、新たに放出されるこの炭素は「以前は閉じ込められており、過去の気候予測には織り込まれていなかった(\"was previously locked away and not accounted for in earlier climate projections\")」とあります。"
   ),
   reading(
     "q-read-permafrost-5",
@@ -162,7 +162,7 @@ export const readingQuestionsBatchB = [
     "The word \"it\" in paragraph 3, in the phrase \"as it thaws,\" refers to",
     ["the atmosphere", "the infrastructure", "the permafrost/ground", "the pipeline"],
     2,
-    "The sentence describes the ground beneath infrastructure thawing and subsiding."
+    "この文は、インフラの下にある地面(永久凍土)が融解し、不均一に沈下していく様子を説明しています。"
   ),
   reading(
     "q-read-permafrost-6",
@@ -170,7 +170,7 @@ export const readingQuestionsBatchB = [
     "According to the passage, all of the following are mentioned as being affected by permafrost thaw EXCEPT",
     ["buildings", "roads", "pipelines", "ocean currents"],
     3,
-    "The passage names buildings, roads, and pipelines as infrastructure affected by thaw; ocean currents are not mentioned."
+    "本文では融解の影響を受けるものとして建物・道路・パイプラインが挙げられていますが、海流については言及がありません。"
   ),
   reading(
     "q-read-hammurabi-1",
@@ -183,7 +183,7 @@ export const readingQuestionsBatchB = [
       "The daily life of Babylonian laborers",
     ],
     1,
-    "The passage describes what the code contained, how it was structured, and how it was rediscovered in 1901."
+    "本文は、ハンムラビ法典の内容と構成、そして1901年の再発見の経緯を説明しています。"
   ),
   reading(
     "q-read-hammurabi-2",
@@ -191,7 +191,7 @@ export const readingQuestionsBatchB = [
     "According to the passage, how many individual laws does Hammurabi's code contain?",
     ["6", "100", "282", "1754"],
     2,
-    "The passage states the code \"consists of 282 individual laws.\""
+    "本文に「法典は282の個別の法から成る(\"consists of 282 individual laws\")」とあります。"
   ),
   reading(
     "q-read-hammurabi-3",
@@ -199,7 +199,7 @@ export const readingQuestionsBatchB = [
     "The word \"proportional\" in the passage is closest in meaning to",
     ["random", "corresponding in degree", "religious", "unlimited"],
     1,
-    "\"Proportional retaliation\" means a punishment corresponding in degree to the offense, as in \"an eye for an eye.\""
+    "「Proportional retaliation」(比例的な報復)とは、「目には目を(\"an eye for an eye\")」のように罪の重さに見合った罰を意味します。"
   ),
   reading(
     "q-read-hammurabi-4",
@@ -212,7 +212,7 @@ export const readingQuestionsBatchB = [
       "rarely enforced",
     ],
     1,
-    "The passage states the prescribed punishment \"often depended heavily on the social status of both the offender and the victim.\""
+    "本文には、実際に科される罰は「加害者と被害者双方の社会的地位に大きく左右されることが多かった(\"often depended heavily on the social status of both the offender and the victim\")」とあります。"
   ),
   reading(
     "q-read-hammurabi-5",
@@ -220,7 +220,7 @@ export const readingQuestionsBatchB = [
     "The word \"Its\" in paragraph 3, in the phrase \"Its rediscovery,\" refers to",
     ["Babylon's", "Iran's", "the stele's", "France's"],
     2,
-    "The sentence discusses the rediscovery of the stele bearing Hammurabi's code."
+    "この文は、ハンムラビ法典が刻まれた石碑(stele)が再発見されたことについて述べています。"
   ),
   reading(
     "q-read-hammurabi-6",
@@ -228,7 +228,7 @@ export const readingQuestionsBatchB = [
     "According to the passage, all of the following topics are mentioned as being addressed by the code EXCEPT",
     ["property disputes", "fixed wages for laborers", "liability for construction defects", "rules for religious worship"],
     3,
-    "The passage mentions property, family disputes, wages, and construction liability; religious worship rules are not mentioned."
+    "本文では財産をめぐる紛争・労働者の賃金・欠陥工事の責任などが挙げられていますが、宗教儀礼に関する規定については言及がありません。"
   ),
   reading(
     "q-read-lichen-1",
@@ -241,7 +241,7 @@ export const readingQuestionsBatchB = [
       "How lichens are used in cooking",
     ],
     1,
-    "The passage explains how a fungus and a photosynthetic partner form the composite organism known as lichen."
+    "本文は、菌類と光合成を行うパートナーがどのように結びついて地衣類という複合生物を形成するかを説明しています。"
   ),
   reading(
     "q-read-lichen-2",
@@ -254,7 +254,7 @@ export const readingQuestionsBatchB = [
       "Moisture retention",
     ],
     2,
-    "The passage states the photosynthetic partner \"supplies the fungus with the carbohydrates it cannot manufacture on its own.\""
+    "本文には、光合成を行うパートナーが「菌類が自ら作り出せない炭水化物を供給する(\"supplies the fungus with the carbohydrates it cannot manufacture on its own\")」とあります。"
   ),
   reading(
     "q-read-lichen-3",
@@ -262,7 +262,7 @@ export const readingQuestionsBatchB = [
     "The word \"desiccation\" in the passage is closest in meaning to",
     ["drying out", "overheating", "freezing", "decay"],
     0,
-    "The fungus shields the photosynthetic partner from sunlight and desiccation, i.e., drying out."
+    "菌類は光合成パートナーを強い日光や乾燥(desiccation、つまり水分が失われて乾ききってしまうこと)から守っています。"
   ),
   reading(
     "q-read-lichen-4",
@@ -275,7 +275,7 @@ export const readingQuestionsBatchB = [
       "require animal hosts to reproduce",
     ],
     1,
-    "The passage notes fungi \"lack chlorophyll\" and rely on the photosynthetic partner for carbohydrates."
+    "本文には、菌類は「クロロフィルを持たない(\"lack chlorophyll\")」ため、炭水化物の供給を光合成パートナーに頼っているとあります。"
   ),
   reading(
     "q-read-lichen-5",
@@ -283,7 +283,7 @@ export const readingQuestionsBatchB = [
     "The word \"their\" in paragraph 3, in the phrase \"Their sensitivity to airborne pollutants,\" refers to",
     ["rocks", "lichens", "scientists", "plants"],
     1,
-    "The paragraph discusses lichens' sensitivity to pollutants as the basis for their use as air-quality indicators."
+    "この段落は、地衣類が大気汚染物質に敏感であることが、大気質の指標として利用される理由になっていると説明しています。"
   ),
   reading(
     "q-read-lichen-6",
@@ -291,7 +291,7 @@ export const readingQuestionsBatchB = [
     "According to the passage, all of the following are mentioned as environments where lichen grow EXCEPT",
     ["tropical rainforests", "bare Arctic rock", "tree bark", "ocean floors"],
     3,
-    "The passage names rainforests, Arctic rock, and tree bark as lichen habitats; ocean floors are not mentioned."
+    "本文では熱帯雨林・北極の裸岩・樹皮が地衣類の生育環境として挙げられていますが、海底については言及がありません。"
   ),
   reading(
     "q-read-vaccination-1",
@@ -304,7 +304,7 @@ export const readingQuestionsBatchB = [
       "The global eradication of infectious diseases in general",
     ],
     1,
-    "The passage traces Jenner's experiment, the coining of the term \"vaccination,\" and its eventual global adoption."
+    "本文は、ジェンナーの実験、「種痘(vaccination)」という用語の誕生、そしてその後の世界的な普及という流れを追っています。"
   ),
   reading(
     "q-read-vaccination-2",
@@ -317,7 +317,7 @@ export const readingQuestionsBatchB = [
       "They refused all medical treatment",
     ],
     1,
-    "The passage states folklore held that milkmaids who had cowpox \"rarely contracted smallpox at all.\""
+    "本文には、民間伝承では牛痘にかかったことのある乳搾りの女性たちは「天然痘にほとんどかからなかった(\"rarely contracted smallpox at all\")」と信じられていたとあります。"
   ),
   reading(
     "q-read-vaccination-3",
@@ -325,7 +325,7 @@ export const readingQuestionsBatchB = [
     "The word \"induce\" in the passage is closest in meaning to",
     ["prevent", "cause", "diagnose", "cure"],
     1,
-    "Variolation was meant to induce, i.e., cause, a milder case of the disease."
+    "人痘接種法(variolation)は、軽い症状を誘発する(induce、つまり引き起こす)ことを狙ったものでした。"
   ),
   reading(
     "q-read-vaccination-4",
@@ -338,7 +338,7 @@ export const readingQuestionsBatchB = [
       "required no medical training",
     ],
     1,
-    "The passage states variolation used smallpox sore material and \"sometimes caused fatal infections.\""
+    "本文には、人痘接種法は天然痘の膿を用いており、「時に致命的な感染を引き起こすことがあった(\"sometimes caused fatal infections\")」とあります。"
   ),
   reading(
     "q-read-vaccination-5",
@@ -346,7 +346,7 @@ export const readingQuestionsBatchB = [
     "The word \"this\" in paragraph 2, in the phrase \"coined the term 'vaccination' for this procedure,\" refers to",
     ["folk belief", "variolation", "the cowpox inoculation method Jenner tested", "smallpox eradication"],
     2,
-    "\"This procedure\" refers to the cowpox-based inoculation method Jenner had just performed on the boy."
+    "「This procedure」は、ジェンナーが少年に対して行ったばかりの、牛痘を用いた接種法を指します。"
   ),
   reading(
     "q-read-vaccination-6",
@@ -354,7 +354,7 @@ export const readingQuestionsBatchB = [
     "According to the passage, all of the following are mentioned in connection with smallpox or its prevention EXCEPT",
     ["variolation", "cowpox", "Edward Jenner", "antibiotics"],
     3,
-    "The passage discusses variolation, cowpox, and Jenner, but does not mention antibiotics, which do not treat viral disease."
+    "本文では人痘接種法・牛痘・ジェンナーについて述べられていますが、ウイルス性の病気には効かない抗生物質については触れられていません。"
   ),
   reading(
     "q-read-urbanization-1",
@@ -367,7 +367,7 @@ export const readingQuestionsBatchB = [
       "The causes of cholera as a disease",
     ],
     1,
-    "The passage traces industrial-era urban growth, the resulting overcrowding and disease, and the reforms that followed."
+    "本文は、産業革命期の急激な都市化が劣悪な生活環境を生み、やがて公衆衛生改革へとつながっていった経緯を追っています。"
   ),
   reading(
     "q-read-urbanization-2",
@@ -380,7 +380,7 @@ export const readingQuestionsBatchB = [
       "It doubled and then declined",
     ],
     1,
-    "The passage states Manchester \"grew from a modest market town of about twenty-five thousand people in 1770 to a city of several hundred thousand.\""
+    "本文には、マンチェスターは「1770年には人口約2万5千人の小さな市場町だったが、数十年のうちに数十万人規模の都市へと成長した(\"grew from a modest market town of about twenty-five thousand people in 1770 to a city of several hundred thousand\")」とあります。"
   ),
   reading(
     "q-read-urbanization-3",
@@ -388,7 +388,7 @@ export const readingQuestionsBatchB = [
     "The word \"outpaced\" in the passage is closest in meaning to",
     ["exceeded the speed of", "financed", "prevented", "matched exactly"],
     0,
-    "Growth \"outpaced\" the government's ability to provide services, meaning it exceeded that capacity's speed."
+    "成長が行政のサービス提供能力を「outpaced(上回った)」というのは、行政の対応が追いつく速さを成長が超えてしまったという意味です。"
   ),
   reading(
     "q-read-urbanization-4",
@@ -401,7 +401,7 @@ export const readingQuestionsBatchB = [
       "the cities were too sparsely populated",
     ],
     1,
-    "The passage describes households sharing a single water source or latrine, creating ideal conditions for disease spread."
+    "本文には、多くの世帯が一つの水源やトイレを共有しており、それが疾病の蔓延にとって理想的な状況を生み出したとあります。"
   ),
   reading(
     "q-read-urbanization-5",
@@ -409,7 +409,7 @@ export const readingQuestionsBatchB = [
     "The word \"these\" in paragraph 3, in the phrase \"the severity of these outbreaks,\" refers to",
     ["factory closures", "housing shortages", "cholera outbreaks", "political elections"],
     2,
-    "The previous paragraph describes cholera outbreaks sweeping through industrial cities."
+    "直前の段落では、コレラの流行が工業都市に何度も広がっていった様子が説明されています。"
   ),
   reading(
     "q-read-urbanization-6",
@@ -417,7 +417,7 @@ export const readingQuestionsBatchB = [
     "According to the passage, all of the following are mentioned as results of industrial urbanization EXCEPT",
     ["overcrowded tenements", "shared water sources and latrines", "cholera outbreaks", "declining factory employment"],
     3,
-    "The passage mentions overcrowded tenements, shared facilities, and cholera; declining factory employment is not mentioned."
+    "本文では過密な集合住宅・共有の水源やトイレ・コレラの流行が挙げられていますが、工場労働者の減少については言及がありません。"
   ),
   reading(
     "q-read-echolocation-1",
@@ -430,7 +430,7 @@ export const readingQuestionsBatchB = [
       "How sonar technology was invented",
     ],
     1,
-    "The passage explains the mechanism of echolocation and the physical adaptations that support it."
+    "本文は、エコーロケーション(反響定位)の仕組みと、それを可能にする身体的な適応について説明しています。"
   ),
   reading(
     "q-read-echolocation-2",
@@ -443,7 +443,7 @@ export const readingQuestionsBatchB = [
       "The temperature of the surrounding air",
     ],
     1,
-    "The passage states a bat can determine \"distance and direction... size, shape, texture, and even whether it is moving.\""
+    "本文には、コウモリは「距離と方向...大きさ、形、質感、さらには動いているかどうかまで(\"distance and direction... size, shape, texture, and even whether it is moving\")」判別できるとあります。"
   ),
   reading(
     "q-read-echolocation-3",
@@ -451,7 +451,7 @@ export const readingQuestionsBatchB = [
     "The word \"faint\" in the passage is closest in meaning to",
     ["loud", "weak or hard to detect", "delayed", "artificial"],
     1,
-    "\"Faint returning echoes\" are echoes that are weak and hard to detect compared to the bat's own call."
+    "「Faint returning echoes」とは、コウモリ自身の鳴き声に比べて弱く、感知しにくい反響音を指します。"
   ),
   reading(
     "q-read-echolocation-4",
@@ -464,7 +464,7 @@ export const readingQuestionsBatchB = [
       "lose their sense of smell",
     ],
     1,
-    "The passage explains this mechanism prevents the bat \"from being deafened by its own call.\""
+    "本文は、この仕組みがコウモリを「自分自身の鳴き声によって耳が聞こえなくなること(\"from being deafened by its own call\")」から守っていると説明しています。"
   ),
   reading(
     "q-read-echolocation-5",
@@ -472,7 +472,7 @@ export const readingQuestionsBatchB = [
     "The word \"its\" in paragraph 3, in the phrase \"drawn on its underlying principles,\" refers to",
     ["sonar", "echolocation", "radar", "darkness"],
     1,
-    "Engineers drew on the underlying principles of echolocation when developing sonar and radar."
+    "技術者たちは、ソナーやレーダーを開発する際にエコーロケーションの基本原理を応用しました。"
   ),
   reading(
     "q-read-echolocation-6",
@@ -480,7 +480,7 @@ export const readingQuestionsBatchB = [
     "According to the passage, all of the following are mentioned in connection with bat echolocation EXCEPT",
     ["specialized laryngeal muscles", "large, mobile outer ears", "a middle-ear disconnection mechanism", "infrared vision"],
     3,
-    "The passage discusses laryngeal muscles, ear shape, and the middle-ear mechanism, but never mentions infrared vision."
+    "本文では喉頭の筋肉・耳の形・中耳の仕組みについて述べられていますが、赤外線視覚については触れられていません。"
   ),
   reading(
     "q-read-panama-1",
@@ -493,7 +493,7 @@ export const readingQuestionsBatchB = [
       "The construction of the Suez Canal",
     ],
     1,
-    "The passage contrasts the failed French effort with the successful American completion using a lock-based design and disease control."
+    "本文は、失敗に終わったフランスによる試みと、それに続くアメリカによるパナマ運河の完成とを対比しています。"
   ),
   reading(
     "q-read-panama-2",
@@ -506,7 +506,7 @@ export const readingQuestionsBatchB = [
       "A shortage of construction materials",
     ],
     1,
-    "The passage states the project was \"defeated by a combination of financial mismanagement, unstable mountainous terrain, and... disease.\""
+    "本文には、このプロジェクトは「財政の失敗、不安定な山岳地形、そして...病気が重なって(\"defeated by a combination of financial mismanagement, unstable mountainous terrain, and... disease\")」失敗したとあります。"
   ),
   reading(
     "q-read-panama-3",
@@ -514,7 +514,7 @@ export const readingQuestionsBatchB = [
     "The word \"devastatingly\" in the passage is closest in meaning to",
     ["surprisingly", "mildly", "destructively", "slowly"],
     2,
-    "Disease is described as the most devastating, i.e., most destructive, cause of the French project's failure."
+    "病気は、フランスのプロジェクトを失敗させた原因の中でも最も「devastating(壊滅的)」、つまり最も破壊的なものとして描かれています。"
   ),
   reading(
     "q-read-panama-4",
@@ -527,7 +527,7 @@ export const readingQuestionsBatchB = [
       "yellow fever had not yet been identified as a disease",
     ],
     1,
-    "The passage states the mosquito-disease connection \"was not yet understood\" during the French attempt, which explains why they could not control the outbreaks."
+    "本文には、フランスの試みの当時は蚊と病気の関係が「まだ理解されていなかった(\"was not yet understood\")」とあり、これが流行を制御できなかった理由を説明しています。"
   ),
   reading(
     "q-read-panama-5",
@@ -535,7 +535,7 @@ export const readingQuestionsBatchB = [
     "The word \"This approach\" in paragraph 2 refers to",
     ["the sea-level canal design", "the lock-based system", "the Suez Canal method", "Gorgas's mosquito control campaign"],
     1,
-    "The sentence follows the description of the lock-based system that made use of Gatun Lake."
+    "この文は、ガトゥン湖を利用した閘門(こうもん)方式の説明の直後に続くものです。"
   ),
   reading(
     "q-read-panama-6",
@@ -543,7 +543,7 @@ export const readingQuestionsBatchB = [
     "According to the passage, all of the following are mentioned as factors in the canal's completion EXCEPT",
     ["the lock-based system", "Gatun Lake", "mosquito control efforts", "the invention of dynamite"],
     3,
-    "The passage discusses the lock system, Gatun Lake, and Gorgas's mosquito control; dynamite is not mentioned."
+    "本文では閘門方式・ガトゥン湖・ゴーガス医師による蚊の駆除活動について述べられていますが、ダイナマイトの発明については言及がありません。"
   ),
   reading(
     "q-read-dissonance-1",
@@ -556,7 +556,7 @@ export const readingQuestionsBatchB = [
       "Modern marketing techniques",
     ],
     1,
-    "The passage introduces cognitive dissonance theory and describes strategies people use to resolve conflicting beliefs."
+    "本文は、認知的不協和理論と、人々が矛盾する信念をどのように解消するかについて説明しています。"
   ),
   reading(
     "q-read-dissonance-2",
@@ -569,7 +569,7 @@ export const readingQuestionsBatchB = [
       "They stopped discussing the prediction entirely",
     ],
     1,
-    "The passage states members \"reinterpreted the failed prophecy as evidence that their faith had saved the world.\""
+    "本文には、メンバーたちは「失敗した予言を、自分たちの信仰が世界を救った証拠だと再解釈した(\"reinterpreted the failed prophecy as evidence that their faith had saved the world\")」とあります。"
   ),
   reading(
     "q-read-dissonance-3",
@@ -577,7 +577,7 @@ export const readingQuestionsBatchB = [
     "The word \"motivating\" in the passage is closest in meaning to",
     ["confusing", "driving someone to act", "irrelevant", "forgettable"],
     1,
-    "Festinger argued dissonance is \"actively motivating,\" driving people to reduce the inconsistency."
+    "フェスティンガーは、不協和は「積極的に人を動かすもの(\"actively motivating\")」であり、人々を矛盾の解消へと駆り立てると論じました。"
   ),
   reading(
     "q-read-dissonance-4",
@@ -590,7 +590,7 @@ export const readingQuestionsBatchB = [
       "prefer to work in groups rather than alone",
     ],
     1,
-    "The passage states the theory explains continued investment in a failing project to avoid admitting an earlier mistake."
+    "本文には、この理論は、過去の投資が誤りだったと認めることを避けるために、失敗しつつあるプロジェクトへの投資を続けてしまう理由を説明できるとあります。"
   ),
   reading(
     "q-read-dissonance-5",
@@ -598,7 +598,7 @@ export const readingQuestionsBatchB = [
     "The word \"It\" in paragraph 3, in the phrase \"It helps explain why people often rate a decision more favorably,\" refers to",
     ["the failed prophecy", "cognitive dissonance theory", "the small group", "Leon Festinger"],
     1,
-    "The paragraph opens by stating cognitive dissonance theory has been applied broadly, and \"It\" continues that reference."
+    "この段落は、認知的不協和理論が幅広く応用されてきたと述べたうえで、「It」はその理論を指し続けています。"
   ),
   reading(
     "q-read-dissonance-6",
@@ -606,7 +606,7 @@ export const readingQuestionsBatchB = [
     "According to the passage, all of the following are mentioned as strategies for resolving cognitive dissonance EXCEPT",
     ["adding new justifying beliefs", "changing one's behavior to match a belief", "minimizing the perceived importance of the inconsistency", "seeking therapy from a psychologist"],
     3,
-    "The passage names adding justifying beliefs, changing behavior, and minimizing importance as strategies; therapy is not mentioned."
+    "本文では、正当化する新たな信念を加えること・信念に合わせて行動を変えること・矛盾の重要性を軽視することが挙げられていますが、心理療法を受けることへの言及はありません。"
   ),
   reading(
     "q-read-desert-1",
@@ -619,7 +619,7 @@ export const readingQuestionsBatchB = [
       "The behavior of nocturnal predators",
     ],
     1,
-    "The passage surveys plant and animal adaptations that address desert water scarcity and temperature swings."
+    "本文は、砂漠の植物や動物が水不足と極端な気温差にどのように適応してきたかを概観しています。"
   ),
   reading(
     "q-read-desert-2",
@@ -632,7 +632,7 @@ export const readingQuestionsBatchB = [
       "By growing only underground",
     ],
     1,
-    "The passage states many desert plants have \"small, needle-like leaves or spines\" rather than broad, water-losing leaves."
+    "本文には、多くの砂漠の植物は水を失いやすい広い葉の代わりに「小さく針のような葉やとげを持つ(\"small, needle-like leaves or spines\")」とあります。"
   ),
   reading(
     "q-read-desert-3",
@@ -640,7 +640,7 @@ export const readingQuestionsBatchB = [
     "The word \"transpiration\" in the passage is closest in meaning to",
     ["photosynthesis", "the loss of water vapor from plant surfaces", "the absorption of sunlight", "root growth"],
     1,
-    "Broad leaves \"lose water rapidly through transpiration,\" i.e., water vapor loss from plant surfaces."
+    "広い葉は「transpiration(蒸散)」、つまり植物の表面から水蒸気が失われる現象によって急速に水分を失います。"
   ),
   reading(
     "q-read-desert-4",
@@ -653,7 +653,7 @@ export const readingQuestionsBatchB = [
       "carbon dioxide is more abundant at night",
     ],
     1,
-    "The passage explains pores open at night \"when temperatures are lower and less water is lost.\""
+    "本文は、気孔が夜間に開くのは「気温が低く、失われる水分が少ないから(\"when temperatures are lower and less water is lost\")」だと説明しています。"
   ),
   reading(
     "q-read-desert-5",
@@ -661,7 +661,7 @@ export const readingQuestionsBatchB = [
     "The word \"they\" in paragraph 3, in the phrase \"they can survive largely on water produced internally,\" refers to",
     ["desert plants", "nocturnal predators", "kangaroo rats (or similarly adapted species)", "underground burrows"],
     2,
-    "The sentence describes kangaroo rats surviving on internally produced water from digesting dry seeds."
+    "この文は、カンガルーネズミが乾燥した種子を消化する過程で体内に作られる水分だけで、ほぼ生きていけることを説明しています。"
   ),
   reading(
     "q-read-desert-6",
@@ -669,6 +669,6 @@ export const readingQuestionsBatchB = [
     "According to the passage, all of the following are mentioned as desert animal or plant adaptations EXCEPT",
     ["nocturnal behavior", "water storage in thickened stems", "highly efficient kidneys", "migration to wetter climates during droughts"],
     3,
-    "The passage mentions nocturnal behavior, succulent water storage, and efficient kidneys; migration is not mentioned."
+    "本文では夜行性の行動・多肉植物による貯水・効率的な腎臓が挙げられていますが、移動(migration)については言及がありません。"
   ),
 ];

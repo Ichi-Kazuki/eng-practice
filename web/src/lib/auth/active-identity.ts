@@ -4,7 +4,7 @@ import { getDb } from "@/db";
 import { users } from "@/db/schema";
 import { getCurrentUser } from "./current-user";
 
-const GUEST_COOKIE_NAME = "guest_id";
+export const GUEST_COOKIE_NAME = "guest_id";
 const GUEST_MAX_AGE_SEC = 60 * 60 * 24 * 365; // 1年
 
 export type ActiveIdentity = {

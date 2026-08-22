@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { desc, eq, sql } from "drizzle-orm";
-import { getDb } from "@/db";
-import { attempts, questions, passages } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { getMistakesForUser } from "@/lib/notebook";
 import { SECTION_META, QUESTION_TYPE_LABEL_JA, type SectionSlug } from "@/lib/section-meta";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LoginRequired } from "@/components/login-required";
+import { JaHeading } from "@/components/ja-heading";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -28,39 +27,13 @@ export default async function NotebookPage({
     return <LoginRequired message="復習ノートは誤答をアカウントに記録して表示するため、ログインが必要です。" />;
   }
 
-  const db = getDb();
-  const rows = await db
-    .select()
-    .from(attempts)
-    .innerJoin(questions, eq(attempts.questionId, questions.id))
-    .leftJoin(passages, eq(questions.passageId, passages.id))
-    .where(eq(attempts.userId, user.userId))
-    // createdAtは秒精度のため、同一秒内の複数回答はrowidで挿入順にタイブレークする
-    .orderBy(desc(attempts.createdAt), desc(sql`attempts.rowid`));
-
-  const latestByQuestion = new Map<string, (typeof rows)[number]>();
-  for (const row of rows) {
-    if (!latestByQuestion.has(row.questions.id)) {
-      latestByQuestion.set(row.questions.id, row);
-    }
-  }
-
+  const mistakes = await getMistakesForUser({ userId: user.userId, section, range });
   const activeRange = DATE_RANGES.find((r) => r.key === range) ?? DATE_RANGES[0];
-  // eslint-disable-next-line react-hooks/purity -- サーバーコンポーネントはリクエストごとに再実行されるため問題ない
-  const cutoff = activeRange.days ? Date.now() - activeRange.days * 86400_000 : null;
-
-  const mistakes = Array.from(latestByQuestion.values()).filter((row) => {
-    if (row.attempts.isCorrect) return false;
-    if (section && row.questions.sectionSlug !== section) return false;
-    if (cutoff && row.attempts.createdAt.getTime() < cutoff) return false;
-    return true;
-  });
-
   const sections: SectionSlug[] = ["structure", "reading"];
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-foreground">復習ノート</h1>
+      <JaHeading className="text-xl font-bold text-foreground" text="復習ノート" />
       <p className="mt-1 text-sm text-muted-foreground">
         最新の解答が不正解だった問題を表示しています。正解すると自動的にここから外れます。
       </p>

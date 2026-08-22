@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db";
 import { mockSessions, attempts, questions } from "@/db/schema";
@@ -32,6 +33,10 @@ export async function startMockTest(formData: FormData) {
 
   const db = getDb();
   const sections = await buildMockSections(requests, timeMode);
+  if (sections.length === 0) {
+    // 選択されたセクションに公開問題が1問もない場合は空のセッションを作らず開始画面に戻す
+    redirect("/app/mock");
+  }
   const id = crypto.randomUUID();
   await db.insert(mockSessions).values({
     id,
@@ -67,6 +72,7 @@ export async function startMockSection(sessionId: string) {
       .set({ sections })
       .where(eq(mockSessions.id, sessionId));
   }
+  revalidatePath(`/app/mock/${sessionId}`);
 }
 
 export async function answerMockQuestion(
@@ -77,6 +83,20 @@ export async function answerMockQuestion(
   const { db, session } = await loadOwnedSession(sessionId);
   const answers = { ...(session.answers as Record<string, number>), [questionId]: selectedIndex };
   await db.update(mockSessions).set({ answers }).where(eq(mockSessions.id, sessionId));
+}
+
+export async function toggleMockFlag(sessionId: string, questionId: string) {
+  const { db, session } = await loadOwnedSession(sessionId);
+  const sections = session.sections as MockSectionConfig[];
+  const current = sections[session.currentSectionIndex];
+  if (!current) return;
+
+  const flags = current.flags ?? [];
+  current.flags = flags.includes(questionId)
+    ? flags.filter((id) => id !== questionId)
+    : [...flags, questionId];
+
+  await db.update(mockSessions).set({ sections }).where(eq(mockSessions.id, sessionId));
 }
 
 export async function submitMockSection(sessionId: string): Promise<{ done: boolean }> {

@@ -3,6 +3,7 @@ import { and, eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { questions, passages } from "@/db/schema";
 import { SECTION_META, type SectionSlug } from "@/lib/section-meta";
+import { shuffle } from "@/lib/shuffle";
 import { QuestionRunner, type RunnerItem } from "@/components/question-runner";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +25,17 @@ export default async function PracticeSectionPage({
     .leftJoin(passages, eq(questions.passageId, passages.id))
     .where(and(eq(questions.sectionSlug, sectionSlug), eq(questions.status, "published")));
 
-  const items: RunnerItem[] = rows.map((row) => ({
+  // パッセージ単位のまとまりは保ったまま、パッセージの出題順と各パッセージ内の設問順をランダム化する
+  const groups = new Map<string, typeof rows>();
+  for (const row of rows) {
+    const key = row.questions.passageId ?? row.questions.id;
+    const list = groups.get(key) ?? [];
+    list.push(row);
+    groups.set(key, list);
+  }
+  const orderedRows = shuffle(Array.from(groups.values()).map(shuffle)).flat();
+
+  const items: RunnerItem[] = orderedRows.map((row) => ({
     question: {
       id: row.questions.id,
       stem: row.questions.stem,

@@ -135,8 +135,72 @@
   }
   body {
     @apply bg-background text-foreground;
+
+    /* 日本語タイポグラフィ ベースライン(Tier 1)。UIチロムの大半は日本語だが、
+       問題文・選択肢・パッセージ本文は英語なので lang="en" 側で打ち消す */
+    font-feature-settings: "palt" 1;
+    letter-spacing: 0.02em;
+    line-height: 1.75;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    word-break: auto-phrase;
+    line-break: strict;
+    text-align: left;
   }
   html {
     @apply font-sans;
+  }
+
+  /* 英語コンテンツ(設問本文・選択肢・パッセージ)は日本語向けの字間/改行ルールを打ち消し、
+     通常の英語タイポグラフィに戻す(Rule 14) */
+  :lang(en) {
+    font-feature-settings: normal;
+    letter-spacing: normal;
+    line-height: 1.6;
+    word-break: normal;
+    hyphens: auto;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    overflow-wrap: normal;
+    word-break: normal;
+    word-break: auto-phrase;
+    line-break: strict;
+    text-wrap: balance;
+    letter-spacing: 0.01em;
+    line-height: 1.4;
+  }
+}
+
+@layer utilities {
+  /* カードタイトル・FAQ見出し等の短い表示用テキスト(Tier A: 常にフレーズ単位改行ON) */
+  .text-ja-card-title {
+    overflow-wrap: normal;
+    word-break: normal;
+    word-break: auto-phrase;
+    line-break: strict;
+    text-wrap: pretty;
+  }
+  /* 左寄せの本文・カード説明文(Tier C: フレーズ単位改行OFF、右端の空白ギャップを避ける) */
+  .text-ja-body {
+    overflow-wrap: anywhere;
+    word-break: normal;
+    line-break: strict;
+    text-align: left;
+  }
+  /* ボタン・ナビラベル等は改行させない */
+  .text-ja-label {
+    white-space: nowrap;
+    word-break: keep-all;
+    line-break: strict;
+  }
+  /* 数字+単位・短い固有名詞・引用フレーズの分割防止 */
+  .text-ja-nowrap {
+    white-space: nowrap;
   }
 }

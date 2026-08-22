@@ -4,6 +4,7 @@ import { getDb } from "@/db";
 import { passages } from "@/db/schema";
 import { PassageForm } from "@/components/admin/passage-form";
 import { updatePassage } from "@/app/admin/actions";
+import { JaHeading } from "@/components/ja-heading";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,7 @@ export default async function EditPassagePage({
 
   return (
     <div className="max-w-2xl">
-      <h1 className="mb-6 text-xl font-bold text-foreground">パッセージを編集</h1>
+      <JaHeading className="mb-6 text-xl font-bold text-foreground" text="パッセージを編集" />
       <PassageForm action={updateWithId} initial={passage} />
     </div>
   );

@@ -1,20 +1,8 @@
 import Link from "next/link";
-import {
-  BookOpenTextIcon,
-  ClockCountdownIcon,
-  NotebookIcon,
-  ChartBarIcon,
-} from "@phosphor-icons/react/ssr";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { AppNav } from "@/components/app-nav";
 
 export const dynamic = "force-dynamic";
-
-const NAV_ITEMS = [
-  { href: "/app/practice", label: "演習", icon: BookOpenTextIcon },
-  { href: "/app/mock", label: "模試", icon: ClockCountdownIcon },
-  { href: "/app/notebook", label: "復習ノート", icon: NotebookIcon },
-  { href: "/app/dashboard", label: "スコア", icon: ChartBarIcon },
-];
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
@@ -22,22 +10,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex min-h-full flex-col">
       <header className="border-b border-border">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-y-2 px-4 py-3 sm:px-6">
           <Link href="/app" className="text-sm font-bold text-foreground">
             英語演習
           </Link>
-          <nav className="flex items-center gap-1">
-            {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
-              <Link
-                key={href}
-                href={href}
-                className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
-              >
-                <Icon className="size-4" />
-                {label}
-              </Link>
-            ))}
-          </nav>
+          <AppNav />
           <div className="flex items-center gap-3">
             {user ? (
               <>
@@ -64,7 +41,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           ゲストとして利用中です。演習・模試はそのまま解けますが、復習ノートとスコアの記録にはログインが必要です。
         </div>
       )}
-      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-8">{children}</main>
+      <main id="main-content" className="mx-auto w-full max-w-5xl flex-1 px-6 py-8">
+        {children}
+      </main>
     </div>
   );
 }

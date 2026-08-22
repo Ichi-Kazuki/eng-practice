@@ -24,6 +24,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "英語演習",
   description: "TOEFL ITP形式のStructure/Reading問題を無料で何度でも解ける演習サイト",
+  openGraph: {
+    title: "英語演習",
+    description: "TOEFL ITP形式のStructure/Reading問題を無料で何度でも解ける演習サイト",
+    locale: "ja_JP",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -32,7 +38,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="ja"
       className={`${notoSansJP.variable} ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:text-primary-foreground"
+        >
+          本文へスキップ
+        </a>
+        {children}
+      </body>
     </html>
   );
 }

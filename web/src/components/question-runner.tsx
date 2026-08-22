@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
+import { QuestionStem } from "@/components/question-stem";
 import { cn } from "@/lib/utils";
 
 export type RunnerQuestion = {
@@ -95,10 +96,7 @@ export function QuestionRunner({
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between text-sm text-muted-foreground">
-        <span className="font-[family-name:var(--font-geist-mono)]">
-          問題 {index + 1} / {items.length}
-        </span>
+      <div className="mb-4 flex items-center justify-end text-sm text-muted-foreground">
         <Link href={backHref} className="hover:text-foreground hover:underline">
           {backLabel}
         </Link>
@@ -106,7 +104,7 @@ export function QuestionRunner({
 
       <div className={cn("grid gap-6", current.passage && "sm:grid-cols-2")}>
         {current.passage && (
-          <div className="max-h-[32rem] overflow-y-auto rounded-lg border border-border p-4">
+          <div className="max-h-[32rem] overflow-y-auto rounded-lg border border-border p-4" lang="en">
             <h3 className="mb-3 font-medium text-foreground">{current.passage.title}</h3>
             <p className="whitespace-pre-line font-[family-name:var(--font-literata)] text-[15px] leading-relaxed text-foreground">
               {current.passage.body}
@@ -115,9 +113,14 @@ export function QuestionRunner({
         )}
 
         <div>
-          <p className="text-base leading-relaxed text-foreground">{current.question.stem}</p>
+          <QuestionStem
+            className="text-base leading-relaxed text-foreground"
+            stem={current.question.stem}
+            choices={current.question.choices}
+            questionType={current.question.questionType}
+          />
 
-          <div className="mt-5 space-y-2">
+          <div className="mt-5 space-y-2" role="radiogroup" aria-label="選択肢">
             {current.question.choices.map((choice, i) => {
               const isSelected = selectedIndex === i;
               const isCorrectChoice = i === current.question.correctIndex;
@@ -125,6 +128,8 @@ export function QuestionRunner({
                 <button
                   key={i}
                   type="button"
+                  role="radio"
+                  aria-checked={isSelected}
                   disabled={hasAnswered}
                   onClick={() => handleSelect(i)}
                   className={cn(
@@ -138,7 +143,9 @@ export function QuestionRunner({
                   <span className="font-[family-name:var(--font-geist-mono)] font-medium text-muted-foreground">
                     {String.fromCharCode(65 + i)}
                   </span>
-                  <span className="flex-1 text-foreground">{choice}</span>
+                  <span className="flex-1 text-foreground" lang="en">
+                    {choice}
+                  </span>
                   {hasAnswered && isCorrectChoice && (
                     <CheckCircleIcon className="size-5 shrink-0 text-success" weight="fill" />
                   )}

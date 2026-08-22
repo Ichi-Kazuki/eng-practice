@@ -6,7 +6,7 @@ import { getActiveIdentity } from "@/lib/auth/active-identity";
 import { getQuestionsByIds } from "@/lib/mock-session";
 import { SECTION_META, type SectionSlug } from "@/lib/section-meta";
 import { startMockSection } from "@/app/app/mock/actions";
-import { Button } from "@/components/ui/button";
+import { StartSectionButton } from "@/components/start-section-button";
 import { MockSectionRunner, type MockRunnerQuestion } from "@/components/mock-section-runner";
 
 export const dynamic = "force-dynamic";
@@ -51,9 +51,7 @@ export default async function MockSessionPage({
           }}
           className="mt-6"
         >
-          <Button type="submit" size="lg">
-            このセクションを開始する
-          </Button>
+          <StartSectionButton />
         </form>
       </div>
     );
@@ -84,6 +82,7 @@ export default async function MockSessionPage({
       current.questionIds.includes(id)
     )
   );
+  const initialFlags = (current.flags ?? []).filter((id) => current.questionIds.includes(id));
 
   return (
     <MockSectionRunner
@@ -93,6 +92,7 @@ export default async function MockSessionPage({
       startedAtMs={current.startedAt}
       questions={orderedQuestions}
       initialAnswers={initialAnswers}
+      initialFlags={initialFlags}
     />
   );
 }

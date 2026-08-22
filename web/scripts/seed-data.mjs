@@ -112,7 +112,7 @@ export const structureQuestions = [
     "_____ the mission was originally scheduled for launch in March, technical problems delayed it until June.",
     ["Although", "Despite", "Because of", "In spite"],
     0,
-    "A dependent clause follows, so a subordinating conjunction like \"Although\" is required. \"Despite\" and \"In spite (of)\" take noun phrases, not clauses, and \"Because of\" would reverse the intended meaning.",
+    "後ろに従属節が続いているため、\"Although\" のような従属接続詞が必要です。\"Despite\" や \"In spite (of)\" は節ではなく名詞句を伴い、\"Because of\" では意味が逆になってしまいます。",
     "medium"
   ),
   struct(
@@ -121,7 +121,7 @@ export const structureQuestions = [
     "Not until the twentieth century _____ widely available to ordinary households.",
     ["electricity became", "did electricity become", "electricity did become", "had electricity become"],
     1,
-    "\"Not until...\" at the start of a sentence triggers subject-auxiliary inversion: did + subject + base verb.",
+    "文頭に \"Not until...\" が来ると主語と助動詞の倒置が起こり、\"did + 主語 + 動詞の原形\" の語順になります。",
     "hard"
   ),
   struct(
@@ -130,7 +130,7 @@ export const structureQuestions = [
     "The committee requested that the report _____ before the end of the fiscal year.",
     ["is submitted", "submitted", "be submitted", "will be submitted"],
     2,
-    "\"Request that\" triggers the subjunctive mood: the base form \"be submitted\" is used regardless of tense.",
+    "\"request that\" は仮定法現在を要求する動詞で、時制に関係なく原形の \"be submitted\" を使います。",
     "medium"
   ),
   struct(
@@ -139,7 +139,7 @@ export const structureQuestions = [
     "_____ of the two candidates has the experience necessary to lead the department.",
     ["Neither", "None", "Both", "All"],
     0,
-    "\"Neither\" is used for exactly two items; \"none\" is reserved for three or more.",
+    "\"neither\" はちょうど2つのものについて使い、\"none\" は3つ以上の場合に使います。",
     "easy"
   ),
   struct(
@@ -148,7 +148,7 @@ export const structureQuestions = [
     "The museum's new wing, _____ construction took nearly three years, opens to the public next month.",
     ["which", "whose", "that", "who"],
     1,
-    "A possessive relative pronoun is needed to show that the construction belongs to the wing; \"whose\" fills that role for both people and things.",
+    "「建設(工事)」が「新館」に属することを示すには所有格の関係代名詞が必要で、\"whose\" は人にも物にも使えます。",
     "medium"
   ),
   struct(
@@ -157,7 +157,7 @@ export const structureQuestions = [
     "It is essential that every employee _____ the updated safety guidelines before returning to the factory floor.",
     ["reviews", "review", "reviewing", "will review"],
     1,
-    "After \"It is essential that,\" the subjunctive base form \"review\" is required.",
+    "\"It is essential that\" の後には仮定法現在の原形 \"review\" が必要です。",
     "medium"
   ),
   struct(
@@ -166,7 +166,7 @@ export const structureQuestions = [
     "_____ increasing air travel, many small regional airports have struggled to remain profitable.",
     ["Despite", "Although", "However", "Nevertheless"],
     0,
-    "A noun phrase (\"increasing air travel\") follows, so a preposition like \"Despite\" is needed rather than a conjunction or adverb.",
+    "後ろに名詞句(\"increasing air travel\")が続いているため、接続詞や副詞ではなく \"Despite\" のような前置詞が必要です。",
     "medium"
   ),
   struct(
@@ -175,7 +175,7 @@ export const structureQuestions = [
     "The new bridge is _____ than the one it replaced, allowing much heavier trucks to cross safely.",
     ["more strong", "stronger", "as strong", "the strongest"],
     1,
-    "A one-syllable adjective like \"strong\" forms its comparative by adding \"-er,\" not with \"more.\"",
+    "\"strong\" のような1音節の形容詞は \"more\" ではなく \"-er\" を付けて比較級を作ります。",
     "easy"
   ),
   struct(
@@ -184,7 +184,7 @@ export const structureQuestions = [
     "Rarely _____ such a well-preserved fossil found outside a controlled excavation site.",
     ["is", "has been", "it is", "being"],
     1,
-    "The negative adverb \"Rarely\" at the start of the sentence requires inversion: has + subject + been.",
+    "否定的な意味を持つ副詞 \"Rarely\" が文頭に来ると倒置が起こり、\"has + 主語 + been\" の語順になります。",
     "hard"
   ),
   struct(
@@ -193,7 +193,7 @@ export const structureQuestions = [
     "The scientist explained _____ the experiment had failed.",
     ["why did", "why", "that why", "the reason why did"],
     1,
-    "In an embedded (indirect) question, normal word order is used, not question-word inversion: \"explained why the experiment had failed.\"",
+    "間接疑問文(埋め込み疑問文)では疑問詞の倒置は起こらず、通常の語順を使います。したがって \"explained why the experiment had failed\" となります。",
     "medium"
   ),
   struct(
@@ -202,7 +202,7 @@ export const structureQuestions = [
     "_____ to reduce costs, the airline eliminated several unprofitable routes.",
     ["In an effort", "With an effort", "By effort", "For efforts"],
     0,
-    "\"In an effort to + verb\" is the standard fixed expression meaning \"in order to.\"",
+    "\"in an effort to + 動詞\" は \"in order to\"(〜するために)と同じ意味を表す定型表現です。",
     "medium"
   ),
   struct(
@@ -211,7 +211,7 @@ export const structureQuestions = [
     "The data collected during the survey _____ far more comprehensive than researchers had expected.",
     ["were", "was", "are", "have been"],
     0,
-    "\"Data\" is the plural form of \"datum\" and in formal, tested English takes a plural verb (\"were\"), even though it is often used informally as a mass noun.",
+    "\"data\" は \"datum\" の複数形であり、日常会話では単数扱いされることも多いですが、フォーマルな英語(試験で問われる英語)では複数動詞 \"were\" を取ります。",
     "hard"
   ),
   struct(
@@ -220,7 +220,7 @@ export const structureQuestions = [
     "If the bridge _____ properly maintained, the collapse could have been prevented.",
     ["was", "were", "had been", "has been"],
     2,
-    "This is a third conditional describing an unreal past situation (\"could have been prevented\"), which requires \"had been\" in the if-clause.",
+    "これは過去の事実に反する仮定を表す仮定法過去完了(第3条件文)で、\"could have been prevented\" に対応するif節には \"had been\" が必要です。",
     "hard"
   ),
   struct(
@@ -229,7 +229,7 @@ export const structureQuestions = [
     "Only after the results were independently verified _____ the findings for publication.",
     ["the team accepted", "did the team accept", "the team did accept", "had the team accepted"],
     1,
-    "\"Only after...\" at the start of a sentence triggers subject-auxiliary inversion in the main clause: did + subject + base verb.",
+    "文頭に \"Only after...\" が来ると主節で主語と助動詞の倒置が起こり、\"did + 主語 + 動詞の原形\" の語順になります。",
     "hard"
   ),
   struct(
@@ -238,7 +238,7 @@ export const structureQuestions = [
     "The new regulation applies to _____ manufacturers importing goods into the country.",
     ["all", "every", "each", "all of"],
     0,
-    "\"All\" correctly modifies the plural noun \"manufacturers\"; \"every\" and \"each\" require a singular noun, and \"all of\" would need \"the\" before the noun.",
+    "\"all\" は複数名詞 \"manufacturers\" を正しく修飾できます。\"every\" と \"each\" は単数名詞を必要とし、\"all of\" を使うなら名詞の前に \"the\" が必要です。",
     "easy"
   ),
   struct(
@@ -247,7 +247,7 @@ export const structureQuestions = [
     "The lecture covered not only the causes of the recession _____ also its long-term effects on employment.",
     ["but", "and", "or", "so"],
     0,
-    "\"Not only... but also...\" is the fixed correlative conjunction pair.",
+    "\"not only... but also...\"(〜だけでなく…も)は決まった相関接続詞のペアです。",
     "easy"
   ),
   struct(
@@ -256,7 +256,7 @@ export const structureQuestions = [
     "The professor recommended _____ the assignment before attending the seminar.",
     ["to complete", "completing", "complete", "completion"],
     1,
-    "\"Recommend\" is followed by a gerund (\"completing\"), not an infinitive.",
+    "\"recommend\" の後には不定詞ではなく動名詞(\"completing\")が続きます。",
     "medium"
   ),
   struct(
@@ -265,7 +265,7 @@ export const structureQuestions = [
     "_____ the report is finished, the team will begin drafting the next proposal.",
     ["Until", "Once", "Unless", "Since"],
     1,
-    "\"Once\" correctly conveys \"as soon as,\" matching the logical sequence of finishing the report and then starting the next task.",
+    "\"once\" は「〜するとすぐに」という意味で、報告書を終えてから次の作業に取りかかるという時間的な流れに合います。",
     "medium"
   ),
   struct(
@@ -274,7 +274,7 @@ export const structureQuestions = [
     "The findings of the two studies, though conducted independently, _____ remarkably similar.",
     ["is", "was", "are", "has been"],
     2,
-    "The subject \"findings\" is plural, so the present-tense verb must be \"are.\"",
+    "主語 \"findings\" は複数形なので、現在形の動詞は \"are\" でなければなりません。",
     "medium"
   ),
   struct(
@@ -283,7 +283,7 @@ export const structureQuestions = [
     "The city council debated whether the new stadium _____ funded through public bonds or private investment.",
     ["should be", "should", "should being", "is should be"],
     0,
-    "The passive modal construction \"should be funded\" is required after \"whether.\"",
+    "\"whether\" の後には受動態の助動詞構文 \"should be funded\" が必要です。",
     "medium"
   ),
   struct(
@@ -292,7 +292,7 @@ export const structureQuestions = [
     "The committee has yet _____ a final decision on the merger.",
     ["to make", "making", "make", "made"],
     0,
-    "\"Has yet to + base verb\" is a fixed expression meaning \"has not yet.\"",
+    "\"has yet to + 動詞の原形\" は「まだ〜していない」という意味を表す定型表現です。",
     "medium"
   ),
   struct(
@@ -301,7 +301,7 @@ export const structureQuestions = [
     "The more data scientists collected, _____ their models became.",
     ["more accurate", "the more accurate", "accurate", "most accurate"],
     1,
-    "The correlative comparative structure \"The more..., the more...\" requires \"the\" before both comparatives.",
+    "\"the more..., the more...\"(〜すればするほど…)という相関比較構文では、両方の比較級の前に \"the\" が必要です。",
     "hard"
   ),
   struct(
@@ -310,7 +310,7 @@ export const structureQuestions = [
     "The manuscript, along with the accompanying illustrations, _____ donated to the university library.",
     ["were", "was", "have been", "are"],
     1,
-    "The phrase \"along with the accompanying illustrations\" is a parenthetical, so the verb agrees with the singular subject \"manuscript\": \"was.\"",
+    "\"along with the accompanying illustrations\" は挿入句であり、動詞は単数主語 \"manuscript\" に一致させて \"was\" にする必要があります。",
     "hard"
   ),
   struct(
@@ -319,7 +319,7 @@ export const structureQuestions = [
     "Few of the witnesses _____ willing to testify in court.",
     ["was", "is", "were", "has been"],
     2,
-    "\"Few\" is a plural quantifier, so the verb must be plural: \"were.\"",
+    "\"few\" は複数扱いの数量詞なので、動詞も複数形の \"were\" にする必要があります。",
     "easy"
   ),
   struct(
@@ -328,7 +328,7 @@ export const structureQuestions = [
     "The results of the study, which was published last year, suggest that the new treatment is more effective than previously believed.",
     ["which was published last year", "suggest that the new treatment", "is more effective than", "previously believed"],
     0,
-    "The relative pronoun \"which\" refers to \"results\" (plural), so the verb should be \"were,\" not \"was.\"",
+    "関係代名詞 \"which\" は複数形の \"results\" を指しているため、動詞は \"was\" ではなく \"were\" にする必要があります。",
     "medium"
   ),
   struct(
@@ -337,7 +337,7 @@ export const structureQuestions = [
     "Despite their initial success, the company's profits have steady declined over the past three years.",
     ["their initial success", "the company's profits", "have steady declined", "over the past three years"],
     2,
-    "The verb \"declined\" must be modified by an adverb, \"steadily,\" not the adjective \"steady.\"",
+    "動詞 \"declined\" を修飾するには形容詞 \"steady\" ではなく副詞 \"steadily\" を使う必要があります。",
     "medium"
   ),
   struct(
@@ -346,7 +346,7 @@ export const structureQuestions = [
     "Each of the applicants were required to submit a portfolio along with a letter of recommendation.",
     ["were required to", "submit a portfolio", "along with", "a letter of recommendation"],
     0,
-    "\"Each of the applicants\" is grammatically singular, so the verb should be \"was required,\" not \"were required.\"",
+    "\"each of the applicants\" は文法上単数扱いなので、動詞は \"were required\" ではなく \"was required\" にする必要があります。",
     "medium"
   ),
   struct(
@@ -355,7 +355,7 @@ export const structureQuestions = [
     "The number of students enrolling in online courses have risen sharply since the university expanded its remote offerings.",
     ["enrolling in online courses", "have risen sharply", "since the university", "expanded its remote offerings"],
     1,
-    "\"The number of\" takes a singular verb (\"has risen\"), unlike \"A number of,\" which takes a plural verb.",
+    "\"the number of\" は単数動詞(\"has risen\")を取ります。複数動詞を取る \"a number of\" とは異なるので注意が必要です。",
     "hard"
   ),
   struct(
@@ -364,7 +364,7 @@ export const structureQuestions = [
     "Scientists have long debated whether Pluto should be classify as a planet or a dwarf planet.",
     ["whether Pluto should", "be classify as", "a planet or", "a dwarf planet"],
     1,
-    "After the modal \"should,\" the verb must appear in its base passive form: \"be classified,\" not \"be classify.\"",
+    "助動詞 \"should\" の後には受動態の原形 \"be classified\" が必要で、\"be classify\" という形は誤りです。",
     "easy"
   ),
   struct(
@@ -373,7 +373,7 @@ export const structureQuestions = [
     "The recipe calls for two cups of flour, a teaspoon of salt, and beating the eggs until frothy.",
     ["two cups of flour", "a teaspoon of salt", "beating the eggs", "until frothy"],
     2,
-    "The list should maintain parallel noun-phrase structure (\"two cups of flour,\" \"a teaspoon of salt,\" \"two beaten eggs\"), but \"beating the eggs\" breaks the pattern by shifting to a gerund phrase.",
+    "リストの列挙は名詞句として並列(\"two cups of flour\"、\"a teaspoon of salt\"、\"two beaten eggs\")にそろえる必要がありますが、\"beating the eggs\" だけ動名詞句になっており、パラレリズム(並列構造)が崩れています。",
     "medium"
   ),
   struct(
@@ -382,7 +382,7 @@ export const structureQuestions = [
     "Although the medication reduced her symptoms, it also caused several side effect that concerned her doctor.",
     ["reduced her symptoms", "it also caused", "several side effect", "that concerned her doctor"],
     2,
-    "The quantifier \"several\" requires a plural noun, so it should be \"several side effects,\" not \"several side effect.\"",
+    "数量詞 \"several\" の後には複数名詞が必要なので、\"several side effect\" ではなく \"several side effects\" が正しい形です。",
     "easy"
   ),
   struct(
@@ -391,7 +391,7 @@ export const structureQuestions = [
     "By the time the film crew arrived, the storm had already destroy much of the coastal village's fishing fleet.",
     ["the storm had already", "destroy much of", "the coastal village's", "fishing fleet"],
     1,
-    "The past perfect tense requires \"had already destroyed,\" using the past participle, not the base form \"destroy.\"",
+    "過去完了形では原形の \"destroy\" ではなく過去分詞を使った \"had already destroyed\" にする必要があります。",
     "medium"
   ),
   struct(
@@ -400,7 +400,7 @@ export const structureQuestions = [
     "The findings, which was presented at the conference, challenged decades of prior research on the subject.",
     ["which was presented at the conference", "challenged decades of", "prior research", "on the subject"],
     0,
-    "The relative pronoun \"which\" refers to \"findings\" (plural), so the verb should be \"were,\" not \"was.\"",
+    "関係代名詞 \"which\" は複数形の \"findings\" を指しているため、動詞は \"was\" ではなく \"were\" にする必要があります。",
     "medium"
   ),
   struct(
@@ -409,7 +409,7 @@ export const structureQuestions = [
     "The engineers worked quick to repair the damaged pipeline before the storm arrived.",
     ["worked quick to repair", "the damaged pipeline", "before the storm", "arrived"],
     0,
-    "The verb \"worked\" must be modified by the adverb \"quickly,\" not the adjective \"quick.\"",
+    "動詞 \"worked\" を修飾するには形容詞 \"quick\" ではなく副詞 \"quickly\" を使う必要があります。",
     "easy"
   ),
   struct(
@@ -418,7 +418,7 @@ export const structureQuestions = [
     "The committee is responsible to ensure that all safety protocols are strictly followed during construction.",
     ["is responsible to ensure", "that all safety protocols", "are strictly followed", "during construction"],
     0,
-    "The correct idiom is \"responsible for ensuring,\" not \"responsible to ensure.\"",
+    "正しい表現は \"responsible to ensure\" ではなく \"responsible for ensuring\" です。",
     "medium"
   ),
   struct(
@@ -427,7 +427,7 @@ export const structureQuestions = [
     "Of the two proposals, the second one is more preferable because it costs less to implement.",
     ["Of the two proposals", "the second one is more preferable", "because it costs less", "to implement"],
     1,
-    "\"Preferable\" already carries a comparative meaning (\"more desirable\"), so adding \"more\" is redundant; it should simply be \"preferable.\"",
+    "\"preferable\" はそれ自体に比較の意味(「より望ましい」)が含まれているため、\"more\" を付けるのは冗長です。単に \"preferable\" とすべきです。",
     "hard"
   ),
   struct(
@@ -436,7 +436,7 @@ export const structureQuestions = [
     "By next year, the company will completed the transition to renewable energy sources.",
     ["By next year", "the company will completed", "the transition to", "renewable energy sources"],
     1,
-    "\"By next year\" signals an action completed before a future point in time, which requires the future perfect: \"will have completed.\"",
+    "\"by next year\" は未来のある時点までに完了している動作を示すため、未来完了形 \"will have completed\" が必要です。",
     "medium"
   ),
   struct(
@@ -445,7 +445,7 @@ export const structureQuestions = [
     "The workshop taught participants how to write clearly, organize their arguments, and to present with confidence.",
     ["how to write clearly", "organize their arguments", "and to present", "with confidence"],
     2,
-    "The list should maintain parallel structure (\"write,\" \"organize,\" \"present\"), but \"to present\" breaks the pattern by repeating \"to.\"",
+    "リストは \"write\"、\"organize\"、\"present\" という並列構造を保つべきですが、\"to present\" だけ \"to\" を繰り返しており、パラレリズムが崩れています。",
     "medium"
   ),
   struct(
@@ -454,7 +454,7 @@ export const structureQuestions = [
     "There has been several complaints filed against the company this month.",
     ["There has been", "several complaints", "filed against", "the company this month"],
     0,
-    "The subject \"complaints\" is plural, so the existential construction requires \"There have been,\" not \"There has been.\"",
+    "主語 \"complaints\" は複数形なので、there構文では \"There has been\" ではなく \"There have been\" が必要です。",
     "easy"
   ),
   struct(
@@ -463,7 +463,7 @@ export const structureQuestions = [
     "Fewer rainfall this year has led to a severe drought across the region.",
     ["Fewer rainfall this year", "has led", "to a severe drought", "across the region"],
     0,
-    "\"Rainfall\" is an uncountable noun, so it should be modified by \"less,\" not \"fewer,\" which is reserved for countable nouns.",
+    "\"rainfall\" は不可算名詞なので、可算名詞に使う \"fewer\" ではなく \"less\" で修飾する必要があります。",
     "medium"
   ),
   ...structureCompletionBatch2,
@@ -482,7 +482,7 @@ export const readingQuestions = [
       "To criticize archaeologists for relying on indirect evidence",
     ],
     1,
-    "The passage traces how genetic studies shifted the accepted account of horse domestication away from the earlier Kazakhstan-steppe theory toward the Volga-Don region."
+    "本文は、遺伝子研究によって馬の家畜化に関する定説が、以前のカザフスタン草原説からヴォルガ・ドン地域説へと移り変わった経緯をたどっています。"
   ),
   reading(
     "q-read-horse-2",
@@ -495,7 +495,7 @@ export const readingQuestions = [
       "Written records from early steppe civilizations",
     ],
     2,
-    "The passage states the earlier theory \"rested largely on indirect evidence: wear patterns on horse teeth... and unusually large deposits of horse bones.\""
+    "本文には、以前の説が \"rested largely on indirect evidence: wear patterns on horse teeth... and unusually large deposits of horse bones\"(間接的な証拠、すなわち馬の歯のすり減り方や大量の馬の骨の堆積に大きく依拠していた)とあります。"
   ),
   reading(
     "q-read-horse-3",
@@ -503,7 +503,7 @@ export const readingQuestions = [
     "The word \"prevailing\" in the passage is closest in meaning to",
     ["outdated", "dominant", "controversial", "incorrect"],
     1,
-    "\"Prevailing\" describes the view that was most widely accepted at the time, i.e., the dominant view."
+    "\"prevailing\" は当時最も広く受け入れられていた見解、つまり「支配的な」見解を表します。"
   ),
   reading(
     "q-read-horse-4",
@@ -516,7 +516,7 @@ export const readingQuestions = [
       "they were traded exclusively among steppe nomads",
     ],
     1,
-    "The passage links the rapid spread to \"a calmer temperament and a stronger backbone,\" traits that made the horses easier to control and better suited to riding."
+    "本文では、急速な広がりは \"a calmer temperament and a stronger backbone\"(穏やかな気性とより強靭な背骨)という特徴と結び付けられており、これらの特徴によって馬は制御しやすく、乗馬に適していました。"
   ),
   reading(
     "q-read-horse-5",
@@ -529,7 +529,7 @@ export const readingQuestions = [
       "horses on the Kazakhstan steppe",
     ],
     2,
-    "The phrase immediately follows the description of \"a single population that lived in the lower Volga-Don region.\""
+    "この語句は、直前にある \"a single population that lived in the lower Volga-Don region\"(ヴォルガ・ドン下流域に生息していた単一の集団)という記述を指しています。"
   ),
   reading(
     "q-read-horse-6",
@@ -537,7 +537,7 @@ export const readingQuestions = [
     "According to the passage, all of the following are mentioned as being affected by horse domestication EXCEPT",
     ["transportation", "warfare", "trade", "agriculture"],
     3,
-    "The final paragraph mentions transportation, warfare, and trade; agriculture is not mentioned in the passage."
+    "最終段落では輸送・戦争・交易が挙げられていますが、農業については本文中で触れられていません。"
   ),
   reading(
     "q-read-coral-1",
@@ -550,7 +550,7 @@ export const readingQuestions = [
       "The life cycle of zooxanthellae algae",
     ],
     1,
-    "The passage centers on how heat stress breaks down the coral-algae partnership, causing bleaching."
+    "本文は、熱ストレスによってサンゴと藻類の共生関係が崩れ、白化現象が起こる仕組みを中心に述べています。"
   ),
   reading(
     "q-read-coral-2",
@@ -563,7 +563,7 @@ export const readingQuestions = [
       "Compounds needed for reproduction",
     ],
     2,
-    "The passage states the algae \"photosynthesize and supply the coral with nutrients.\""
+    "本文には藻類が \"photosynthesize and supply the coral with nutrients\"(光合成を行いサンゴに栄養を供給する)とあります。"
   ),
   reading(
     "q-read-coral-3",
@@ -571,7 +571,7 @@ export const readingQuestions = [
     "The word \"translucent\" in the passage is closest in meaning to",
     ["brightly colored", "partly transparent", "extremely fragile", "thickly layered"],
     1,
-    "\"Translucent\" describes tissue through which the white skeleton becomes visible, i.e., partly see-through."
+    "\"translucent\" は白い骨格が透けて見える組織を表す語で、つまり「半透明の」という意味です。"
   ),
   reading(
     "q-read-coral-4",
@@ -579,7 +579,7 @@ export const readingQuestions = [
     "It can be inferred from the passage that a bleached coral reef would appear",
     ["darker than a healthy reef", "the same color as a healthy reef", "paler or whiter than a healthy reef", "covered in algae"],
     2,
-    "Since bleaching exposes the white skeleton after algae (which provide color) are expelled, a bleached reef would look paler or white."
+    "白化は色を与えている藻類が失われた後に白い骨格が露出する現象なので、白化したサンゴ礁はより白っぽく、色が薄く見えるはずです。"
   ),
   reading(
     "q-read-coral-5",
@@ -592,7 +592,7 @@ export const readingQuestions = [
       "the balance between predators and prey on the reef",
     ],
     0,
-    "Paragraph 1 establishes the coral-algae partnership, which paragraph 2 refers back to as \"this partnership.\""
+    "第1段落でサンゴと藻類の共生関係が説明されており、第2段落の \"this partnership\" はそれを指しています。"
   ),
   reading(
     "q-read-coral-6",
@@ -605,7 +605,7 @@ export const readingQuestions = [
       "coral recovers fully within a single year regardless of damage",
     ],
     3,
-    "The passage states recovery from severe bleaching \"can take decades,\" directly contradicting full recovery within a single year."
+    "本文には深刻な白化からの回復には \"can take decades\"(数十年かかることもある)とあり、1年以内に完全回復するという記述とは直接矛盾します。"
   ),
   reading(
     "q-read-imp-1",
@@ -618,7 +618,7 @@ export const readingQuestions = [
       "A comparison between Impressionism and modern art",
     ],
     1,
-    "The passage traces how Impressionism began as an insult and developed into a recognized artistic movement."
+    "本文は、印象派が侮蔑的な呼び名として始まり、やがて確立された芸術運動へと発展していった経緯をたどっています。"
   ),
   reading(
     "q-read-imp-2",
@@ -631,7 +631,7 @@ export const readingQuestions = [
       "It referred to a technique taught at the official Salon",
     ],
     1,
-    "The passage states a critic, \"mocking a Claude Monet painting... coined the term 'Impressionist' as an insult.\""
+    "本文には、ある批評家が \"mocking a Claude Monet painting... coined the term 'Impressionist' as an insult\"(クロード・モネの絵画をあざけって「印象派」という語を侮辱として作り出した)とあります。"
   ),
   reading(
     "q-read-imp-3",
@@ -639,7 +639,7 @@ export const readingQuestions = [
     "The word \"transient\" in the passage is closest in meaning to",
     ["permanent", "brief", "colorful", "natural"],
     1,
-    "\"Transient effects of natural light\" refers to light effects that change quickly, i.e., brief ones."
+    "\"transient effects of natural light\" は、すぐに変化する光の効果、つまり「一時的な」効果を指しています。"
   ),
   reading(
     "q-read-imp-4",
@@ -652,7 +652,7 @@ export const readingQuestions = [
       "rejected by professional art dealers",
     ],
     2,
-    "The passage contrasts the Impressionists' visible brushstrokes with \"the smooth, blended surfaces the Salon prized.\""
+    "本文では、印象派の目に見える筆致と、\"the smooth, blended surfaces the Salon prized\"(サロンが高く評価していた滑らかで混ぜ合わされた画面)とが対比されています。"
   ),
   reading(
     "q-read-imp-5",
@@ -660,7 +660,7 @@ export const readingQuestions = [
     "The word \"their\" in paragraph 3 refers to",
     ["the critics'", "the dealers'", "the artists'", "the Salon's"],
     2,
-    "The sentence describes dealers promoting \"the artists' work,\" so \"their\" refers to the artists."
+    "この文は画商たちが \"the artists' work\"(画家たちの作品)を売り込んでいたことを述べているので、\"their\" は画家たちを指します。"
   ),
   reading(
     "q-read-imp-6",
@@ -668,7 +668,7 @@ export const readingQuestions = [
     "According to the passage, all of the following are mentioned as subjects favored by Impressionist painters EXCEPT",
     ["train stations", "cafes", "riverside gatherings", "mythological scenes"],
     3,
-    "The passage lists train stations, cafes, and riverside gatherings as favored subjects, while mythological scenes are described as subjects the Impressionists moved away from."
+    "本文では駅・カフェ・川辺の集いが好んで描かれた題材として挙げられている一方、神話の場面は印象派が離れていった題材として述べられています。"
   ),
   reading(
     "q-read-insulin-1",
@@ -681,7 +681,7 @@ export const readingQuestions = [
       "Surgical techniques used on laboratory animals in the 1920s",
     ],
     1,
-    "The passage traces the discovery of insulin from early research on the pancreas to its rapid development into a lifesaving treatment."
+    "本文は、膵臓に関する初期の研究からインスリンが発見され、それが急速に命を救う治療法へと発展していった経緯をたどっています。"
   ),
   reading(
     "q-read-insulin-2",
@@ -694,7 +694,7 @@ export const readingQuestions = [
       "The equipment needed for extraction had not yet been invented",
     ],
     1,
-    "The passage states earlier attempts failed \"largely because digestive enzymes in the pancreas broke down the substance before it could be extracted in usable form.\""
+    "本文には、以前の試みが失敗したのは \"largely because digestive enzymes in the pancreas broke down the substance before it could be extracted in usable form\"(膵臓内の消化酵素が、その物質を使える形で抽出する前に分解してしまっていたため)とあります。"
   ),
   reading(
     "q-read-insulin-3",
@@ -702,7 +702,7 @@ export const readingQuestions = [
     "The word \"degenerate\" in the passage is closest in meaning to",
     ["multiply", "break down", "become active", "relocate"],
     1,
-    "\"Degenerate\" describes tissue deteriorating after the pancreatic duct was tied off, i.e., breaking down."
+    "\"degenerate\" は膵管を結紮した後に組織が劣化していく様子、つまり「分解する」ことを表しています。"
   ),
   reading(
     "q-read-insulin-4",
@@ -715,7 +715,7 @@ export const readingQuestions = [
       "cured the dogs' diabetes permanently",
     ],
     1,
-    "The passage explains this technique caused enzyme-producing tissue to degenerate \"while preserving the cells now known to produce insulin.\""
+    "本文では、この方法によって酵素を産生する組織を分解させる一方で、\"while preserving the cells now known to produce insulin\"(現在インスリンを産生することが分かっている細胞は保存された)と説明されています。"
   ),
   reading(
     "q-read-insulin-5",
@@ -723,7 +723,7 @@ export const readingQuestions = [
     "The word \"it\" in paragraph 2, in the phrase \"to make it safe for humans,\" refers to",
     ["the pancreatic duct", "the extraction process", "the substance/extract", "the laboratory"],
     2,
-    "Collip refined the extraction process to make the extracted substance safe for human use."
+    "コリップは抽出された物質を人間が安全に使えるように、抽出プロセスを改良しました。"
   ),
   reading(
     "q-read-insulin-6",
@@ -731,7 +731,7 @@ export const readingQuestions = [
     "According to the passage, all of the following people are mentioned as contributing to the discovery of insulin EXCEPT",
     ["Frederick Banting", "Charles Best", "James Collip", "Alexander Fleming"],
     3,
-    "Banting, Best, and Collip (along with Macleod) are named in the passage; Alexander Fleming is not mentioned."
+    "本文にはバンティング、ベスト、コリップ(およびマクラウド)の名前が挙げられていますが、アレクサンダー・フレミングについては触れられていません。"
   ),
   reading(
     "q-read-heat-1",
@@ -744,7 +744,7 @@ export const readingQuestions = [
       "To describe how air conditioning units work",
     ],
     0,
-    "The passage explains what causes urban heat islands, their consequences, and mitigation strategies cities are trying."
+    "本文は、ヒートアイランド現象の原因、その影響、そして都市が試みている対策について説明しています。"
   ),
   reading(
     "q-read-heat-2",
@@ -757,7 +757,7 @@ export const readingQuestions = [
       "A lack of rainfall in cities",
     ],
     1,
-    "The passage states the primary cause is that materials like asphalt and dark rooftops \"absorb far more solar radiation... then slowly release that stored heat after sunset.\""
+    "本文には、主な原因はアスファルトや濃い色の屋根材などが \"absorb far more solar radiation... then slowly release that stored heat after sunset\"(日中に太陽光をはるかに多く吸収し、日没後にその蓄えた熱をゆっくり放出する)ことだとあります。"
   ),
   reading(
     "q-read-heat-3",
@@ -765,7 +765,7 @@ export const readingQuestions = [
     "The word \"compound\" in the passage is closest in meaning to",
     ["reduce", "explain", "intensify", "measure"],
     2,
-    "\"Compound the effect\" means other factors make the effect stronger, i.e., intensify it."
+    "\"compound the effect\" は他の要因がその効果をさらに強める、つまり「増強する」という意味です。"
   ),
   reading(
     "q-read-heat-4",
@@ -778,7 +778,7 @@ export const readingQuestions = [
       "increase waste heat from air conditioning",
     ],
     1,
-    "Green roofs are listed among strategies intended to \"reduce how much solar energy urban surfaces absorb and retain.\""
+    "屋上緑化は、\"reduce how much solar energy urban surfaces absorb and retain\"(都市の表面が吸収・保持する太陽エネルギーの量を減らす)ことを目的とした対策の一つとして挙げられています。"
   ),
   reading(
     "q-read-heat-5",
@@ -786,7 +786,7 @@ export const readingQuestions = [
     "The word \"it\" in paragraph 1, in the phrase \"release that stored heat,\" refers to heat stored in",
     ["rural vegetation", "the atmosphere generally", "urban construction materials such as asphalt and rooftops", "air conditioning units"],
     2,
-    "The heat referred to is the solar radiation absorbed by urban construction materials during the day."
+    "ここで言う熱とは、日中に都市の建築資材が吸収した太陽放射のことです。"
   ),
   reading(
     "q-read-heat-6",
@@ -794,7 +794,7 @@ export const readingQuestions = [
     "According to the passage, all of the following are mentioned as mitigation strategies EXCEPT",
     ["reflective roofing materials", "expanded tree canopy coverage", "green roofs", "banning private vehicles"],
     3,
-    "The passage names reflective roofing, tree canopy expansion, and green roofs as mitigation strategies; banning vehicles is not mentioned."
+    "本文では反射性のある屋根材、樹冠(緑地)の拡大、屋上緑化が対策として挙げられていますが、車両の禁止については触れられていません。"
   ),
   reading(
     "q-read-silkroad-1",
@@ -807,7 +807,7 @@ export const readingQuestions = [
       "Papermaking technology was invented along the Silk Road",
     ],
     1,
-    "The passage emphasizes that the Silk Road carried far more than silk and had a lasting economic and cultural legacy."
+    "本文は、シルクロードが絹以外にもはるかに多くのものを運び、経済的・文化的に長く続く遺産を残したことを強調しています。"
   ),
   reading(
     "q-read-silkroad-2",
@@ -815,7 +815,7 @@ export const readingQuestions = [
     "According to the passage, what caused the decline of the Silk Road network?",
     ["The invention of paper", "The rise of direct sea trade between Europe and Asia", "A decline in demand for silk", "The spread of Buddhism"],
     1,
-    "The passage states the network declined \"following the rise of direct sea trade between Europe and Asia.\""
+    "本文には、このネットワークは \"following the rise of direct sea trade between Europe and Asia\"(ヨーロッパとアジア間の直接海上貿易の台頭を受けて)衰退したとあります。"
   ),
   reading(
     "q-read-silkroad-3",
@@ -823,7 +823,7 @@ export const readingQuestions = [
     "The word \"disseminated\" in the passage is closest in meaning to",
     ["destroyed", "spread", "translated", "hidden"],
     1,
-    "\"Disseminated\" describes how information was recorded and spread after papermaking reached new regions."
+    "\"disseminated\" は、製紙技術が新しい地域に伝わった後に情報が記録され広まっていった様子を表しています。"
   ),
   reading(
     "q-read-silkroad-4",
@@ -836,7 +836,7 @@ export const readingQuestions = [
       "banned foreign traders from entering",
     ],
     1,
-    "The passage states these cities prospered \"largely because of their strategic locations rather than their own manufacturing output.\""
+    "本文には、これらの都市が繁栄したのは \"largely because of their strategic locations rather than their own manufacturing output\"(自らの生産力よりも主に戦略的な立地のおかげ)だとあります。"
   ),
   reading(
     "q-read-silkroad-5",
@@ -844,7 +844,7 @@ export const readingQuestions = [
     "The word \"its\" in paragraph 1, in the phrase \"the network's decline,\" refers to",
     ["China's", "the Mediterranean's", "the Silk Road's", "Europe's"],
     2,
-    "The phrase describes the decline of the Silk Road network described earlier in the sentence."
+    "この語句は、同じ文の前半で述べられているシルクロードのネットワークの衰退を指しています。"
   ),
   reading(
     "q-read-silkroad-6",
@@ -852,7 +852,7 @@ export const readingQuestions = [
     "According to the passage, all of the following are mentioned as having traveled along the Silk Road EXCEPT",
     ["spices", "papermaking technology", "Buddhism", "firearms"],
     3,
-    "The passage mentions spices, papermaking technology, and the spread of Buddhism; firearms are not mentioned."
+    "本文では香辛料、製紙技術、仏教の伝播について触れられていますが、火器については言及されていません。"
   ),
   ...readingQuestionsBatchA,
   ...readingQuestionsBatchB,

@@ -4,6 +4,31 @@
 **対象**: 英語演習サイト(TOEFL ITP形式演習アプリ)実装全体 — `web/src/app/**`, `web/src/components/**`, `web/src/lib/**`, `web/src/db/schema.ts`
 **本番URL**: https://english-web.ichi-kazuki.workers.dev
 
+## 対応状況(2026-08-22 追記)
+
+以下の指摘に対応し、本番デプロイ済み。
+
+- [x] High: バブルグリッドのフラグ×解答済み状態の視覚的区別 → 背景色(解答済み)と右上ドット(フラグ)を分離し、凡例に3状態すべて明記
+- [x] High: loading.tsx/error.tsx の追加 → `app/app/`・`app/admin/` 配下に追加
+- [x] High: スコアダッシュボードの視覚化 → `AccuracyBar`(横棒)コンポーネントを追加
+- [x] High: グローバルナビのモバイル対応 → `sm`未満でラベルを隠しアイコン+`aria-label`に、現在地ハイライトも追加(`AppNav`クライアントコンポーネントへ分離)
+- [x] High: ゲストの演習履歴がログイン後に引き継がれない → OAuthコールバック時に`guest_id` Cookieがあれば`attempts`/`mock_sessions`を実ユーザーへ再割当し、ゲストuser行を削除するマージ処理を追加(SQLレベルで動作確認済み)
+- [x] Medium: 演習モードの出題順固定 → パッセージのまとまりを保ったままランダム化
+- [x] Medium: 模試設定フォームで公開問題0件セクションを選択可能 → `buildMockSections`が0件セクションを自動的に除外し、全セクションが0件なら開始画面に戻すガードを追加
+- [x] Medium: 復習ノートのクエリ・フィルタロジック重複 → `getMistakesForUser`共通関数に統合
+- [x] Medium: 見直しフラグが永続化されずリロードで消える → `MockSectionConfig.flags`をDBに追加し、`toggleMockFlag`サーバーアクションで永続化
+- [x] Medium: 離脱確認・タイムアウト時のメッセージなし → `beforeunload`警告と「時間切れです」インターステイシャルを追加
+- [x] Medium: 非公式バッジへの`--destructive`トークン誤用 → `ScoreDisclaimerBadge`共通コンポーネントに切り出し、中立トーンに変更(Low「重複実装」も同時解消)
+- [x] Medium: アクセシビリティ属性不足 → バブルセルに状態を含む`aria-label`、選択肢群に`role="radiogroup"`/`role="radio"`を追加
+- [x] Low: 管理画面の削除確認ダイアログなし → `ConfirmSubmitButton`で`window.confirm`を追加
+- [x] Low: `/admin`のログイン誘導パターン差異の意図が不明瞭 → 意図を示すコメントを追加
+- 追加で発見した実バグ: 模試タイマーの初期値計算(`Date.now()`)がSSRとクライアントで異なりハイドレーションエラーを起こしていた(レビュー対象外だったが実機テスト中に発見)→ 初期値を静的にし、mount後のeffectで補正するよう修正
+
+未対応(据え置き):
+- Low: ダッシュボード分野別一覧の将来的なborder scalingリスク(将来のP1機能追加時に再検討)
+- Low: `structure_error_id`タイプの下線相当の視覚的手がかり(実データ確認が必要、影響度が推測の域を出ないため据え置き)
+- Low: コミットメッセージのスコープ乖離(情報提供のみ、対応不要)
+
 ## 1. Review Scope and Mode
 
 **モード**: 実装レビュー(自動判定)。`docs/UI_UX_PLAN.md` という名前のファイルは存在しないが、`docs/toefl-itp-prd.md`・`docs/design-plan.md`・`docs/design-plan-app.md` という計画書一式に加え、実際に動作しデプロイ済みの実装が存在するため、実装レビューとして実施した。

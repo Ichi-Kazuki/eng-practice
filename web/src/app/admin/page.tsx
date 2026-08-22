@@ -3,6 +3,7 @@ import { sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import { questions, passages } from "@/db/schema";
 import { Card } from "@/components/ui/card";
+import { JaHeading } from "@/components/ja-heading";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ export default async function AdminHome() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-foreground">管理画面</h1>
+      <JaHeading className="text-xl font-bold text-foreground" text="管理画面" />
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Link href="/admin/questions">
           <Card className="p-5 hover:border-primary">

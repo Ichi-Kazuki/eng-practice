@@ -4,6 +4,7 @@ import { getDb } from "@/db";
 import { questions, passages } from "@/db/schema";
 import { QuestionForm } from "@/components/admin/question-form";
 import { updateQuestion } from "@/app/admin/actions";
+import { JaHeading } from "@/components/ja-heading";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,7 @@ export default async function EditQuestionPage({
 
   return (
     <div className="max-w-2xl">
-      <h1 className="mb-6 text-xl font-bold text-foreground">問題を編集</h1>
+      <JaHeading className="mb-6 text-xl font-bold text-foreground" text="問題を編集" />
       <QuestionForm action={updateWithId} initial={question} passages={passageRows} />
     </div>
   );

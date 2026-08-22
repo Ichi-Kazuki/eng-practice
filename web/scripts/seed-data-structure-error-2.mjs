@@ -12,7 +12,7 @@ export const structureErrorBatch2 = [
     choices: ["The new policy will effect", "how employees schedule", "their vacation time", "next year"],
     correctIndex: 0,
     explanation:
-      "\"Affect\" (verb, meaning \"to influence\") is required here, not \"effect,\" which is normally a noun; \"effect\" as a verb means \"to bring about,\" which does not fit the intended meaning.",
+      "ここでは「〜に影響を与える」という意味の動詞\"affect\"が必要だが、通常は名詞として使われる\"effect\"になっている。\"effect\"を動詞として使うと「〜を引き起こす」という意味になり、この文の意図に合わない。",
     difficulty: "medium",
   },
   {
@@ -24,7 +24,7 @@ export const structureErrorBatch2 = [
     choices: ["The inheritance was divided", "between the four siblings", "according to", "their father's will"],
     correctIndex: 1,
     explanation:
-      "\"Between\" is used for exactly two people or things; with more than two, as here with four siblings, \"among\" is required.",
+      "\"between\"は2者の間を表すときに使う語。ここでは4人のきょうだいのように3者以上が対象になっているので、\"among\"を使う必要がある。",
     difficulty: "easy",
   },
   {
@@ -36,7 +36,7 @@ export const structureErrorBatch2 = [
     choices: ["After the long hike,", "she decided to lay down", "and rest for a while", "before continuing"],
     correctIndex: 1,
     explanation:
-      "The intransitive verb \"lie\" (lie–lay–lain), meaning to recline, is needed here, not \"lay,\" which is transitive and requires a direct object.",
+      "「横になる」という意味の自動詞\"lie\"(lie–lay–lain)が必要。\"lay\"は他動詞で目的語を取る動詞なので、ここでは使えない。",
     difficulty: "hard",
   },
   {
@@ -48,7 +48,7 @@ export const structureErrorBatch2 = [
     choices: ["Since the merger was completed,", "the two companies", "shared a single headquarters", "in the capital"],
     correctIndex: 2,
     explanation:
-      "A clause introduced by \"since\" describing a state continuing up to the present requires the present perfect (\"have shared\"), not the simple past (\"shared\").",
+      "\"since\"で始まり、現在まで続く状態を表す節では現在完了形(\"have shared\")を使う必要があり、単純過去形の\"shared\"は誤り。",
     difficulty: "medium",
   },
   {
@@ -60,7 +60,7 @@ export const structureErrorBatch2 = [
     choices: ["Arriving late to the meeting,", "the presentation had", "already begun", "without him"],
     correctIndex: 1,
     explanation:
-      "The introductory participial phrase \"Arriving late to the meeting\" must logically modify a person, but the subject of the main clause is \"the presentation,\" creating a dangling modifier; the subject should be a person, e.g., \"he had already begun.\"",
+      "文頭の分詞構文\"Arriving late to the meeting\"は意味の上で人を修飾するはずだが、主節の主語が\"the presentation\"になっており、修飾先が宙に浮いた「懸垂分詞構文」になっている。主語は人にする必要がある(例:\"he had already begun\")。",
     difficulty: "hard",
   },
   {
@@ -72,7 +72,7 @@ export const structureErrorBatch2 = [
     choices: ["The committee are meeting", "tomorrow to discuss", "the new budget", "proposal"],
     correctIndex: 0,
     explanation:
-      "In standard American English, collective nouns like \"committee\" take a singular verb when acting as a single unit, so it should be \"The committee is meeting.\"",
+      "標準的なアメリカ英語では、\"committee\"のような集合名詞が1つのまとまりとして機能する場合は単数扱いの動詞を取るため、\"The committee is meeting\"が正しい。",
     difficulty: "medium",
   },
   {
@@ -83,7 +83,8 @@ export const structureErrorBatch2 = [
     stem: "Drivers should avoid to use their phones while operating a vehicle.",
     choices: ["Drivers should avoid", "to use their phones", "while operating", "a vehicle"],
     correctIndex: 1,
-    explanation: "\"Avoid\" is followed by a gerund, not an infinitive, so it should be \"avoid using,\" not \"avoid to use.\"",
+    explanation:
+      "\"avoid\"の後には不定詞ではなく動名詞が続く。したがって\"avoid to use\"ではなく\"avoid using\"が正しい。",
     difficulty: "easy",
   },
   {
@@ -94,7 +95,7 @@ export const structureErrorBatch2 = [
     stem: "Many students are interested on studying abroad during their junior year.",
     choices: ["Many students are", "interested on studying", "abroad during", "their junior year"],
     correctIndex: 1,
-    explanation: "The correct preposition after \"interested\" is \"in,\" not \"on\": \"interested in studying.\"",
+    explanation: "\"interested\"の後に続く正しい前置詞は\"on\"ではなく\"in\"(\"interested in studying\")。",
     difficulty: "easy",
   },
   {
@@ -106,7 +107,7 @@ export const structureErrorBatch2 = [
     choices: ["This year's exam", "was more harder than", "last year's,", "according to most students"],
     correctIndex: 1,
     explanation:
-      "\"Harder\" already is the comparative form of \"hard,\" so adding \"more\" creates a double comparative; it should simply be \"harder than.\"",
+      "\"harder\"はすでに\"hard\"の比較級なので、さらに\"more\"を付けると二重比較級になってしまう。単に\"harder than\"とすればよい。",
     difficulty: "easy",
   },
   {
@@ -118,7 +119,7 @@ export const structureErrorBatch2 = [
     choices: ["She received", "an unique opportunity", "to study at", "the research institute"],
     correctIndex: 1,
     explanation:
-      "\"Unique\" begins with a consonant sound (\"yoo-neek\"), so it should be preceded by \"a,\" not \"an\": \"a unique opportunity.\"",
+      "\"unique\"は子音の音(「ユニーク」)で始まるため、前に置く冠詞は\"an\"ではなく\"a\"になる(\"a unique opportunity\")。",
     difficulty: "medium",
   },
   {
@@ -130,7 +131,7 @@ export const structureErrorBatch2 = [
     choices: ["The bridge was closed", "for repairs, however", "commuters found alternate routes", "without much difficulty"],
     correctIndex: 1,
     explanation:
-      "\"However\" cannot join two independent clauses with only a comma; it should be preceded by a semicolon (or the clauses should be separated into two sentences): \"for repairs; however,\".",
+      "\"however\"だけでは2つの独立した節をコンマでつなぐことはできない。前にセミコロンを置くか(\"for repairs; however,\")、2つの文に分ける必要がある。",
     difficulty: "medium",
   },
   {
@@ -141,7 +142,7 @@ export const structureErrorBatch2 = [
     stem: "The new bridge is being build by a team of engineers from three different countries.",
     choices: ["The new bridge", "is being build by", "a team of engineers", "from three different countries"],
     correctIndex: 1,
-    explanation: "The passive progressive requires the past participle \"built,\" not the base form \"build\": \"is being built.\"",
+    explanation: "受動進行形には過去分詞\"built\"が必要で、原形の\"build\"は使えない(\"is being built\")。",
     difficulty: "easy",
   },
   {
@@ -153,7 +154,7 @@ export const structureErrorBatch2 = [
     choices: ["The laptop who crashed", "during the presentation", "had never", "malfunctioned before"],
     correctIndex: 0,
     explanation:
-      "\"Who\" refers to people; since \"laptop\" is a thing, the relative pronoun should be \"that\" or \"which\": \"The laptop that crashed.\"",
+      "\"who\"は人を指す関係代名詞。\"laptop\"は物なので、関係代名詞には\"that\"または\"which\"を使う必要がある(\"The laptop that crashed\")。",
     difficulty: "easy",
   },
   {
@@ -165,7 +166,7 @@ export const structureErrorBatch2 = [
     choices: ["The witness couldn't hardly", "remember any details", "about the incident", "that night"],
     correctIndex: 0,
     explanation:
-      "\"Hardly\" is already negative in meaning, so pairing it with \"couldn't\" creates a double negative; it should be \"could hardly remember.\"",
+      "\"hardly\"はそれ自体が否定的な意味を持つ語なので、\"couldn't\"と組み合わせると二重否定になってしまう。正しくは\"could hardly remember\"。",
     difficulty: "medium",
   },
   {
@@ -177,7 +178,7 @@ export const structureErrorBatch2 = [
     choices: ["The manager and the supervisor", "is responsible for", "approving the new", "hires"],
     correctIndex: 1,
     explanation:
-      "A compound subject joined by \"and\" (\"The manager and the supervisor\") is treated as plural, so the verb should be \"are responsible,\" not \"is responsible.\"",
+      "\"and\"で結ばれた複合主語(\"The manager and the supervisor\")は複数として扱われるため、動詞は\"is responsible\"ではなく\"are responsible\"が正しい。",
     difficulty: "easy",
   },
   {
@@ -189,7 +190,7 @@ export const structureErrorBatch2 = [
     choices: ["The coach made", "the players to run", "extra laps after", "they arrived late to practice"],
     correctIndex: 1,
     explanation:
-      "The causative verb \"make\" is followed by the bare infinitive (base form) without \"to\": \"made the players run,\" not \"made the players to run.\"",
+      "使役動詞\"make\"の後には\"to\"を伴わない原形の動詞(原形不定詞)が続く。したがって\"made the players to run\"ではなく\"made the players run\"が正しい。",
     difficulty: "easy",
   },
   {
@@ -201,7 +202,7 @@ export const structureErrorBatch2 = [
     choices: ["The organization revised", "it's membership policy", "after receiving feedback", "from long-time members"],
     correctIndex: 1,
     explanation:
-      "The possessive form of \"it\" is \"its\" (no apostrophe); \"it's\" is a contraction of \"it is,\" which does not fit here.",
+      "\"it\"の所有格は\"its\"(アポストロフィなし)。\"it's\"は\"it is\"の短縮形であり、ここでは意味が合わない。",
     difficulty: "easy",
   },
   {
@@ -213,7 +214,7 @@ export const structureErrorBatch2 = [
     choices: ["Either the manager", "or the employees", "is responsible for", "submitting the report on time"],
     correctIndex: 2,
     explanation:
-      "With \"either...or,\" the verb agrees with the nearer subject, which here is the plural \"employees,\" so it should be \"are responsible.\"",
+      "\"either...or\"では、動詞は\"or\"に近い方の主語に一致させる。ここでは近い主語が複数形の\"employees\"なので、\"are responsible\"が正しい。",
     difficulty: "hard",
   },
   {
@@ -225,7 +226,7 @@ export const structureErrorBatch2 = [
     choices: ["I would rather to stay", "home tonight", "than go to", "the crowded concert"],
     correctIndex: 0,
     explanation:
-      "\"Would rather\" is followed directly by the base form of the verb, without \"to\": \"would rather stay,\" not \"would rather to stay.\"",
+      "\"would rather\"の直後には\"to\"を伴わない動詞の原形が続く。したがって\"would rather to stay\"ではなく\"would rather stay\"が正しい。",
     difficulty: "medium",
   },
   {
@@ -237,7 +238,7 @@ export const structureErrorBatch2 = [
     choices: ["Please let me know", "who you will invite", "to the ceremony", "next month"],
     correctIndex: 1,
     explanation:
-      "Since the pronoun functions as the object of \"invite\" (you will invite whom), the objective case \"whom\" is required in formal written English, not the subjective \"who.\"",
+      "この代名詞は\"invite\"の目的語として機能している(you will invite whom)ため、フォーマルな文章では主格の\"who\"ではなく目的格の\"whom\"が必要になる。",
     difficulty: "hard",
   },
   {
@@ -249,7 +250,7 @@ export const structureErrorBatch2 = [
     choices: ["The reason the flight", "was delayed is because of", "a mechanical issue", "with the aircraft"],
     correctIndex: 1,
     explanation:
-      "\"The reason is because\" is redundant since \"reason\" and \"because\" both indicate cause; it should be \"the reason... is that\" or simply \"the flight was delayed because of.\"",
+      "\"the reason is because\"は\"reason\"と\"because\"がどちらも原因を表すため、意味が重複してしまう。\"the reason...is that\"とするか、単に\"the flight was delayed because of\"とするのが正しい。",
     difficulty: "medium",
   },
   {
@@ -261,7 +262,7 @@ export const structureErrorBatch2 = [
     choices: ["When I arrive", "at the airport yesterday,", "my flight had already", "been delayed by two hours"],
     correctIndex: 0,
     explanation:
-      "The time clause refers to a completed past event (\"yesterday\"), so the verb should be in the simple past: \"When I arrived.\"",
+      "この時を表す節は\"yesterday\"という過去に完了した出来事を指しているため、動詞は単純過去形でなければならない(\"When I arrived\")。",
     difficulty: "easy",
   },
   {
@@ -273,7 +274,7 @@ export const structureErrorBatch2 = [
     choices: ["She is one of", "the few employees", "who consistently meets", "every deadline without exception"],
     correctIndex: 2,
     explanation:
-      "The relative pronoun \"who\" refers to the plural noun \"employees,\" so the verb should be plural: \"who consistently meet,\" not \"meets.\"",
+      "関係代名詞\"who\"は複数名詞\"employees\"を指しているため、動詞も複数形の\"meet\"にする必要があり、\"meets\"は誤り。",
     difficulty: "hard",
   },
   {
@@ -285,7 +286,7 @@ export const structureErrorBatch2 = [
     choices: ["The new engine", "is not as efficient than", "the previous model", "in terms of fuel consumption"],
     correctIndex: 1,
     explanation:
-      "The \"as...as\" construction requires \"as\" on both sides for an equal comparison, not \"than\": \"not as efficient as the previous model.\"",
+      "\"as...as\"の構文は同等比較を表すため両側に\"as\"が必要で、\"than\"は使えない。正しくは\"not as efficient as the previous model\"。",
     difficulty: "easy",
   },
   {
@@ -297,7 +298,7 @@ export const structureErrorBatch2 = [
     choices: ["During the interview,", "the candidate acted", "very professional", "despite being nervous"],
     correctIndex: 2,
     explanation:
-      "The verb \"acted\" here describes manner and should be modified by the adverb \"professionally,\" not the adjective \"professional.\"",
+      "ここでの動詞\"acted\"は様態(どのように振る舞ったか)を表しているため、形容詞\"professional\"ではなく副詞\"professionally\"で修飾する必要がある。",
     difficulty: "medium",
   },
   {
@@ -309,7 +310,7 @@ export const structureErrorBatch2 = [
     choices: ["Collecting rare stamps", "have been her hobby", "since she was", "a child"],
     correctIndex: 1,
     explanation:
-      "A gerund phrase functioning as the subject (\"Collecting rare stamps\") is treated as singular, so the verb should be \"has been,\" not \"have been.\"",
+      "主語として機能する動名詞句(\"Collecting rare stamps\")は単数として扱われるため、動詞は\"have been\"ではなく\"has been\"が正しい。",
     difficulty: "medium",
   },
   {
@@ -320,7 +321,7 @@ export const structureErrorBatch2 = [
     stem: "She use to walk to school every morning before her family bought a car.",
     choices: ["She use to walk", "to school every morning", "before her family", "bought a car"],
     correctIndex: 0,
-    explanation: "The past habitual expression requires \"used to,\" not \"use to\": \"She used to walk.\"",
+    explanation: "過去の習慣を表す表現には\"use to\"ではなく\"used to\"が必要(\"She used to walk\")。",
     difficulty: "easy",
   },
   {
@@ -332,7 +333,7 @@ export const structureErrorBatch2 = [
     choices: ["There is a wallet", "and several keys", "underneath the front seat", "of the car"],
     correctIndex: 0,
     explanation:
-      "The subject following \"there\" is the compound \"a wallet and several keys,\" which is plural, so the verb should be \"There are,\" not \"There is.\"",
+      "\"there\"の後に続く主語は複合主語\"a wallet and several keys\"であり複数扱いになるため、\"There is\"ではなく\"There are\"が正しい。",
     difficulty: "hard",
   },
   {
@@ -343,7 +344,7 @@ export const structureErrorBatch2 = [
     stem: "The results of this experiment are similar with those reported in earlier studies.",
     choices: ["The results of", "this experiment are", "similar with those reported", "in earlier studies"],
     correctIndex: 2,
-    explanation: "The correct idiom is \"similar to,\" not \"similar with\": \"similar to those reported.\"",
+    explanation: "正しい慣用表現は\"similar with\"ではなく\"similar to\"(\"similar to those reported\")。",
     difficulty: "easy",
   },
   {
@@ -355,7 +356,7 @@ export const structureErrorBatch2 = [
     choices: ["Each and every one", "of the applicants were interviewed", "twice before", "a decision was made"],
     correctIndex: 1,
     explanation:
-      "\"Each and every one\" is grammatically singular, so the verb should be \"was interviewed,\" not \"were interviewed.\"",
+      "\"each and every one\"は文法上単数として扱われるため、動詞は\"were interviewed\"ではなく\"was interviewed\"が正しい。",
     difficulty: "medium",
   },
   {
@@ -367,7 +368,7 @@ export const structureErrorBatch2 = [
     choices: ["If the government increases", "funding for public transit,", "more people would use", "the buses instead of driving"],
     correctIndex: 0,
     explanation:
-      "The main clause uses the hypothetical \"would use,\" which pairs with a past-tense if-clause in the second conditional; it should be \"If the government increased,\" not \"increases,\" to match.",
+      "主節に仮定を表す\"would use\"が使われており、これは第二条件文(仮定法過去)のif節と対応する形。したがって\"increases\"ではなく過去形の\"If the government increased\"にしないと時制が一致しない。",
     difficulty: "hard",
   },
   {
@@ -379,7 +380,7 @@ export const structureErrorBatch2 = [
     choices: ["Beside working as a nurse,", "she volunteers at", "an animal shelter", "every weekend"],
     correctIndex: 0,
     explanation:
-      "\"Besides\" (meaning \"in addition to\") is needed here, not \"beside\" (meaning \"next to\"): \"Besides working as a nurse.\"",
+      "「〜に加えて」という意味の\"besides\"が必要で、「〜の隣に」という意味の\"beside\"はここでは意味が合わない(\"Besides working as a nurse\")。",
     difficulty: "medium",
   },
   {
@@ -391,7 +392,7 @@ export const structureErrorBatch2 = [
     choices: ["Prices have raised", "steadily over", "the past decade", "due to inflation"],
     correctIndex: 0,
     explanation:
-      "\"Rise\" is the intransitive verb used for something increasing on its own (rise–rose–risen); \"raise\" is transitive and requires a direct object, so it should be \"Prices have risen.\"",
+      "\"rise\"は物事がひとりでに増加することを表す自動詞(rise–rose–risen)。\"raise\"は他動詞で目的語を必要とするため、ここでは\"Prices have risen\"が正しい。",
     difficulty: "medium",
   },
   {
@@ -403,7 +404,7 @@ export const structureErrorBatch2 = [
     choices: ["Could you borrow me", "your calculator", "for the duration", "of the exam"],
     correctIndex: 0,
     explanation:
-      "\"Lend\" means to give something temporarily, while \"borrow\" means to receive something temporarily; since the speaker wants to receive the calculator, it should be \"Could you lend me.\"",
+      "\"lend\"は何かを一時的に「貸す」こと、\"borrow\"は何かを一時的に「借りる」ことを意味する。話し手は電卓を借りたい側なので、\"Could you lend me\"が正しい。",
     difficulty: "easy",
   },
   {
@@ -415,7 +416,7 @@ export const structureErrorBatch2 = [
     choices: ["The news about", "the merger were leaked", "to journalists before", "the official announcement"],
     correctIndex: 1,
     explanation:
-      "\"News\" is an uncountable noun that always takes a singular verb in English, so it should be \"the news... was leaked,\" not \"were leaked.\"",
+      "\"news\"は常に単数扱いとなる不可算名詞なので、\"were leaked\"ではなく\"the news...was leaked\"が正しい。",
     difficulty: "medium",
   },
   {
@@ -427,7 +428,7 @@ export const structureErrorBatch2 = [
     choices: ["It was so complicated problem", "that even the professor", "took an hour", "to solve it"],
     correctIndex: 0,
     explanation:
-      "Before a noun, \"such a/an + adjective + noun\" is used, not \"so\"; it should be \"It was such a complicated problem.\"",
+      "名詞の前では\"so\"ではなく\"such a/an + 形容詞 + 名詞\"の形を使う。正しくは\"It was such a complicated problem\"。",
     difficulty: "medium",
   },
   {
@@ -439,7 +440,7 @@ export const structureErrorBatch2 = [
     choices: ["Despite that the weather", "was poor,", "the outdoor concert continued", "as scheduled"],
     correctIndex: 0,
     explanation:
-      "\"Despite\" is a preposition and cannot be directly followed by a \"that\" clause; it should be \"Despite the fact that\" or simply \"Although the weather was poor.\"",
+      "\"despite\"は前置詞であり、\"that\"節を直接続けることはできない。\"Despite the fact that\"とするか、単に\"Although the weather was poor\"とする必要がある。",
     difficulty: "medium",
   },
   {
@@ -450,7 +451,7 @@ export const structureErrorBatch2 = [
     stem: "She is best qualified candidate for the position, based on her extensive experience.",
     choices: ["She is best qualified", "candidate for the position,", "based on her", "extensive experience"],
     correctIndex: 0,
-    explanation: "Superlative adjectives require the definite article \"the\": it should be \"the best qualified candidate.\"",
+    explanation: "最上級の形容詞には定冠詞\"the\"が必要(\"the best qualified candidate\")。",
     difficulty: "easy",
   },
   {
@@ -462,7 +463,7 @@ export const structureErrorBatch2 = [
     choices: ["She had her car repair", "by a mechanic", "the day before", "the road trip"],
     correctIndex: 0,
     explanation:
-      "The causative structure \"have something done\" requires the past participle, not the base form: \"had her car repaired,\" not \"repair.\"",
+      "使役構文\"have something done\"には過去分詞が必要で、原形の\"repair\"は使えない。正しくは\"had her car repaired\"。",
     difficulty: "easy",
   },
   {
@@ -474,7 +475,7 @@ export const structureErrorBatch2 = [
     choices: ["The majority of", "the students has completed", "the assignment", "ahead of the deadline"],
     correctIndex: 1,
     explanation:
-      "\"The majority of\" followed by a plural noun (\"students\") takes a plural verb: \"the students have completed,\" not \"has completed.\"",
+      "\"the majority of\"の後に複数名詞(\"students\")が続く場合は複数形の動詞を取るため、\"has completed\"ではなく\"have completed\"が正しい。",
     difficulty: "medium",
   },
 ];

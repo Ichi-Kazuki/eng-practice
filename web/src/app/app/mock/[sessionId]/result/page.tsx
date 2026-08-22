@@ -8,6 +8,8 @@ import { SECTION_META, type SectionSlug } from "@/lib/section-meta";
 import { percentToScaledScore, estimateProvisionalTotalScore } from "@/lib/mock-scoring";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ScoreDisclaimerBadge } from "@/components/score-disclaimer-badge";
+import { JaHeading } from "@/components/ja-heading";
 
 export const dynamic = "force-dynamic";
 
@@ -48,14 +50,12 @@ export default async function MockResultPage({
 
   return (
     <div className="mx-auto max-w-lg">
-      <h1 className="text-xl font-bold text-foreground">模試の結果</h1>
+      <JaHeading className="text-xl font-bold text-foreground" text="模試の結果" />
 
       <Card className="mt-6 border-2 p-6">
         <div className="flex items-start justify-between">
           <p className="text-sm font-medium text-foreground">予想スコア(目安)</p>
-          <span className="shrink-0 rotate-3 rounded border-2 border-destructive px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-destructive">
-            非公式の目安
-          </span>
+          <ScoreDisclaimerBadge />
         </div>
         <p className="mt-1 text-xs text-muted-foreground">
           Listeningを含まない暫定スコアです。公式スコアではありません。

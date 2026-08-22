@@ -3,7 +3,9 @@ import { desc } from "drizzle-orm";
 import { getDb } from "@/db";
 import { questions } from "@/db/schema";
 import { Button } from "@/components/ui/button";
+import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
 import { deleteQuestion } from "@/app/admin/actions";
+import { JaHeading } from "@/components/ja-heading";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +16,7 @@ export default async function AdminQuestionsPage() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-foreground">問題一覧</h1>
+        <JaHeading className="text-xl font-bold text-foreground" text="問題一覧" />
         <Button render={<Link href="/admin/questions/new" />} size="sm">
           新規作成
         </Button>
@@ -44,9 +46,12 @@ export default async function AdminQuestionsPage() {
                       編集
                     </Link>
                     <form action={deleteQuestion.bind(null, q.id)}>
-                      <button type="submit" className="text-destructive hover:underline">
+                      <ConfirmSubmitButton
+                        confirmMessage="この問題を削除します。よろしいですか?"
+                        className="text-destructive hover:underline"
+                      >
                         削除
-                      </button>
+                      </ConfirmSubmitButton>
                     </form>
                   </div>
                 </td>

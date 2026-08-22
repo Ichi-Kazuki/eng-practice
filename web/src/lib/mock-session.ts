@@ -2,16 +2,8 @@ import { and, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db";
 import { questions } from "@/db/schema";
 import { MOCK_SECTION_ORDER, SECTION_META, type SectionSlug } from "@/lib/section-meta";
+import { shuffle } from "@/lib/shuffle";
 import type { MockSectionConfig } from "@/db/schema";
-
-function shuffle<T>(arr: T[]): T[] {
-  const copy = [...arr];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
-}
 
 export type MockSectionRequest = {
   sectionSlug: SectionSlug;
@@ -30,6 +22,61 @@ export function countPresets(available: number, officialCount: number): { value:
   });
 }
 
+// 本番のStructureセクションは「文法補充15問→誤り指摘25問」の順・比率で出題される。
+// 出題数が本番相当(40問)のときはこの比率、それ以外(10問・20問など)は半々に分ける。
+function splitStructureCounts(total: number, officialCount: number) {
+  if (total === officialCount) {
+    const officialCompletion = 15;
+    return { completion: Math.min(officialCompletion, total), errorId: total - Math.min(officialCompletion, total) };
+  }
+  const completion = Math.floor(total / 2);
+  return { completion, errorId: total - completion };
+}
+
+async function selectStructureQuestionIds(count: number, officialCount: number): Promise<string[]> {
+  const db = getDb();
+  const [completionRows, errorIdRows] = await Promise.all([
+    db
+      .select({ id: questions.id })
+      .from(questions)
+      .where(
+        and(
+          eq(questions.sectionSlug, "structure"),
+          eq(questions.status, "published"),
+          eq(questions.questionType, "structure_completion")
+        )
+      ),
+    db
+      .select({ id: questions.id })
+      .from(questions)
+      .where(
+        and(
+          eq(questions.sectionSlug, "structure"),
+          eq(questions.status, "published"),
+          eq(questions.questionType, "structure_error_id")
+        )
+      ),
+  ]);
+
+  const shuffledCompletion = shuffle(completionRows.map((q) => q.id));
+  const shuffledErrorId = shuffle(errorIdRows.map((q) => q.id));
+  const total = Math.min(count, shuffledCompletion.length + shuffledErrorId.length);
+  const { completion, errorId } = splitStructureCounts(total, officialCount);
+
+  // 一方の種類が不足する場合は、もう一方から不足分を補う
+  const completionTake = Math.min(completion, shuffledCompletion.length);
+  const errorIdTake = Math.min(errorId, shuffledErrorId.length);
+  const shortfall = total - completionTake - errorIdTake;
+  const completionExtra = Math.min(shortfall, shuffledCompletion.length - completionTake);
+  const finalCompletionTake = completionTake + completionExtra;
+  const finalErrorIdTake = Math.min(total - finalCompletionTake, shuffledErrorId.length);
+
+  return [
+    ...shuffledCompletion.slice(0, finalCompletionTake),
+    ...shuffledErrorId.slice(0, finalErrorIdTake),
+  ];
+}
+
 export async function buildMockSections(
   requests: MockSectionRequest[],
   timeMode: MockTimeMode
@@ -43,14 +90,26 @@ export async function buildMockSections(
   );
 
   for (const { sectionSlug, count } of ordered) {
-    const published = await db
-      .select({ id: questions.id })
-      .from(questions)
-      .where(and(eq(questions.sectionSlug, sectionSlug), eq(questions.status, "published")));
+    let selectedIds: string[];
 
-    const shuffled = shuffle(published.map((q) => q.id));
-    const clampedCount = Math.max(1, Math.min(Math.round(count) || 1, shuffled.length || 1));
-    const selectedIds = shuffled.slice(0, clampedCount);
+    if (sectionSlug === "structure") {
+      selectedIds = await selectStructureQuestionIds(
+        Math.round(count) || 1,
+        SECTION_META.structure.mockOfficialQuestionCount
+      );
+      if (selectedIds.length === 0) continue;
+    } else {
+      const published = await db
+        .select({ id: questions.id })
+        .from(questions)
+        .where(and(eq(questions.sectionSlug, sectionSlug), eq(questions.status, "published")));
+
+      const shuffled = shuffle(published.map((q) => q.id));
+      if (shuffled.length === 0) continue; // 公開問題が0件のセクションは含めない(空セクションによる画面クラッシュを防ぐ)
+
+      const clampedCount = Math.max(1, Math.min(Math.round(count) || 1, shuffled.length));
+      selectedIds = shuffled.slice(0, clampedCount);
+    }
 
     const timeLimitSec =
       timeMode === "stopwatch"
@@ -64,6 +123,7 @@ export async function buildMockSections(
       timeMode,
       startedAt: null,
       submittedAt: null,
+      flags: [],
     });
   }
 

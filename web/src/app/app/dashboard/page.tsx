@@ -6,6 +6,9 @@ import { SECTION_META, QUESTION_TYPE_LABEL_JA, type SectionSlug } from "@/lib/se
 import { percentToScaledScore, estimateProvisionalTotalScore } from "@/lib/mock-scoring";
 import { Card } from "@/components/ui/card";
 import { LoginRequired } from "@/components/login-required";
+import { ScoreDisclaimerBadge } from "@/components/score-disclaimer-badge";
+import { AccuracyBar } from "@/components/accuracy-bar";
+import { JaHeading } from "@/components/ja-heading";
 
 export const dynamic = "force-dynamic";
 
@@ -67,7 +70,7 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-foreground">スコアダッシュボード</h1>
+      <JaHeading className="text-xl font-bold text-foreground" text="スコアダッシュボード" />
 
       <Card className="mt-6 border-2 p-6">
         <div className="flex items-start justify-between">
@@ -77,9 +80,7 @@ export default async function DashboardPage() {
               Listeningを含まない暫定スコアです。公式スコアではありません。
             </p>
           </div>
-          <span className="shrink-0 rotate-3 rounded border-2 border-destructive px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-destructive">
-            非公式の目安
-          </span>
+          <ScoreDisclaimerBadge />
         </div>
 
         <div className="mt-5 grid grid-cols-3 gap-4 border-t border-border pt-5 text-center">
@@ -110,15 +111,23 @@ export default async function DashboardPage() {
       )}
 
       <h2 className="mt-10 text-lg font-bold text-foreground">分野別正答率</h2>
-      <div className="mt-4 space-y-2">
-        {Array.from(byType.entries()).map(([type, stat]) => (
-          <div key={type} className="flex items-center justify-between border-b border-border py-2 text-sm">
-            <span className="text-foreground">{QUESTION_TYPE_LABEL_JA[type] ?? type}</span>
-            <span className="font-[family-name:var(--font-geist-mono)] text-muted-foreground">
-              {stat.correct}/{stat.total} ({Math.round((stat.correct / stat.total) * 100)}%)
-            </span>
-          </div>
-        ))}
+      <div className="mt-4 space-y-4">
+        {Array.from(byType.entries()).map(([type, stat]) => {
+          const pct = Math.round((stat.correct / stat.total) * 100);
+          return (
+            <div key={type}>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-foreground">{QUESTION_TYPE_LABEL_JA[type] ?? type}</span>
+                <span className="font-[family-name:var(--font-geist-mono)] text-muted-foreground">
+                  {stat.correct}/{stat.total} ({pct}%)
+                </span>
+              </div>
+              <div className="mt-1.5">
+                <AccuracyBar percent={pct} />
+              </div>
+            </div>
+          );
+        })}
         {byType.size === 0 && (
           <p className="text-sm text-muted-foreground">まだ演習記録がありません。</p>
         )}

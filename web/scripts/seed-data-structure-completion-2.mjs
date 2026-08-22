@@ -11,7 +11,7 @@ export const structureCompletionBatch2 = [
     choices: ["lying", "lay", "lied", "is lying"],
     correctIndex: 0,
     explanation:
-      "A reduced relative clause uses the present participle \"lying\" (from the intransitive verb \"lie\") to modify \"book\"; \"lay\" and \"lied\" are finite verb forms that do not fit a reduced relative clause here.",
+      "「book」を後ろから修飾する分詞構文(縮約関係詞節)なので、自動詞「lie(横たわる・置いてある)」の現在分詞「lying」が正解です。「lay」「lied」は定形動詞(文の述語になる形)であり、名詞を後置修飾する形にはなりません。",
     difficulty: "easy",
   },
   {
@@ -23,7 +23,7 @@ export const structureCompletionBatch2 = [
     choices: ["Revising", "Having revised", "Revised", "To revise"],
     correctIndex: 2,
     explanation:
-      "Since the manuscript itself was revised rather than doing the revising, the passive past participle \"Revised\" is required, not the active forms \"Revising\" or \"Having revised.\"",
+      "「原稿(manuscript)」は「改訂する」のではなく「改訂される」側なので、受け身の過去分詞「Revised」が正解です。「Revising」や「Having revised」は能動の意味になってしまい、主語(原稿)と意味が合いません。",
     difficulty: "medium",
   },
   {
@@ -35,7 +35,7 @@ export const structureCompletionBatch2 = [
     choices: ["Having", "Have", "To have", "Had"],
     correctIndex: 0,
     explanation:
-      "\"Having + past participle\" (the perfect participle) shows an action completed before the main clause's action; \"Have,\" \"To have,\" and \"Had\" do not form this participial construction.",
+      "「Having + 過去分詞」(完了分詞構文)は、主節の動作より前に完了した動作を表します。「Have」「To have」「Had」はこのような分詞構文の形を作れません。",
     difficulty: "hard",
   },
   {
@@ -47,7 +47,7 @@ export const structureCompletionBatch2 = [
     choices: ["has been funded", "is funding", "funds", "had funding"],
     correctIndex: 0,
     explanation:
-      "The funding began in the past and continues into the present (\"since 2019\"), and the library receives the action, so the present perfect passive \"has been funded\" is correct.",
+      "「since 2019」があることから、資金提供は過去に始まり現在まで続いていることがわかります。また図書館は「資金を提供される」側なので、現在完了の受動態「has been funded」が正解です。",
     difficulty: "easy",
   },
   {
@@ -59,7 +59,7 @@ export const structureCompletionBatch2 = [
     choices: ["will review", "will be reviewed", "reviews", "is reviewing"],
     correctIndex: 1,
     explanation:
-      "The proposal receives the action of reviewing, so the passive voice is required; \"will be reviewed\" correctly expresses the future passive.",
+      "「提案書(proposal)」は「審査する」のではなく「審査される」側なので受け身が必要です。未来の受け身を正しく表す「will be reviewed」が正解です。",
     difficulty: "medium",
   },
   {
@@ -71,7 +71,7 @@ export const structureCompletionBatch2 = [
     choices: ["rains", "will rain", "rained", "would rain"],
     correctIndex: 0,
     explanation:
-      "In a first conditional describing a real future possibility, the if-clause uses the simple present (\"rains\"), while the main clause uses \"will.\"",
+      "現実に起こりうる未来の出来事を述べる「第1条件文」では、if節の中は現在形(rains)を使い、主節でwillを使います。if節の中では未来形(will rain)は使いません。",
     difficulty: "easy",
   },
   {
@@ -83,7 +83,7 @@ export const structureCompletionBatch2 = [
     choices: ["puts", "put", "will put", "had put"],
     correctIndex: 1,
     explanation:
-      "This second conditional describes a hypothetical present situation (\"would likely develop\"), which requires the simple past \"put\" in the if-clause.",
+      "主節が「would likely develop」となっていることから、現在の事実に反する仮定を表す「第2条件文」だとわかります。第2条件文のif節では動詞は過去形(put)を使います。",
     difficulty: "medium",
   },
   {
@@ -95,7 +95,7 @@ export const structureCompletionBatch2 = [
     choices: ["why did", "why", "why had", "that why"],
     correctIndex: 1,
     explanation:
-      "In an embedded question, normal declarative word order is used, so \"why she had chosen\" is correct; question-word inversion (\"why did she\") is not used in indirect questions.",
+      "他の文に組み込まれた間接疑問文では、疑問詞のあとは通常の平叙文の語順(主語+動詞)になります。「why she had chosen」が正しく、疑問文のような倒置(why did she)は間接疑問文では使いません。",
     difficulty: "hard",
   },
   {
@@ -107,7 +107,7 @@ export const structureCompletionBatch2 = [
     choices: ["many", "much", "a number of", "few"],
     correctIndex: 1,
     explanation:
-      "\"Money\" is an uncountable noun, so it should be modified by \"much,\" not \"many,\" \"a number of,\" or \"few,\" which are used with countable nouns.",
+      "「money(お金)」は不可算名詞なので、可算名詞に使う「many」「a number of」「few」ではなく、不可算名詞を修飾する「much」を使います。",
     difficulty: "easy",
   },
   {
@@ -119,7 +119,7 @@ export const structureCompletionBatch2 = [
     choices: ["A great deal of", "A great number of", "Many", "Few"],
     correctIndex: 0,
     explanation:
-      "\"Effort\" is an uncountable noun, so \"a great deal of\" is the correct quantifier; \"a great number of,\" \"many,\" and \"few\" are used with countable nouns.",
+      "「effort(努力)」は不可算名詞なので、不可算名詞に使う数量表現「a great deal of」が正解です。「a great number of」「many」「few」はいずれも可算名詞に使う表現です。",
     difficulty: "medium",
   },
   {
@@ -130,7 +130,7 @@ export const structureCompletionBatch2 = [
     stem: "The meeting is scheduled _____ 3 p.m. on Thursday.",
     choices: ["in", "on", "at", "by"],
     correctIndex: 2,
-    explanation: "The preposition \"at\" is used with specific clock times, such as \"at 3 p.m.\"",
+    explanation: "「3 p.m.」のような時刻を表すときには前置詞「at」を使います(例: at 3 p.m.)。",
     difficulty: "easy",
   },
   {
@@ -141,7 +141,8 @@ export const structureCompletionBatch2 = [
     stem: "The company's headquarters are located _____ the corner of Fifth Avenue and Main Street.",
     choices: ["in", "at", "on", "by"],
     correctIndex: 1,
-    explanation: "The idiom \"at the corner of\" is the standard way to describe a location at an intersection.",
+    explanation:
+      "交差点の場所を表すときの決まった言い方は「at the corner of」です。この熟語をそのまま覚えておきましょう。",
     difficulty: "medium",
   },
   {
@@ -152,7 +153,8 @@ export const structureCompletionBatch2 = [
     stem: "The committee's decision was based _____ extensive research and community feedback.",
     choices: ["in", "on", "at", "for"],
     correctIndex: 1,
-    explanation: "The correct collocation is \"based on,\" meaning something is grounded in or derived from a source.",
+    explanation:
+      "「〜に基づいている」という意味の正しい連語(コロケーション)は「based on」です。この組み合わせで覚えておく必要があります。",
     difficulty: "medium",
   },
   {
@@ -163,7 +165,7 @@ export const structureCompletionBatch2 = [
     stem: "The professor's argument consists _____ three main points, each supported by data.",
     choices: ["of", "in", "with", "from"],
     correctIndex: 0,
-    explanation: "The correct collocation is \"consist of,\" meaning to be composed of something.",
+    explanation: "「〜から成る、〜で構成されている」という意味の正しい連語は「consist of」です。",
     difficulty: "hard",
   },
   {
@@ -175,7 +177,7 @@ export const structureCompletionBatch2 = [
     choices: ["have", "had", "has", "will have"],
     correctIndex: 1,
     explanation:
-      "In reported speech with a past-tense reporting verb (\"reported\"), the tense typically shifts back, so \"had\" is used instead of the present \"have.\"",
+      "伝達動詞(ここではreported)が過去形の場合、that節の中の時制もそれに合わせて一つ過去にずらす「時制の一致」が起こります。そのため現在形「have」ではなく過去形「had」を使います。",
     difficulty: "hard",
   },
   {
@@ -187,7 +189,7 @@ export const structureCompletionBatch2 = [
     choices: ["so", "such", "too", "very"],
     correctIndex: 0,
     explanation:
-      "\"So + adjective + that\" is the correct structure to show cause and result; \"such\" would require a noun phrase (\"such compelling evidence\").",
+      "原因と結果を表す「so + 形容詞 + that」の構文が正解です。「such」を使う場合は「such compelling evidence」のように名詞句が必要になります。",
     difficulty: "medium",
   },
   {
@@ -199,7 +201,7 @@ export const structureCompletionBatch2 = [
     choices: ["so", "such", "too", "very"],
     correctIndex: 1,
     explanation:
-      "\"Such + a/an + adjective + noun + that\" is the correct structure when a noun follows; \"so\" would be used without the article and noun (\"so persuasive that\").",
+      "後ろに名詞(argument)が続く場合は「such + a/an + 形容詞 + 名詞 + that」の形を使います。「so」を使う場合は冠詞と名詞を省いて「so persuasive that」のようにします。",
     difficulty: "medium",
   },
   {
@@ -210,7 +212,8 @@ export const structureCompletionBatch2 = [
     stem: "Before the factory closed, workers _____ commute over an hour each way.",
     choices: ["use to", "used to", "are used to", "get used to"],
     correctIndex: 1,
-    explanation: "\"Used to + base verb\" describes a repeated past habit that no longer occurs.",
+    explanation:
+      "「used to + 動詞の原形」は「以前はよく〜したものだ(今はもうしていない)」という過去の習慣を表します。",
     difficulty: "easy",
   },
   {
@@ -222,7 +225,7 @@ export const structureCompletionBatch2 = [
     choices: ["used to", "use to", "is used to", "uses to"],
     correctIndex: 2,
     explanation:
-      "\"Be used to + gerund/noun\" means \"to be accustomed to,\" which fits the context of an ongoing adjustment.",
+      "「be used to + 動名詞/名詞」は「〜に慣れている」という意味で、ここでは「異なる時差の中で暮らすことに慣れている」という継続的な状態に合います。",
     difficulty: "medium",
   },
   {
@@ -234,7 +237,7 @@ export const structureCompletionBatch2 = [
     choices: ["use to", "get used to", "used to", "be use to"],
     correctIndex: 1,
     explanation:
-      "\"Get used to + gerund/noun\" describes the process of becoming accustomed to something, which fits \"took... several weeks.\"",
+      "「get used to + 動名詞/名詞」は「〜に慣れていく」という変化の過程を表し、「数週間かかった」という文脈にぴったり合います。",
     difficulty: "hard",
   },
   {
@@ -246,7 +249,7 @@ export const structureCompletionBatch2 = [
     choices: ["have", "make", "let", "get to"],
     correctIndex: 0,
     explanation:
-      "The causative structure \"have something done\" (have + object + past participle) means arranging for someone else to do the action.",
+      "使役表現「have + 目的語 + 過去分詞」は「(人に頼んで)〜してもらう」という意味です。屋根の修理を業者に依頼する、という状況に合います。",
     difficulty: "medium",
   },
   {
@@ -258,7 +261,7 @@ export const structureCompletionBatch2 = [
     choices: ["have get", "get", "make", "let"],
     correctIndex: 1,
     explanation:
-      "The causative structure \"get something done\" (get + object + past participle) is correct here; the other options do not fit this passive causative pattern.",
+      "使役表現「get + 目的語 + 過去分詞」も「〜してもらう」という意味を表し、ここではこの受け身的な使役の形に合うのは「get」だけです。他の選択肢はこの形に当てはまりません。",
     difficulty: "hard",
   },
   {
@@ -269,7 +272,8 @@ export const structureCompletionBatch2 = [
     stem: "_____ patience is essential for anyone learning a new language.",
     choices: ["The", "A", "An", "(no article)"],
     correctIndex: 3,
-    explanation: "When referring to the abstract quality of patience in general, no article is used.",
+    explanation:
+      "「patience(忍耐力)」のような抽象的な性質・概念を一般的な意味で述べるときには、冠詞をつけません。",
     difficulty: "easy",
   },
   {
@@ -280,7 +284,7 @@ export const structureCompletionBatch2 = [
     stem: "_____ Amazon River carries more water than any other river in the world.",
     choices: ["A", "An", "The", "(no article)"],
     correctIndex: 2,
-    explanation: "Names of rivers require the definite article \"the.\"",
+    explanation: "河川名には定冠詞「the」をつけるという決まりがあります(例: the Amazon River)。",
     difficulty: "medium",
   },
   {
@@ -291,7 +295,8 @@ export const structureCompletionBatch2 = [
     stem: "It is crucial that the medication _____ refrigerated at all times.",
     choices: ["is", "be", "will be", "being"],
     correctIndex: 1,
-    explanation: "After \"It is crucial that,\" the subjunctive base form \"be\" is required, regardless of tense.",
+    explanation:
+      "「It is crucial that」に続くthat節の中では、時制に関係なく動詞の原形(仮定法現在)を使います。ここでは受け身の原形「be refrigerated」が正解です。",
     difficulty: "hard",
   },
   {
@@ -303,7 +308,7 @@ export const structureCompletionBatch2 = [
     choices: ["the leader", "leading", "who leads", "leads"],
     correctIndex: 0,
     explanation:
-      "An appositive phrase renaming the subject should be a noun phrase, \"the leader,\" set off by commas.",
+      "コンマで挟まれ、主語を別の言葉で言い換える「同格」の部分には名詞句が入ります。「the leader(リーダー)」という名詞句が正解です。",
     difficulty: "medium",
   },
   {
@@ -315,7 +320,7 @@ export const structureCompletionBatch2 = [
     choices: ["does", "did", "is", "was"],
     correctIndex: 1,
     explanation:
-      "The emphatic auxiliary \"did\" combines with the base verb \"support\" to stress a contrast with \"seemed inconclusive\" and matches the past-tense context; \"does\" is both present tense and singular, which does not fit.",
+      "強調の助動詞「did」を動詞の原形「support」と組み合わせることで、「seemed inconclusive(結論が出ていないように見えた)」との対比を強めています。文脈は過去の話なので、現在形かつ単数用法の「does」は合いません。",
     difficulty: "hard",
   },
   {
@@ -327,7 +332,7 @@ export const structureCompletionBatch2 = [
     choices: ["It", "There", "This", "That"],
     correctIndex: 0,
     explanation:
-      "This is a cleft sentence (\"It was X that...\") used to emphasize \"the unexpected drop in temperature\"; \"It\" is the required subject for this structure.",
+      "「It was X that ...」という強調構文(分裂文)で、「the unexpected drop in temperature(予想外の気温低下)」を強調しています。この構文の主語は必ず「It」になります。",
     difficulty: "hard",
   },
   {
@@ -339,7 +344,7 @@ export const structureCompletionBatch2 = [
     choices: ["What", "That", "Which", "Because"],
     correctIndex: 1,
     explanation:
-      "\"That\" introduces a noun clause that can serve as the sentence's subject; \"What\" would alter the meaning, \"Which\" needs an antecedent, and \"Because\" introduces an adverbial clause, which cannot function as a subject.",
+      "「That」は文の主語になれる名詞節を導くことができます。「What」だと意味が変わってしまい、「Which」は先行詞が必要で、「Because」が導く副詞節は文の主語にはなれません。",
     difficulty: "medium",
   },
   {
@@ -351,7 +356,7 @@ export const structureCompletionBatch2 = [
     choices: ["so as", "in order to", "for to", "so that"],
     correctIndex: 1,
     explanation:
-      "\"In order to + base verb\" expresses purpose; \"so as\" alone is incomplete, \"for to\" is not standard English, and \"so that\" requires a full clause, not an infinitive.",
+      "目的を表す「in order to + 動詞の原形」が正解です。「so as」は単独では不完全な形であり、「for to」は正しい英語ではなく、「so that」の後には不定詞ではなく完全な節が必要です。",
     difficulty: "easy",
   },
   {
@@ -363,7 +368,7 @@ export const structureCompletionBatch2 = [
     choices: ["so that", "so as to", "in order", "for"],
     correctIndex: 0,
     explanation:
-      "\"So that + clause\" expresses purpose when followed by a full clause with a subject and verb; \"so as to\" and \"in order\" are followed by infinitives, not clauses.",
+      "後ろに主語と動詞を含む完全な節が続く場合、目的を表すには「so that + 節」を使います。「so as to」や「in order」の後には不定詞が続き、節は続きません。",
     difficulty: "medium",
   },
   {
@@ -375,7 +380,7 @@ export const structureCompletionBatch2 = [
     choices: ["Even though", "Even if", "Because", "Unless"],
     correctIndex: 1,
     explanation:
-      "\"Even if\" introduces a hypothetical or uncertain condition, which fits this speculative context; \"Even though\" is used for a known fact, not a hypothetical one.",
+      "「Even if」は「たとえ〜だとしても」と、まだ不確かな仮定の状況を導きます。この文脈は仮定的な内容なので合いますが、「Even though」は既に分かっている事実に対して使うため合いません。",
     difficulty: "medium",
   },
   {
@@ -387,7 +392,7 @@ export const structureCompletionBatch2 = [
     choices: ["Despite", "Despite the fact that", "Despite of", "In spite"],
     correctIndex: 1,
     explanation:
-      "\"Despite the fact that\" is followed by a full clause; plain \"Despite,\" \"Despite of,\" and \"In spite\" (without \"of\") cannot be directly followed by a clause with a subject and verb.",
+      "後ろに主語と動詞を含む完全な節が続く場合は「Despite the fact that」を使います。「Despite」単独、「Despite of」、「of」を伴わない「In spite」は、いずれも節を直接後ろに置くことができません。",
     difficulty: "hard",
   },
   {
@@ -399,7 +404,7 @@ export const structureCompletionBatch2 = [
     choices: ["lest", "unless", "in case of", "so"],
     correctIndex: 0,
     explanation:
-      "\"Lest\" is a formal conjunction meaning \"for fear that,\" followed by the subjunctive base verb \"collapse,\" and expresses a precaution against an undesired outcome.",
+      "「lest」は「〜しないように」という意味のややかたい接続詞で、後ろには仮定法現在(動詞の原形)である「collapse」が続きます。望ましくない事態を未然に防ぐ、という意味を表しています。",
     difficulty: "hard",
   },
   {
@@ -411,7 +416,7 @@ export const structureCompletionBatch2 = [
     choices: ["whereas", "despite", "unless", "because"],
     correctIndex: 0,
     explanation:
-      "\"Whereas\" is used to contrast two facts, which fits the comparison between the two regions' economies.",
+      "「whereas(〜である一方)」は2つの事実を対比するときに使います。2つの地域の経済構造を比較しているこの文脈にぴったり合います。",
     difficulty: "medium",
   },
   {
@@ -423,7 +428,7 @@ export const structureCompletionBatch2 = [
     choices: ["is", "was", "had been", "has been"],
     correctIndex: 2,
     explanation:
-      "\"As if/as though\" describing a state resulting from an action that preceded the moment of looking takes the past perfect, \"had been abandoned.\"",
+      "「as if / as though」が、見た瞬間よりも前に起きた出来事の結果としての状態を表す場合には、過去完了形「had been abandoned」を使います。",
     difficulty: "hard",
   },
   {
@@ -435,7 +440,7 @@ export const structureCompletionBatch2 = [
     choices: ["have", "had", "will have", "has"],
     correctIndex: 1,
     explanation:
-      "\"Wish\" about a present unreal situation is followed by the past subjunctive (\"had\"), even though the meaning is present.",
+      "「wish」を使って現在の事実に反する願望を表す場合、意味は現在のことでも動詞は過去形(仮定法過去)「had」を使います。",
     difficulty: "medium",
   },
   {
@@ -447,7 +452,7 @@ export const structureCompletionBatch2 = [
     choices: ["is", "will be", "were", "be"],
     correctIndex: 2,
     explanation:
-      "\"Would rather + subject + past subjunctive\" is used when the subject differs from the speaker's own action; here it should be \"were submitted,\" not \"is,\" \"will be,\" or \"be.\"",
+      "「would rather + 主語 + 動詞」の形は、主語が話し手自身の動作ではない場合に使い、動詞には仮定法過去(were submitted)を使います。「is」「will be」「be」はこの構文には合いません。",
     difficulty: "hard",
   },
   {
@@ -459,7 +464,7 @@ export const structureCompletionBatch2 = [
     choices: ["updates", "update", "updated", "will update"],
     correctIndex: 2,
     explanation:
-      "\"It's time + subject + past tense\" is an idiomatic subjunctive-like structure meaning it is now appropriate or overdue for something to happen, so the verb takes the simple past form, \"updated.\"",
+      "「It's time + 主語 + 過去形」は「そろそろ〜すべき時だ、〜するのが遅すぎるくらいだ」という意味を表す仮定法的な決まり文句で、動詞には過去形「updated」を使います。",
     difficulty: "medium",
   },
   {
@@ -471,7 +476,7 @@ export const structureCompletionBatch2 = [
     choices: ["since", "for", "during", "from"],
     correctIndex: 1,
     explanation:
-      "\"For\" is used with a duration of time (\"for over two decades\"), while \"since\" is used with a specific starting point.",
+      "「for」は「for over two decades(20年以上にわたって)」のように期間の長さを表すときに使います。一方「since」は起点となる時点を表すときに使います。",
     difficulty: "easy",
   },
 ];

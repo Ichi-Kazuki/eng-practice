@@ -4,8 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FlagIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
+import { QuestionStem } from "@/components/question-stem";
 import { cn } from "@/lib/utils";
-import { answerMockQuestion, submitMockSection } from "@/app/app/mock/actions";
+import { answerMockQuestion, submitMockSection, toggleMockFlag } from "@/app/app/mock/actions";
 
 export type MockRunnerQuestion = {
   id: string;
@@ -32,6 +33,7 @@ export function MockSectionRunner({
   startedAtMs,
   questions,
   initialAnswers,
+  initialFlags,
 }: {
   sessionId: string;
   sectionLabel: string;
@@ -39,21 +41,24 @@ export function MockSectionRunner({
   startedAtMs: number;
   questions: MockRunnerQuestion[];
   initialAnswers: Record<string, number>;
+  initialFlags: string[];
 }) {
   const isStopwatch = timeLimitSec === null;
   const router = useRouter();
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>(initialAnswers);
-  const [flagged, setFlagged] = useState<Set<string>>(new Set());
-  const [displaySec, setDisplaySec] = useState(() => {
-    const elapsed = Math.floor((Date.now() - startedAtMs) / 1000);
-    return isStopwatch ? elapsed : Math.max(0, timeLimitSec - elapsed);
-  });
+  const [flagged, setFlagged] = useState<Set<string>>(() => new Set(initialFlags));
+  // 初期値はサーバーとクライアントで一致する静的な値にしておき(SSR時とhydration時でDate.now()の
+  // 結果が食い違うハイドレーションエラーを避ける)、正しい経過/残り時間はマウント後にeffect内で補正する
+  const [displaySec, setDisplaySec] = useState<number>(() => (isStopwatch ? 0 : (timeLimitSec ?? 0)));
+  const [timeUpMessage, setTimeUpMessage] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const submittingRef = useRef(false);
 
   const handleSubmit = useCallback(async () => {
     if (submittingRef.current) return;
     submittingRef.current = true;
+    setIsSubmitting(true);
     const result = await submitMockSection(sessionId);
     if (result.done) {
       router.push(`/app/mock/${sessionId}/result`);
@@ -64,21 +69,38 @@ export function MockSectionRunner({
   }, [router, sessionId]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    function tick() {
       const elapsed = Math.floor((Date.now() - startedAtMs) / 1000);
       if (isStopwatch) {
         setDisplaySec(elapsed);
-        return;
+        return true;
       }
-      const remaining = Math.max(0, timeLimitSec - elapsed);
+      const remaining = Math.max(0, (timeLimitSec ?? 0) - elapsed);
       setDisplaySec(remaining);
       if (remaining <= 0) {
-        clearInterval(interval);
-        void handleSubmit();
+        setTimeUpMessage(true);
+        setTimeout(() => void handleSubmit(), 1500);
+        return false;
       }
+      return true;
+    }
+
+    tick(); // マウント直後に正しい経過/残り時間へ即座に補正する
+    const interval = setInterval(() => {
+      if (!tick()) clearInterval(interval);
     }, 1000);
     return () => clearInterval(interval);
   }, [handleSubmit, isStopwatch, startedAtMs, timeLimitSec]);
+
+  // タブを閉じる/戻る操作で進行中の模試から離脱しようとした場合に警告する
+  useEffect(() => {
+    function handleBeforeUnload(e: BeforeUnloadEvent) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
 
   const current = questions[index];
 
@@ -92,19 +114,34 @@ export function MockSectionRunner({
     }
   }
 
-  function toggleFlag() {
+  async function toggleFlag() {
     if (!current) return;
+    const questionId = current.id;
     setFlagged((prev) => {
       const next = new Set(prev);
-      if (next.has(current.id)) next.delete(current.id);
-      else next.add(current.id);
+      if (next.has(questionId)) next.delete(questionId);
+      else next.add(questionId);
       return next;
     });
+    try {
+      await toggleMockFlag(sessionId, questionId);
+    } catch {
+      // 保存に失敗してもローカルの表示は維持する
+    }
   }
 
   const answeredCount = useMemo(() => Object.keys(answers).length, [answers]);
 
   if (!current) return null;
+
+  if (timeUpMessage) {
+    return (
+      <div className="mx-auto max-w-sm py-24 text-center">
+        <p className="text-lg font-bold text-foreground">時間切れです</p>
+        <p className="mt-2 text-sm text-muted-foreground">自動的に提出されました。少々お待ちください…</p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -120,33 +157,52 @@ export function MockSectionRunner({
           const isAnswered = answers[q.id] !== undefined;
           const isFlagged = flagged.has(q.id);
           const isCurrent = i === index;
+          const statusLabel = isAnswered ? "解答済み" : "未解答";
+          const ariaLabel = `問題${i + 1}、${statusLabel}${isFlagged ? "、見直しフラグあり" : ""}${
+            isCurrent ? "、現在表示中" : ""
+          }`;
           return (
             <button
               key={q.id}
               type="button"
               onClick={() => setIndex(i)}
+              aria-label={ariaLabel}
+              aria-current={isCurrent ? "true" : undefined}
               className={cn(
-                "flex aspect-square items-center justify-center rounded border font-[family-name:var(--font-geist-mono)] text-xs",
+                "relative flex aspect-square items-center justify-center rounded border font-[family-name:var(--font-geist-mono)] text-xs",
                 isCurrent ? "border-primary ring-2 ring-primary/40" : "border-border",
-                isAnswered && !isFlagged && "bg-primary/10",
-                isFlagged && "bg-secondary"
+                isAnswered && "bg-primary/10"
               )}
-              title={`問題 ${i + 1}`}
             >
               {i + 1}
+              {isFlagged && (
+                <span
+                  aria-hidden="true"
+                  className="absolute -right-1 -top-1 size-2.5 rounded-full border border-background bg-amber-500"
+                />
+              )}
             </button>
           );
         })}
       </div>
       <div className="mb-6 flex items-center gap-4 text-xs text-muted-foreground">
-        <span>{answeredCount}/{questions.length} 解答済み</span>
-        <span>■ 解答済み</span>
-        <span>□ 未解答</span>
+        <span>
+          {answeredCount}/{questions.length} 解答済み
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="inline-block size-2.5 rounded-sm bg-primary/10" /> 解答済み
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="inline-block size-2.5 rounded-sm border border-border" /> 未解答
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="inline-block size-2.5 rounded-full bg-amber-500" /> 見直しフラグ
+        </span>
       </div>
 
       <div className={cn("grid gap-6", current.passage && "sm:grid-cols-2")}>
         {current.passage && (
-          <div className="max-h-[32rem] overflow-y-auto rounded-lg border border-border p-4">
+          <div className="max-h-[32rem] overflow-y-auto rounded-lg border border-border p-4" lang="en">
             <h3 className="mb-3 font-medium text-foreground">{current.passage.title}</h3>
             <p className="whitespace-pre-line font-[family-name:var(--font-literata)] text-[15px] leading-relaxed text-foreground">
               {current.passage.body}
@@ -161,7 +217,8 @@ export function MockSectionRunner({
             </span>
             <button
               type="button"
-              onClick={toggleFlag}
+              onClick={() => void toggleFlag()}
+              aria-pressed={flagged.has(current.id)}
               className={cn(
                 "flex items-center gap-1 text-xs",
                 flagged.has(current.id) ? "text-primary" : "text-muted-foreground"
@@ -172,13 +229,20 @@ export function MockSectionRunner({
             </button>
           </div>
 
-          <p className="text-base leading-relaxed text-foreground">{current.stem}</p>
+          <QuestionStem
+            className="text-base leading-relaxed text-foreground"
+            stem={current.stem}
+            choices={current.choices}
+            questionType={current.questionType}
+          />
 
-          <div className="mt-5 space-y-2">
+          <div className="mt-5 space-y-2" role="radiogroup" aria-label="選択肢">
             {current.choices.map((choice, i) => (
               <button
                 key={i}
                 type="button"
+                role="radio"
+                aria-checked={answers[current.id] === i}
                 onClick={() => handleSelect(i)}
                 className={cn(
                   "flex w-full items-start gap-3 rounded-md border px-4 py-3 text-left text-sm transition-colors",
@@ -190,7 +254,9 @@ export function MockSectionRunner({
                 <span className="font-[family-name:var(--font-geist-mono)] font-medium text-muted-foreground">
                   {String.fromCharCode(65 + i)}
                 </span>
-                <span className="flex-1 text-foreground">{choice}</span>
+                <span className="flex-1 text-foreground" lang="en">
+                  {choice}
+                </span>
               </button>
             ))}
           </div>
@@ -208,7 +274,9 @@ export function MockSectionRunner({
                 次へ
               </Button>
             </div>
-            <Button onClick={() => void handleSubmit()}>提出する</Button>
+            <Button disabled={isSubmitting} onClick={() => void handleSubmit()}>
+              {isSubmitting ? "提出中…" : "提出する"}
+            </Button>
           </div>
         </div>
       </div>

@@ -2,7 +2,9 @@ import Link from "next/link";
 import { getDb } from "@/db";
 import { passages } from "@/db/schema";
 import { Button } from "@/components/ui/button";
+import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
 import { deletePassage } from "@/app/admin/actions";
+import { JaHeading } from "@/components/ja-heading";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +15,7 @@ export default async function AdminPassagesPage() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-foreground">Readingパッセージ一覧</h1>
+        <JaHeading className="text-xl font-bold text-foreground" text="Readingパッセージ一覧" />
         <Button render={<Link href="/admin/passages/new" />} size="sm">
           新規作成
         </Button>
@@ -28,9 +30,12 @@ export default async function AdminPassagesPage() {
                 編集
               </Link>
               <form action={deletePassage.bind(null, p.id)}>
-                <button type="submit" className="text-destructive hover:underline">
+                <ConfirmSubmitButton
+                  confirmMessage="このパッセージを削除します。よろしいですか?"
+                  className="text-destructive hover:underline"
+                >
                   削除
-                </button>
+                </ConfirmSubmitButton>
               </form>
             </div>
           </div>

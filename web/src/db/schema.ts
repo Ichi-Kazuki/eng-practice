@@ -76,6 +76,7 @@ export type MockSectionConfig = {
   timeMode: "fixed" | "stopwatch";
   startedAt: number | null;
   submittedAt: number | null;
+  flags: string[]; // 見直しフラグを立てた questionId の一覧
 };
 
 export const mockSessions = sqliteTable("mock_sessions", {

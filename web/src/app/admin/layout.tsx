@@ -7,6 +7,8 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
+  // 管理画面は運営者本人専用のため、他の未ログインページ(LoginRequired)とは異なり
+  // 案内画面を挟まず即座にログインへ誘導している(意図的な差異)。
   if (!user) redirect("/api/auth/login");
 
   const { env } = getCloudflareContext();
@@ -26,7 +28,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </Link>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-8">{children}</main>
+      <main id="main-content" className="mx-auto w-full max-w-5xl flex-1 px-6 py-8">
+        {children}
+      </main>
     </div>
   );
 }
