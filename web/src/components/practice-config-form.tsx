@@ -129,6 +129,16 @@ export function PracticeConfigForm({
     );
   }, [completionAvailable, completionCount, errorAvailable, errorCount, grammarType, readingAvailable, readingCount, section]);
 
+  const inventoryUnavailable = useMemo(() => {
+    if (section === "reading") return readingAvailable < READING_COUNT_PRESETS[0];
+    if (grammarType === "structure_completion") return completionAvailable < GRAMMAR_COMPLETION_COUNT_PRESETS[0];
+    if (grammarType === "structure_error_id") return errorAvailable < GRAMMAR_ERROR_COUNT_PRESETS[0];
+    return (
+      completionAvailable < GRAMMAR_COMPLETION_COUNT_PRESETS[0] ||
+      errorAvailable < GRAMMAR_ERROR_COUNT_PRESETS[0]
+    );
+  }, [completionAvailable, errorAvailable, grammarType, readingAvailable, section]);
+
   return (
     <form method="get" action="" className="space-y-7">
       {section === "structure" ? (
@@ -239,7 +249,12 @@ export function PracticeConfigForm({
         </div>
       </fieldset>
 
-      <div className="flex items-center justify-between gap-4 border-t border-border pt-5">
+      {inventoryUnavailable && (
+        <p className="border-t border-border pt-5 text-sm font-medium text-destructive" role="alert">
+          この設定で選べる公開問題が不足しているため、演習を開始できません。
+        </p>
+      )}
+      <div className={cn("flex items-center justify-between gap-4", !inventoryUnavailable && "border-t border-border pt-5")}>
         <p className="text-sm text-muted-foreground" aria-live="polite">
           合計 <span className="font-[family-name:var(--font-geist-mono)] font-medium text-foreground">{selectedCount}</span>問
         </p>

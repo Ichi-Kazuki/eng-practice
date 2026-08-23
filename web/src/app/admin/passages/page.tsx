@@ -8,7 +8,12 @@ import { JaHeading } from "@/components/ja-heading";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPassagesPage() {
+export default async function AdminPassagesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   const db = getDb();
   const rows = await db.select().from(passages);
 
@@ -20,6 +25,12 @@ export default async function AdminPassagesPage() {
           新規作成
         </Button>
       </div>
+
+      {error === "passage-in-use" && (
+        <p className="mt-4 text-sm text-destructive" role="alert">
+          この本文は問題に使用中のため削除できません。先に問題の紐付けを変更してください。
+        </p>
+      )}
 
       <div className="mt-6 space-y-2">
         {rows.map((p) => (

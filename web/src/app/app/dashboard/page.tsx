@@ -1,4 +1,4 @@
-import { eq, and, desc, inArray } from "drizzle-orm";
+import { eq, and, desc, inArray, sql } from "drizzle-orm";
 import Link from "next/link";
 import { getDb } from "@/db";
 import { attempts, questions, mockSessions, type MockSectionConfig } from "@/db/schema";
@@ -11,6 +11,9 @@ import { JaHeading } from "@/components/ja-heading";
 
 export const dynamic = "force-dynamic";
 
+const MAX_D1_BOUND_PARAMS = 100;
+const MOCK_ID_CHUNK_SIZE = MAX_D1_BOUND_PARAMS - 2; // userId + mode
+
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) {
@@ -20,29 +23,35 @@ export default async function DashboardPage() {
   }
 
   const db = getDb();
-  const rows = await db
-    .select({
-      sectionSlug: questions.sectionSlug,
-      questionType: questions.questionType,
-      isCorrect: attempts.isCorrect,
-    })
-    .from(attempts)
-    .innerJoin(questions, eq(attempts.questionId, questions.id))
-    .where(eq(attempts.userId, user.userId));
+  const [sectionRows, typeRows] = await Promise.all([
+    db
+      .select({
+        sectionSlug: questions.sectionSlug,
+        correct: sql<number>`sum(case when ${attempts.isCorrect} = 1 then 1 else 0 end)`,
+        total: sql<number>`count(*)`,
+      })
+      .from(attempts)
+      .innerJoin(questions, eq(attempts.questionId, questions.id))
+      .where(eq(attempts.userId, user.userId))
+      .groupBy(questions.sectionSlug),
+    db
+      .select({
+        questionType: questions.questionType,
+        correct: sql<number>`sum(case when ${attempts.isCorrect} = 1 then 1 else 0 end)`,
+        total: sql<number>`count(*)`,
+      })
+      .from(attempts)
+      .innerJoin(questions, eq(attempts.questionId, questions.id))
+      .where(eq(attempts.userId, user.userId))
+      .groupBy(questions.questionType),
+  ]);
 
-  const bySection = new Map<string, { correct: number; total: number }>();
-  const byType = new Map<string, { correct: number; total: number }>();
-  for (const row of rows) {
-    const s = bySection.get(row.sectionSlug) ?? { correct: 0, total: 0 };
-    s.total += 1;
-    if (row.isCorrect) s.correct += 1;
-    bySection.set(row.sectionSlug, s);
-
-    const t = byType.get(row.questionType) ?? { correct: 0, total: 0 };
-    t.total += 1;
-    if (row.isCorrect) t.correct += 1;
-    byType.set(row.questionType, t);
-  }
+  const bySection = new Map(
+    sectionRows.map((row) => [row.sectionSlug, { correct: Number(row.correct), total: Number(row.total) }])
+  );
+  const byType = new Map(
+    typeRows.map((row) => [row.questionType, { correct: Number(row.correct), total: Number(row.total) }])
+  );
 
   const scoredSections: SectionSlug[] = ["structure", "reading"];
 
@@ -70,37 +79,53 @@ export default async function DashboardPage() {
     });
   });
 
-  const mockQuestionIds = Array.from(
-    new Set(
-      fullLengthMocks.flatMap((session) =>
-        (session.sections as MockSectionConfig[]).flatMap((s) => s.questionIds)
-      )
-    )
-  );
-  const correctIndexById = new Map<string, number>();
-  // D1は1クエリあたり最大100個のバインドパラメータまでしか受け付けないため、
-  // 受験履歴が増えて出題IDの合計が100を超える場合はチャンクに分けて問い合わせる
-  const D1_MAX_BOUND_PARAMS = 100;
-  for (let i = 0; i < mockQuestionIds.length; i += D1_MAX_BOUND_PARAMS) {
-    const chunk = mockQuestionIds.slice(i, i + D1_MAX_BOUND_PARAMS);
-    const qRows = await db
-      .select({ id: questions.id, correctIndex: questions.correctIndex })
-      .from(questions)
-      .where(inArray(questions.id, chunk));
-    for (const q of qRows) correctIndexById.set(q.id, q.correctIndex);
+  const fullMockIds = fullLengthMocks.map((session) => session.id);
+  const legacyMockAttempts = [];
+  for (let i = 0; i < fullMockIds.length; i += MOCK_ID_CHUNK_SIZE) {
+    const idChunk = fullMockIds.slice(i, i + MOCK_ID_CHUNK_SIZE);
+    legacyMockAttempts.push(
+      ...(await db
+        .select({
+          mockSessionId: attempts.mockSessionId,
+          questionId: attempts.questionId,
+          isCorrect: attempts.isCorrect,
+        })
+        .from(attempts)
+        .where(
+          and(
+            eq(attempts.userId, user.userId),
+            eq(attempts.mode, "mock"),
+            inArray(attempts.mockSessionId, idChunk)
+          )
+        ))
+    );
   }
+  const legacyCorrectByKey = new Map(
+    legacyMockAttempts.map((attempt) => [`${attempt.mockSessionId}:${attempt.questionId}`, attempt.isCorrect])
+  );
 
   const mockHistory = fullLengthMocks.map((session) => {
     const sections = session.sections as MockSectionConfig[];
-    const answers = session.answers as Record<string, number>;
-    const sectionScores = sections.map((s) => {
-      const total = s.questionIds.length;
-      const correct = s.questionIds.filter((id) => answers[id] === correctIndexById.get(id)).length;
+    if (session.resultSnapshot) {
+      return {
+        id: session.id,
+        completedAt: session.completedAt,
+        sectionScores: session.resultSnapshot.sections.map((section) => ({
+          sectionSlug: section.sectionSlug as SectionSlug,
+          scaled: section.scaled,
+        })),
+        total: session.resultSnapshot.totalScore,
+      };
+    }
+
+    const sectionScores = sections.map((section) => {
+      const total = section.questionIds.length;
+      const correct = section.questionIds.filter((id) => legacyCorrectByKey.get(`${session.id}:${id}`)).length;
       const scaled = total > 0 ? percentToScaledScore((correct / total) * 100) : null;
-      return { sectionSlug: s.sectionSlug as SectionSlug, scaled };
+      return { sectionSlug: section.sectionSlug as SectionSlug, scaled };
     });
     const total = estimateProvisionalTotalScore(
-      sectionScores.filter((s) => s.scaled !== null).map((s) => s.scaled as number)
+      sectionScores.filter((section) => section.scaled !== null).map((section) => section.scaled as number)
     );
     return { id: session.id, completedAt: session.completedAt, sectionScores, total };
   });
@@ -112,10 +137,33 @@ export default async function DashboardPage() {
       {weakest && (
         <p className="mt-4 text-sm text-muted-foreground">
           現在の弱点セクションは
-          <span className="font-medium text-destructive"> {SECTION_META[weakest.section].nameJa} </span>
+          <span className="font-medium text-primary"> {SECTION_META[weakest.section].nameJa} </span>
           です(正答率 {Math.round((weakest.stat!.correct / weakest.stat!.total) * 100)}%)。
         </p>
       )}
+
+      <h2 className="mt-10 text-lg font-bold text-foreground">セクション別正答率</h2>
+      <div className="mt-4 space-y-4">
+        {scoredSections.map((section) => {
+          const stat = bySection.get(section);
+          const percent = stat ? Math.round((stat.correct / stat.total) * 100) : null;
+          return (
+            <div key={section}>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-foreground">{SECTION_META[section].nameJa}</span>
+                <span className="font-[family-name:var(--font-geist-mono)] text-muted-foreground">
+                  {stat ? `${stat.correct}/${stat.total} (${percent}%)` : "未受験"}
+                </span>
+              </div>
+              {percent !== null && (
+                <div className="mt-1.5">
+                  <AccuracyBar percent={percent} />
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
 
       <h2 className="mt-10 text-lg font-bold text-foreground">分野別正答率</h2>
       <div className="mt-4 space-y-4">
@@ -153,7 +201,7 @@ export default async function DashboardPage() {
           <Link
             key={session.id}
             href={`/app/mock/${session.id}/result`}
-            className="flex items-center justify-between rounded-lg border border-border p-4 transition-colors hover:bg-accent"
+            className="grid gap-2 rounded-lg border border-border p-4 transition-colors hover:bg-accent sm:flex sm:items-center sm:justify-between"
           >
             <span className="text-sm text-muted-foreground">
               {session.completedAt
@@ -164,7 +212,7 @@ export default async function DashboardPage() {
                   })
                 : "-"}
             </span>
-            <span className="flex items-center gap-4">
+            <span className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1">
               {session.sectionScores.map((s) => (
                 <span key={s.sectionSlug} className="text-xs text-muted-foreground">
                   {SECTION_META[s.sectionSlug].nameEn}{" "}

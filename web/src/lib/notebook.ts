@@ -31,6 +31,8 @@ export async function getMistakesForUser({
   section?: string;
   range?: string;
 }): Promise<MistakeRow[]> {
+  const days = range === "7" ? 7 : range === "30" ? 30 : null;
+  const cutoff = days ? new Date(Date.now() - days * 86400_000) : null;
   const rows = await queryAttemptRows(userId);
 
   // 問題ごとに新しい順(desc)の解答履歴をまとめる
@@ -41,11 +43,11 @@ export async function getMistakesForUser({
     else historyByQuestion.set(row.questions.id, [row]);
   }
 
-  const days = range === "7" ? 7 : range === "30" ? 30 : null;
-  const cutoff = days ? Date.now() - days * 86400_000 : null;
-
   const result: MistakeRow[] = [];
   for (const history of historyByQuestion.values()) {
+    const latest = history[0];
+    if (cutoff && latest.attempts.createdAt < cutoff) continue;
+
     const hasEverWrong = history.some((r) => !r.attempts.isCorrect);
     if (!hasEverWrong) continue;
 
@@ -57,10 +59,7 @@ export async function getMistakesForUser({
     }
     if (trailingCorrectStreak >= 2) continue;
 
-    const latest = history[0];
     if (section && latest.questions.sectionSlug !== section) continue;
-    if (cutoff && latest.attempts.createdAt.getTime() < cutoff) continue;
-
     result.push({ ...latest, pendingMastery: trailingCorrectStreak === 1 });
   }
 

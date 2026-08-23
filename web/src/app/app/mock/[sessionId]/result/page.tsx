@@ -1,9 +1,16 @@
 import { eq, inArray } from "drizzle-orm";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react/ssr";
 import { getDb } from "@/db";
-import { mockSessions, questions, type MockSectionConfig } from "@/db/schema";
+import {
+  attempts,
+  mockSessions,
+  questions,
+  type MockQuestionSnapshot,
+  type MockResultSnapshot,
+  type MockSectionConfig,
+} from "@/db/schema";
 import { getActiveIdentity } from "@/lib/auth/active-identity";
 import { SECTION_META, QUESTION_TYPE_LABEL_JA, type SectionSlug } from "@/lib/section-meta";
 import { percentToScaledScore, estimateProvisionalTotalScore } from "@/lib/mock-scoring";
@@ -31,20 +38,56 @@ export default async function MockResultPage({
     where: eq(mockSessions.id, sessionId),
   });
   if (!session || session.userId !== identity.userId) notFound();
+  if (session.status !== "completed") redirect(`/app/mock/${sessionId}`);
 
   const sections = session.sections as MockSectionConfig[];
+  const snapshot = session.resultSnapshot as MockResultSnapshot | null;
   const answers = session.answers as Record<string, number>;
-  const allQuestionIds = sections.flatMap((s) => s.questionIds);
+  const allQuestionIds = snapshot
+    ? snapshot.sections.flatMap((section) => section.questions.map((question) => question.id))
+    : sections.flatMap((section) => section.questionIds);
   const questionRows =
-    allQuestionIds.length > 0
+    !snapshot && allQuestionIds.length > 0
       ? await db.select().from(questions).where(inArray(questions.id, allQuestionIds))
       : [];
-  const questionById = new Map(questionRows.map((q) => [q.id, q]));
-  const correctById = new Map(questionRows.map((q) => [q.id, q.correctIndex]));
+  const questionById = new Map<string, MockQuestionSnapshot>();
+  if (snapshot) {
+    for (const question of snapshot.sections.flatMap((section) => section.questions)) {
+      questionById.set(question.id, question);
+    }
+  } else {
+    const legacyAttempts = await db
+      .select({ questionId: attempts.questionId, isCorrect: attempts.isCorrect })
+      .from(attempts)
+      .where(eq(attempts.mockSessionId, sessionId));
+    const isCorrectById = new Map(legacyAttempts.map((attempt) => [attempt.questionId, attempt.isCorrect]));
+    for (const question of questionRows) {
+      const selectedIndex = answers[question.id] ?? null;
+      questionById.set(question.id, {
+        id: question.id,
+        stem: question.stem,
+        choices: question.choices,
+        correctIndex: question.correctIndex,
+        explanation: question.explanation,
+        questionType: question.questionType,
+        selectedIndex,
+        isCorrect: isCorrectById.get(question.id) ?? false,
+      });
+    }
+  }
 
   const results = sections.map((s) => {
+    const savedResult = snapshot?.sections.find((result) => result.sectionSlug === s.sectionSlug);
+    if (savedResult) {
+      return {
+        sectionSlug: savedResult.sectionSlug as SectionSlug,
+        correct: savedResult.correct,
+        total: savedResult.total,
+        scaled: savedResult.scaled,
+      };
+    }
     const total = s.questionIds.length;
-    const correct = s.questionIds.filter((id) => answers[id] === correctById.get(id)).length;
+    const correct = s.questionIds.filter((id) => questionById.get(id)?.isCorrect).length;
     const scaled = total > 0 ? percentToScaledScore((correct / total) * 100) : null;
     return { sectionSlug: s.sectionSlug as SectionSlug, correct, total, scaled };
   });
@@ -122,9 +165,9 @@ export default async function MockResultPage({
               {s.questionIds.map((id, i) => {
                 const q = questionById.get(id);
                 if (!q) return null;
-                const selectedIndex = answers[id];
-                const isAnswered = selectedIndex !== undefined;
-                const isCorrect = isAnswered && selectedIndex === q.correctIndex;
+                const selectedIndex = q.selectedIndex;
+                const isAnswered = q.selectedIndex !== null;
+                const isCorrect = isAnswered && q.isCorrect;
 
                 return (
                   <details key={id} className="group rounded-lg border border-border">

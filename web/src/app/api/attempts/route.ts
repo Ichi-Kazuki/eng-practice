@@ -1,18 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { and, eq, gte, inArray } from "drizzle-orm";
+import { and, eq, gte } from "drizzle-orm";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/db";
-import { attempts, questions, mockSessions } from "@/db/schema";
-import { getOrCreateActiveIdentity } from "@/lib/auth/active-identity";
+import { attempts, mockSessions } from "@/db/schema";
+import { getOrCreateActiveIdentity, GuestIdentityRateLimitError } from "@/lib/auth/active-identity";
 import { assertInt, assertNonEmptyString, assertOneOf, ValidationError } from "@/lib/validation";
+import { chunk, D1_MAX_BOUND_PARAMS } from "@/lib/db/chunked-query";
+import { getQuestionsByIds } from "@/lib/mock-session";
 
 const MODES = ["practice", "mock"] as const;
 const MAX_ID_LENGTH = 200;
 const MAX_BATCH_ANSWERS = 200;
-const D1_MAX_BOUND_PARAMS = 100;
 const ATTEMPT_INSERT_PARAM_COUNT = 7;
 const MAX_INSERT_ROWS = Math.floor(D1_MAX_BOUND_PARAMS / ATTEMPT_INSERT_PARAM_COUNT);
-const DEDUP_WINDOW_MS = 3000;
+const DEDUP_WINDOW_MS = 5 * 60 * 1000; // covers a manual "retry save" click, not just an instant client retry
 
 type ParsedSubmission = {
   mode: (typeof MODES)[number];
@@ -20,12 +21,6 @@ type ParsedSubmission = {
   answers: Record<string, number>;
   isLegacySingle: boolean;
 };
-
-function chunk<T>(values: T[], size: number): T[][] {
-  const chunks: T[][] = [];
-  for (let i = 0; i < values.length; i += size) chunks.push(values.slice(i, i + size));
-  return chunks;
-}
 
 function parseAnswers(value: unknown): Record<string, number> {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
@@ -51,21 +46,18 @@ function parseSubmission(body: Record<string, unknown>): ParsedSubmission {
 
   if (body.answers !== undefined) {
     const answers = parseAnswers(body.answers);
+    if (mode === "mock" && mockSessionId === null) throw new ValidationError("mockSessionId is required");
+    if (mode === "practice" && mockSessionId !== null) throw new ValidationError("mockSessionId is not allowed");
     return { mode, mockSessionId, answers, isLegacySingle: false };
+  }
+
+  if (mode !== "practice" || mockSessionId !== null) {
+    throw new ValidationError("legacy single submissions are practice-only");
   }
 
   const questionId = assertNonEmptyString(body.questionId, "questionId", MAX_ID_LENGTH);
   const selectedIndex = assertInt(body.selectedIndex, "selectedIndex", { min: 0 });
   return { mode, mockSessionId, answers: { [questionId]: selectedIndex }, isLegacySingle: true };
-}
-
-async function getQuestionsForIds(ids: string[]) {
-  const db = getDb();
-  const rows = [];
-  for (const idChunk of chunk(ids, D1_MAX_BOUND_PARAMS)) {
-    rows.push(...(await db.select().from(questions).where(inArray(questions.id, idChunk))));
-  }
-  return rows;
 }
 
 export async function POST(request: NextRequest) {
@@ -96,7 +88,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "リクエストが多すぎます。しばらくしてから再試行してください。" }, { status: 429 });
   }
 
-  const identity = await getOrCreateActiveIdentity();
+  let identity: Awaited<ReturnType<typeof getOrCreateActiveIdentity>>;
+  try {
+    identity = await getOrCreateActiveIdentity();
+  } catch (error) {
+    if (error instanceof GuestIdentityRateLimitError) {
+      return NextResponse.json({ error: "too many guest sessions" }, { status: 429 });
+    }
+    throw error;
+  }
   const db = getDb();
   const ids = Object.keys(submission.answers);
   if (submission.mockSessionId) {
@@ -106,18 +106,46 @@ export async function POST(request: NextRequest) {
     if (!session || session.userId !== identity.userId) {
       return NextResponse.json({ error: "入力内容が正しくありません。" }, { status: 400 });
     }
+    if (submission.mode === "mock") {
+      if (session.status !== "in_progress") {
+        return NextResponse.json({ error: "mock session is not in progress" }, { status: 409 });
+      }
+      const sections = session.sections as {
+        questionIds: string[];
+        startedAt: number | null;
+        timeMode: "fixed" | "stopwatch";
+        timeLimitSec: number | null;
+      }[];
+      const current = sections[session.currentSectionIndex];
+      const expired =
+        current?.timeMode === "fixed" &&
+        current.startedAt !== null &&
+        current.timeLimitSec !== null &&
+        Date.now() - current.startedAt >= current.timeLimitSec * 1000;
+      if (!current || current.startedAt === null || expired) {
+        return NextResponse.json({ error: "mock section is not available" }, { status: 409 });
+      }
+      if (ids.some((id) => !current.questionIds.includes(id))) {
+        return NextResponse.json({ error: "question is not in the current mock section" }, { status: 400 });
+      }
+    }
     const sessionQuestionIds = new Set(
-      (session.sections as { questionIds: string[] }[]).flatMap((section) => section.questionIds)
+      submission.mode === "mock"
+        ? ((session.sections as { questionIds: string[] }[])[session.currentSectionIndex]?.questionIds ?? [])
+        : (session.sections as { questionIds: string[] }[]).flatMap((section) => section.questionIds)
     );
     if (ids.some((id) => !sessionQuestionIds.has(id))) {
       return NextResponse.json({ error: "入力内容が正しくありません。" }, { status: 400 });
     }
   }
 
-  const questionRows = await getQuestionsForIds(ids);
+  const questionRows = await getQuestionsByIds(ids);
   const questionsById = new Map(questionRows.map((question) => [question.id, question]));
   if (questionRows.length !== ids.length || ids.some((id) => !questionsById.has(id))) {
     return NextResponse.json({ error: "question not found" }, { status: 404 });
+  }
+  if (submission.mode === "practice" && questionRows.some((question) => question.status !== "published")) {
+    return NextResponse.json({ error: "question is not available" }, { status: 400 });
   }
 
   for (const [questionId, selectedIndex] of Object.entries(submission.answers)) {
@@ -160,7 +188,7 @@ export async function POST(request: NextRequest) {
     await db.insert(attempts).values(valueChunk);
   }
 
-  if (submission.isLegacySingle) {
+  if (submission.isLegacySingle && submission.mode === "practice") {
     const question = questionsById.get(ids[0])!;
     return NextResponse.json({ isCorrect: submission.answers[ids[0]] === question.correctIndex });
   }

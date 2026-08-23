@@ -3,6 +3,7 @@ import { getDb } from "@/db";
 import { questions } from "@/db/schema";
 import { MOCK_SECTION_ORDER, SECTION_META, type SectionSlug } from "@/lib/section-meta";
 import { shuffle } from "@/lib/shuffle";
+import { chunk, D1_MAX_BOUND_PARAMS } from "@/lib/db/chunked-query";
 import type { MockSectionConfig } from "@/db/schema";
 
 export type MockSectionRequest = {
@@ -120,7 +121,10 @@ export async function buildMockSections(
 }
 
 export async function getQuestionsByIds(ids: string[]) {
-  if (ids.length === 0) return [];
   const db = getDb();
-  return db.select().from(questions).where(inArray(questions.id, ids));
+  const rows = [];
+  for (const idChunk of chunk(ids, D1_MAX_BOUND_PARAMS)) {
+    rows.push(...(await db.select().from(questions).where(inArray(questions.id, idChunk))));
+  }
+  return rows;
 }

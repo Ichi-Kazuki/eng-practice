@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { users, attempts, mockSessions } from "@/db/schema";
+import { isValidGuestId } from "@/lib/auth/active-identity";
 
 export async function getOrCreateUserByGoogle(profile: {
   sub: string;
@@ -16,13 +17,21 @@ export async function getOrCreateUserByGoogle(profile: {
   if (existing) return existing;
 
   const id = crypto.randomUUID();
-  await db.insert(users).values({
-    id,
-    googleSub: profile.sub,
-    email: profile.email,
-    name: profile.name,
-    avatarUrl: profile.picture ?? null,
-  });
+  try {
+    await db.insert(users).values({
+      id,
+      googleSub: profile.sub,
+      email: profile.email,
+      name: profile.name,
+      avatarUrl: profile.picture ?? null,
+    });
+  } catch (error) {
+    const concurrentUser = await db.query.users.findFirst({
+      where: eq(users.googleSub, profile.sub),
+    });
+    if (concurrentUser) return concurrentUser;
+    throw error;
+  }
 
   return {
     id,
@@ -40,6 +49,8 @@ export async function getOrCreateUserByGoogle(profile: {
  * 引き継ぎ後、空になったゲストuser行は削除する。
  */
 export async function mergeGuestDataIntoUser(guestId: string, realUserId: string) {
+  if (!isValidGuestId(guestId)) return;
+
   const db = getDb();
   const googleSub = `guest:${guestId}`;
 

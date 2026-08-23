@@ -1,5 +1,6 @@
 import { writeFileSync } from "node:fs";
 import { sections, passages, structureQuestions, readingQuestions } from "./seed-data.mjs";
+import { QUESTION_REVIEW_STATUS } from "./seed-review-manifest.mjs";
 
 function sqlStr(value) {
   if (value === null || value === undefined) return "NULL";
@@ -22,12 +23,16 @@ for (const p of passages) {
 
 const allQuestions = [...structureQuestions, ...readingQuestions];
 for (const q of allQuestions) {
+  const reviewStatus = QUESTION_REVIEW_STATUS.get(q.id);
+  if (reviewStatus !== "published") {
+    throw new Error(`Question ${q.id} is not approved for publication`);
+  }
   lines.push(
     `INSERT INTO questions (id, section_slug, passage_id, question_type, stem, choices, correct_index, explanation, difficulty, status) VALUES (${sqlStr(
       q.id
     )}, ${sqlStr(q.sectionSlug)}, ${sqlStr(q.passageId)}, ${sqlStr(q.questionType)}, ${sqlStr(q.stem)}, ${sqlStr(
       JSON.stringify(q.choices)
-    )}, ${q.correctIndex}, ${sqlStr(q.explanation)}, ${sqlStr(q.difficulty)}, 'published') ON CONFLICT(id) DO NOTHING;`
+    )}, ${q.correctIndex}, ${sqlStr(q.explanation)}, ${sqlStr(q.difficulty)}, ${sqlStr(reviewStatus)}) ON CONFLICT(id) DO NOTHING;`
   );
 }
 

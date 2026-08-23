@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, index, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 // 将来のListening追加を見据え、セクションはマスタテーブルとして疎結合に扱う
 export const sections = sqliteTable("sections", {
@@ -67,7 +67,13 @@ export const attempts = sqliteTable("attempts", {
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
-});
+}, (table) => ({
+  userCreatedAtIdx: index("attempts_user_created_at_idx").on(table.userId, table.createdAt),
+  mockSessionQuestionUnique: uniqueIndex("attempts_mock_session_question_unique").on(
+    table.mockSessionId,
+    table.questionId
+  ),
+}));
 
 export type MockSectionConfig = {
   sectionSlug: string;
@@ -77,6 +83,31 @@ export type MockSectionConfig = {
   startedAt: number | null;
   submittedAt: number | null;
   flags: string[]; // 見直しフラグを立てた questionId の一覧
+};
+
+export type MockQuestionSnapshot = {
+  id: string;
+  stem: string;
+  choices: string[];
+  correctIndex: number;
+  explanation: string;
+  questionType: string;
+  selectedIndex: number | null;
+  isCorrect: boolean;
+};
+
+export type MockSectionResultSnapshot = {
+  sectionSlug: string;
+  correct: number;
+  total: number;
+  scaled: number | null;
+  questions: MockQuestionSnapshot[];
+};
+
+export type MockResultSnapshot = {
+  sections: MockSectionResultSnapshot[];
+  totalScore: number;
+  completedAt: number;
 };
 
 export const mockSessions = sqliteTable("mock_sessions", {
@@ -91,8 +122,17 @@ export const mockSessions = sqliteTable("mock_sessions", {
     .$type<Record<string, number>>()
     .notNull()
     .default(sql`'{}'`),
+  resultSnapshot: text("result_snapshot", { mode: "json" }).$type<MockResultSnapshot | null>(),
+  revision: integer("revision").notNull().default(0),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
   completedAt: integer("completed_at", { mode: "timestamp" }),
-});
+}, (table) => ({
+  userStatusCompletedAtIdx: index("mock_sessions_user_status_completed_at_idx").on(
+    table.userId,
+    table.status,
+    table.completedAt
+  ),
+  userCreatedAtIdx: index("mock_sessions_user_created_at_idx").on(table.userId, table.createdAt),
+}));

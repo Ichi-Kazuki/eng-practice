@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import Link from "next/link";
 import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
@@ -49,13 +49,18 @@ export function QuestionRunner({
   const [selections, setSelections] = useState<Record<string, number>>({});
   const [phase, setPhase] = useState<RunnerPhase>("running");
   const [submissionError, setSubmissionError] = useState(false);
+  const [answerError, setAnswerError] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
   const submitHandlerRef = useRef<(options?: { skipConfirm?: boolean; timedOut?: boolean }) => void>(() => undefined);
   const submissionRef = useRef(false);
 
   const handleSubmit = useCallback(
     async (options?: { skipConfirm?: boolean; timedOut?: boolean }) => {
-      if (!isDeferred || phase !== "running" || submissionRef.current) return;
+      if (
+        !isDeferred ||
+        (phase !== "running" && !(phase === "result" && submissionError)) ||
+        submissionRef.current
+      ) return;
 
       if (!options?.skipConfirm) {
         const unansweredCount = items.length - Object.keys(selections).length;
@@ -68,6 +73,7 @@ export function QuestionRunner({
 
       submissionRef.current = true;
       setPhase("submitting");
+      setSubmissionError(false);
       if (options?.timedOut) setTimedOut(true);
 
       try {
@@ -83,10 +89,11 @@ export function QuestionRunner({
         if (!response.ok) throw new Error("attempts request failed");
       } catch {
         setSubmissionError(true);
+        submissionRef.current = false;
       } finally {
         setPhase("result");
       }
-    }, [isDeferred, items.length, mockSessionId, mode, phase, selections]);
+    }, [isDeferred, items.length, mockSessionId, mode, phase, selections, submissionError]);
 
   useEffect(() => {
     submitHandlerRef.current = handleSubmit;
@@ -102,6 +109,7 @@ export function QuestionRunner({
   const current = items[index];
   const selectedIndex = current ? selections[current.question.id] : undefined;
   const hasAnswered = selectedIndex !== undefined;
+  const choiceRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const correctCount = useMemo(
     () => items.filter((item) => selections[item.question.id] === item.question.correctIndex).length,
     [items, selections]
@@ -111,23 +119,51 @@ export function QuestionRunner({
     if (!current || phase !== "running") return;
     if (!isDeferred && hasAnswered) return;
 
-    setSelections((prev) => ({ ...prev, [current.question.id]: choiceIndex }));
+    const questionId = current.question.id;
+    setAnswerError(false);
+    setSelections((prev) => ({ ...prev, [questionId]: choiceIndex }));
     if (isDeferred) return;
 
     try {
-      await fetch("/api/attempts", {
+      const response = await fetch("/api/attempts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          questionId: current.question.id,
+          questionId,
           selectedIndex: choiceIndex,
           mode,
           mockSessionId,
         }),
       });
+      if (!response.ok) throw new Error("attempt save failed");
     } catch {
-      // ベストエフォート: 記録に失敗しても演習自体は継続できる
+      setSelections((prev) => {
+        if (prev[questionId] !== choiceIndex) return prev;
+        const next = { ...prev };
+        delete next[questionId];
+        return next;
+      });
+      setAnswerError(true);
+      // 即時フィードバック型は今回の解答を取り消し、保存失敗を明示する
     }
+  }
+
+  function handleChoiceKeyDown(event: KeyboardEvent<HTMLButtonElement>, choiceIndex: number) {
+    if (!current) return;
+    let nextIndex: number | null = null;
+    if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+      nextIndex = (choiceIndex + 1) % current.question.choices.length;
+    } else if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+      nextIndex = (choiceIndex - 1 + current.question.choices.length) % current.question.choices.length;
+    } else if (event.key === "Home") {
+      nextIndex = 0;
+    } else if (event.key === "End") {
+      nextIndex = current.question.choices.length - 1;
+    }
+    if (nextIndex === null) return;
+    event.preventDefault();
+    choiceRefs.current[nextIndex]?.focus();
+    void handleSelect(nextIndex);
   }
 
   if (items.length === 0) {
@@ -161,6 +197,7 @@ export function QuestionRunner({
         elapsedSec={timer.elapsedSec}
         timedOut={timedOut}
         submissionError={submissionError}
+        onRetry={() => void handleSubmit({ skipConfirm: true })}
         backHref={backHref}
         backLabel={backLabel}
       />
@@ -200,7 +237,7 @@ export function QuestionRunner({
 
       <div className={cn("grid gap-6", current.passage && "sm:grid-cols-2")}>
         {current.passage && (
-          <div className="max-h-[32rem] overflow-y-auto rounded-lg border border-border p-4" lang="en">
+          <div className="rounded-lg border border-border p-4 sm:max-h-[32rem] sm:overflow-y-auto" lang="en">
             <h3 className="mb-3 font-medium text-foreground">{current.passage.title}</h3>
             <p className="whitespace-pre-line font-[family-name:var(--font-literata)] text-[15px] leading-relaxed text-foreground">
               {current.passage.body}
@@ -238,6 +275,11 @@ export function QuestionRunner({
                   type="button"
                   role="radio"
                   aria-checked={isSelected}
+                  tabIndex={isSelected || (!hasAnswered && i === 0) ? 0 : -1}
+                  ref={(element) => {
+                    choiceRefs.current[i] = element;
+                  }}
+                  onKeyDown={(event) => handleChoiceKeyDown(event, i)}
                   disabled={phase !== "running" || (!isDeferred && hasAnswered)}
                   onClick={() => void handleSelect(i)}
                   className={cn(
@@ -268,6 +310,12 @@ export function QuestionRunner({
               );
             })}
           </div>
+
+          {answerError && (
+            <p className="mt-3 text-sm text-destructive" role="alert">
+              解答の保存に失敗しました。もう一度選択してください。
+            </p>
+          )}
 
           {!isDeferred && hasAnswered && (
             <div className="mt-5 rounded-md bg-secondary/50 p-4">
@@ -315,6 +363,7 @@ function PracticeResult({
   elapsedSec,
   timedOut,
   submissionError,
+  onRetry,
   backHref,
   backLabel,
 }: {
@@ -324,6 +373,7 @@ function PracticeResult({
   elapsedSec: number;
   timedOut: boolean;
   submissionError: boolean;
+  onRetry: () => void;
   backHref: string;
   backLabel: string;
 }) {
@@ -347,9 +397,12 @@ function PracticeResult({
           </p>
         )}
         {submissionError && (
-          <p className="mt-3 text-sm text-destructive" role="alert">
-            保存に失敗しました。今回の結果はこの画面に表示しています。
-          </p>
+          <div className="mt-3 space-y-2" role="alert">
+            <p className="text-sm text-destructive">保存に失敗しました。通信状態を確認して再試行してください。</p>
+            <Button variant="outline" size="sm" onClick={onRetry}>
+              保存を再試行
+            </Button>
+          </div>
         )}
         <div className="mt-6 flex justify-center gap-3">
           <Button variant="outline" onClick={() => location.reload()}>

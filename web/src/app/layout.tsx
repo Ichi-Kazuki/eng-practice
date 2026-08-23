@@ -24,10 +24,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "英語演習",
-  description: "TOEFL ITP形式のStructure/Reading問題を無料で何度でも解ける演習サイト",
+  description: "英語演習でGrammar/StructureとReadingの問題を無料で何度でも解ける学習サイト",
   openGraph: {
     title: "英語演習",
-    description: "TOEFL ITP形式のStructure/Reading問題を無料で何度でも解ける演習サイト",
+    description: "英語演習でGrammar/StructureとReadingの問題を無料で何度でも解ける学習サイト",
     locale: "ja_JP",
     type: "website",
   },

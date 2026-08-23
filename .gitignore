@@ -1,0 +1,6 @@
+# Local Claude Code permissions; never commit machine-specific approvals.
+/.claude/settings.local.json
+
+# Cloudflare/OpenNext generated artifacts.
+/.wrangler/
+/.open-next/

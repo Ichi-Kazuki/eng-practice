@@ -1,21 +1,24 @@
 import { cookies, headers } from "next/headers";
-import { eq } from "drizzle-orm";
+import { and, eq, like, lt, notExists } from "drizzle-orm";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/db";
-import { users } from "@/db/schema";
+import { attempts, mockSessions, users } from "@/db/schema";
 import { getCurrentUser } from "./current-user";
 
 export const GUEST_COOKIE_NAME = "guest_id";
-const GUEST_MAX_AGE_SEC = 60 * 60 * 24 * 365; // 1年
+const GUEST_MAX_AGE_SEC = 60 * 60 * 24 * 365;
+const GUEST_CLEANUP_AGE_MS = 90 * 24 * 60 * 60 * 1000;
+const GUEST_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-/**
- * Route Handler/Server Actionではリクエストの生プロトコルに直接アクセスできないため、
- * Cloudflareが付与するx-forwarded-protoで判定し、無ければビルド時のNODE_ENVにフォールバックする
- * (session cookie発行側のrequest.nextUrl.protocol判定と同じ意図を、requestオブジェクトが無い
- * コンテキストでも安全に再現するため)。
- */
+export class GuestIdentityRateLimitError extends Error {}
+
+export function isValidGuestId(value: string): boolean {
+  return GUEST_ID_PATTERN.test(value);
+}
+
 async function isHttpsRequest(): Promise<boolean> {
-  const h = await headers();
-  const proto = h.get("x-forwarded-proto");
+  const requestHeaders = await headers();
+  const proto = requestHeaders.get("x-forwarded-proto");
   if (proto) return proto.split(",")[0].trim() === "https";
   return process.env.NODE_ENV === "production";
 }
@@ -27,33 +30,67 @@ export type ActiveIdentity = {
   isGuest: boolean;
 };
 
-async function getOrCreateGuestUser(guestId: string) {
+async function getGuestUser(guestId: string) {
   const db = getDb();
-  const googleSub = `guest:${guestId}`;
-
-  const existing = await db.query.users.findFirst({
-    where: eq(users.googleSub, googleSub),
-  });
-  if (existing) return existing;
-
-  const id = crypto.randomUUID();
-  await db.insert(users).values({ id, googleSub, email: "", name: "ゲスト", avatarUrl: null });
-  return { id, googleSub, email: "", name: "ゲスト", avatarUrl: null, createdAt: new Date() };
+  return db.query.users.findFirst({ where: eq(users.googleSub, `guest:${guestId}`) });
 }
 
-/**
- * Route HandlerまたはServer Action専用。
- * ログイン済みならそのユーザー、未ログインならCookieのゲストIDを解決し、
- * 無ければ新規発行してCookieに保存する(ここでのcookies().set()はNext.jsの制約上、
- * Server ComponentのレンダリングパスからではなくRoute Handler/Server Actionからのみ呼び出せる)。
- */
+async function assertGuestCreationAllowed() {
+  const requestHeaders = await headers();
+  const clientIp =
+    requestHeaders.get("cf-connecting-ip") ??
+    requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    "unknown";
+  const { env } = getCloudflareContext();
+  const { success } = await env.ATTEMPTS_RATE_LIMITER.limit({ key: `guest-create:${clientIp}` });
+  if (!success) throw new GuestIdentityRateLimitError("guest identity creation rate limit exceeded");
+}
+
+async function cleanupStaleGuestUsers() {
+  const db = getDb();
+  const cutoff = new Date(Date.now() - GUEST_CLEANUP_AGE_MS);
+  await db.delete(users).where(
+    and(
+      like(users.googleSub, "guest:%"),
+      lt(users.createdAt, cutoff),
+      notExists(db.select({ id: attempts.id }).from(attempts).where(eq(attempts.userId, users.id))),
+      notExists(db.select({ id: mockSessions.id }).from(mockSessions).where(eq(mockSessions.userId, users.id)))
+    )
+  );
+}
+
+async function createGuestUser(guestId: string) {
+  if (!isValidGuestId(guestId)) throw new Error("invalid guest id");
+
+  const db = getDb();
+  await assertGuestCreationAllowed();
+  await cleanupStaleGuestUsers();
+
+  const id = crypto.randomUUID();
+  try {
+    await db.insert(users).values({ id, googleSub: `guest:${guestId}`, email: "", name: "ゲスト", avatarUrl: null });
+  } catch (error) {
+    const existing = await getGuestUser(guestId);
+    if (existing) return existing;
+    throw error;
+  }
+
+  return { id, googleSub: `guest:${guestId}`, email: "", name: "ゲスト", avatarUrl: null, createdAt: new Date() };
+}
+
+async function getOrCreateGuestUser(guestId: string) {
+  const existing = await getGuestUser(guestId);
+  return existing ?? createGuestUser(guestId);
+}
+
+/** Use from Route Handlers and Server Actions where creating a guest identity is allowed. */
 export async function getOrCreateActiveIdentity(): Promise<ActiveIdentity> {
   const user = await getCurrentUser();
   if (user) return { userId: user.userId, email: user.email, name: user.name, isGuest: false };
 
   const cookieStore = await cookies();
   let guestId = cookieStore.get(GUEST_COOKIE_NAME)?.value;
-  if (!guestId) {
+  if (!guestId || !isValidGuestId(guestId)) {
     guestId = crypto.randomUUID();
     cookieStore.set(GUEST_COOKIE_NAME, guestId, {
       httpOnly: true,
@@ -65,22 +102,18 @@ export async function getOrCreateActiveIdentity(): Promise<ActiveIdentity> {
   }
 
   const guestUser = await getOrCreateGuestUser(guestId);
-  return { userId: guestUser.id, email: "", name: "ゲスト", isGuest: true };
+  return { userId: guestUser.id, email: "", name: guestUser.name, isGuest: true };
 }
 
-/**
- * Server Component専用の読み取り専用版。新規Cookieの発行はしない
- * (Server Componentのレンダリング中はcookies().set()を呼べないため)。
- * ログイン済みユーザーもゲストCookieも無ければnullを返す。
- */
+/** Read-only identity lookup for Server Components. It never creates a database row or cookie. */
 export async function getActiveIdentity(): Promise<ActiveIdentity | null> {
   const user = await getCurrentUser();
   if (user) return { userId: user.userId, email: user.email, name: user.name, isGuest: false };
 
-  const cookieStore = await cookies();
-  const guestId = cookieStore.get(GUEST_COOKIE_NAME)?.value;
-  if (!guestId) return null;
+  const guestId = (await cookies()).get(GUEST_COOKIE_NAME)?.value;
+  if (!guestId || !isValidGuestId(guestId)) return null;
 
-  const guestUser = await getOrCreateGuestUser(guestId);
-  return { userId: guestUser.id, email: "", name: "ゲスト", isGuest: true };
+  const guestUser = await getGuestUser(guestId);
+  if (!guestUser) return null;
+  return { userId: guestUser.id, email: "", name: guestUser.name, isGuest: true };
 }

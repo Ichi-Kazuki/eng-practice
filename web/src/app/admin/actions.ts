@@ -20,6 +20,8 @@ const MIN_CHOICES = 2;
 const MAX_CHOICES = 10;
 const MAX_TITLE = 300;
 const MAX_PASSAGE_BODY = 20000;
+const STRUCTURE_QUESTION_TYPES = ["structure_completion", "structure_error_id"] as const;
+const READING_QUESTION_TYPES = ["reading_comprehension"] as const;
 
 function parseChoices(raw: string): string[] {
   const choices = raw
@@ -53,10 +55,78 @@ function parseQuestionFields(formData: FormData) {
   return { sectionSlug, passageId, questionType, stem, choices, correctIndex, explanation, difficulty, status };
 }
 
+function hasQuestionContentChanged(
+  current: typeof questions.$inferSelect,
+  next: ReturnType<typeof parseQuestionFields>
+) {
+  return (
+    current.sectionSlug !== next.sectionSlug ||
+    current.passageId !== next.passageId ||
+    current.questionType !== next.questionType ||
+    current.stem !== next.stem ||
+    JSON.stringify(current.choices) !== JSON.stringify(next.choices) ||
+    current.correctIndex !== next.correctIndex ||
+    current.explanation !== next.explanation ||
+    current.difficulty !== next.difficulty
+  );
+}
+
+async function assertQuestionStatusTransition(
+  db: ReturnType<typeof getDb>,
+  id: string,
+  next: ReturnType<typeof parseQuestionFields>
+) {
+  const current = await db.query.questions.findFirst({ where: eq(questions.id, id) });
+  if (!current) throw new Error("question not found");
+
+  const allowedByCurrentStatus: Record<string, readonly string[]> = {
+    draft: ["draft", "ai_verified"],
+    ai_verified: ["draft", "ai_verified", "published"],
+    published: ["draft", "published"],
+  };
+  if (!allowedByCurrentStatus[current.status]?.includes(next.status)) {
+    throw new Error("invalid question status transition");
+  }
+  if (current.status === "published" && next.status === "published" && hasQuestionContentChanged(current, next)) {
+    throw new Error("published questions must return to draft before editing");
+  }
+
+  return current;
+}
+
+async function validateQuestionRelations(
+  db: ReturnType<typeof getDb>,
+  fields: ReturnType<typeof parseQuestionFields>
+) {
+  const isStructureType = (STRUCTURE_QUESTION_TYPES as readonly string[]).includes(fields.questionType);
+  const isReadingType = (READING_QUESTION_TYPES as readonly string[]).includes(fields.questionType);
+  if (fields.sectionSlug === "structure" && !isStructureType) {
+    throw new Error("structure questions must use a structure question type");
+  }
+  if (fields.sectionSlug === "reading" && !isReadingType) {
+    throw new Error("reading questions must use a reading question type");
+  }
+  if (fields.sectionSlug === "reading" && !fields.passageId) {
+    throw new Error("reading questions require a passage");
+  }
+  if (fields.sectionSlug !== "reading" && fields.passageId) {
+    throw new Error("only reading questions may use a passage");
+  }
+
+  if (!fields.passageId) return;
+  const passage = await db.query.passages.findFirst({ where: eq(passages.id, fields.passageId) });
+  if (!passage) throw new Error("passage not found");
+  if (passage.sectionSlug !== fields.sectionSlug) {
+    throw new Error("question and passage sections must match");
+  }
+}
+
 export async function createQuestion(formData: FormData) {
   await requireAdmin();
   const fields = parseQuestionFields(formData);
+  if (fields.status !== "draft") throw new Error("new questions must start as draft");
   const db = getDb();
+  await validateQuestionRelations(db, fields);
 
   await db.insert(questions).values({
     id: crypto.randomUUID(),
@@ -68,8 +138,11 @@ export async function createQuestion(formData: FormData) {
 
 export async function updateQuestion(id: string, formData: FormData) {
   await requireAdmin();
+  assertNonEmptyString(id, "id", MAX_ID);
   const fields = parseQuestionFields(formData);
   const db = getDb();
+  await validateQuestionRelations(db, fields);
+  await assertQuestionStatusTransition(db, id, fields);
 
   await db
     .update(questions)
@@ -81,8 +154,12 @@ export async function updateQuestion(id: string, formData: FormData) {
 
 export async function deleteQuestion(id: string) {
   await requireAdmin();
+  assertNonEmptyString(id, "id", MAX_ID);
   const db = getDb();
-  await db.delete(questions).where(eq(questions.id, id));
+  await db
+    .update(questions)
+    .set({ status: "draft", passageId: null, updatedAt: new Date() })
+    .where(eq(questions.id, id));
   redirect("/admin/questions");
 }
 
@@ -117,7 +194,14 @@ export async function updatePassage(id: string, formData: FormData) {
 
 export async function deletePassage(id: string) {
   await requireAdmin();
+  assertNonEmptyString(id, "id", MAX_ID);
   const db = getDb();
+  const dependentQuestion = await db.query.questions.findFirst({
+    where: eq(questions.passageId, id),
+  });
+  if (dependentQuestion) {
+    redirect("/admin/passages?error=passage-in-use");
+  }
   await db.delete(passages).where(eq(passages.id, id));
   redirect("/admin/passages");
 }
