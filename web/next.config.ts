@@ -1,4 +1,7 @@
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 import type { NextConfig } from "next";
+
+initOpenNextCloudflareForDev();
 
 // next/font はビルド時にフォントを自己ホストするため、Google Fonts等の外部originへの
 // 実行時リクエストは発生しない。クライアントJSからの外部fetchも無い(Google OAuthは
@@ -42,6 +45,3 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-
-import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
-initOpenNextCloudflareForDev();

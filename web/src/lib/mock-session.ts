@@ -12,16 +12,6 @@ export type MockSectionRequest = {
 
 export type MockTimeMode = "fixed" | "stopwatch";
 
-export function countPresets(available: number, officialCount: number): { value: number; label: string }[] {
-  const candidates = [10, 20, officialCount].filter((n) => n > 0 && n <= available);
-  const unique = Array.from(new Set(candidates)).sort((a, b) => a - b);
-  if (unique.length === 0 && available > 0) unique.push(available);
-  return unique.map((n) => {
-    if (n === officialCount) return { value: n, label: `${n}問(本番相当)` };
-    return { value: n, label: `${n}問` };
-  });
-}
-
 // 本番のStructureセクションは「文法補充15問→誤り指摘25問」の順・比率で出題される。
 // 出題数が本番相当(40問)のときはこの比率、それ以外(10問・20問など)は半々に分ける。
 function splitStructureCounts(total: number, officialCount: number) {
@@ -63,17 +53,13 @@ async function selectStructureQuestionIds(count: number, officialCount: number):
   const total = Math.min(count, shuffledCompletion.length + shuffledErrorId.length);
   const { completion, errorId } = splitStructureCounts(total, officialCount);
 
-  // 一方の種類が不足する場合は、もう一方から不足分を補う
+  // 固定模試では本番のtype別構成を維持する。不足時は呼び出し側で開始を止める。
   const completionTake = Math.min(completion, shuffledCompletion.length);
   const errorIdTake = Math.min(errorId, shuffledErrorId.length);
-  const shortfall = total - completionTake - errorIdTake;
-  const completionExtra = Math.min(shortfall, shuffledCompletion.length - completionTake);
-  const finalCompletionTake = completionTake + completionExtra;
-  const finalErrorIdTake = Math.min(total - finalCompletionTake, shuffledErrorId.length);
 
   return [
-    ...shuffledCompletion.slice(0, finalCompletionTake),
-    ...shuffledErrorId.slice(0, finalErrorIdTake),
+    ...shuffledCompletion.slice(0, completionTake),
+    ...shuffledErrorId.slice(0, errorIdTake),
   ];
 }
 
@@ -97,7 +83,9 @@ export async function buildMockSections(
         Math.round(count) || 1,
         SECTION_META.structure.mockOfficialQuestionCount
       );
-      if (selectedIds.length === 0) continue;
+      if (selectedIds.length !== Math.round(count)) {
+        throw new Error("not enough published structure questions");
+      }
     } else {
       const published = await db
         .select({ id: questions.id })
@@ -105,10 +93,11 @@ export async function buildMockSections(
         .where(and(eq(questions.sectionSlug, sectionSlug), eq(questions.status, "published")));
 
       const shuffled = shuffle(published.map((q) => q.id));
-      if (shuffled.length === 0) continue; // 公開問題が0件のセクションは含めない(空セクションによる画面クラッシュを防ぐ)
-
-      const clampedCount = Math.max(1, Math.min(Math.round(count) || 1, shuffled.length));
-      selectedIds = shuffled.slice(0, clampedCount);
+      const requestedCount = Math.round(count) || 1;
+      if (shuffled.length < requestedCount) {
+        throw new Error("not enough published questions");
+      }
+      selectedIds = shuffled.slice(0, requestedCount);
     }
 
     const timeLimitSec =

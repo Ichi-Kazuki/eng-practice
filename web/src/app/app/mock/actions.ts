@@ -10,9 +10,8 @@ import { buildMockSections, type MockSectionRequest, type MockTimeMode } from "@
 import { SECTION_META, MOCK_SECTION_ORDER, type SectionSlug } from "@/lib/section-meta";
 import type { MockSectionConfig } from "@/db/schema";
 
-type SectionChoice = "both" | SectionSlug;
-
 const MAX_ID_LENGTH = 200;
+const MAX_INSERT_ROWS = 10;
 // 個人運営の無料サイトを想定した粗い濫用対策。1時間に大量の模試セッションを
 // 自動生成されるとD1の行数が無制限に増えるため、常識的な上限だけ設ける
 // (通常利用でこの回数に達することはない)。
@@ -29,16 +28,57 @@ async function assertUnderSessionRateLimit(db: ReturnType<typeof getDb>, userId:
   }
 }
 
+async function assertFixedMockAvailability(db: ReturnType<typeof getDb>) {
+  const published = await db
+    .select({ sectionSlug: questions.sectionSlug, questionType: questions.questionType })
+    .from(questions)
+    .where(eq(questions.status, "published"));
+  const structureCompletion = published.filter(
+    (question) => question.sectionSlug === "structure" && question.questionType === "structure_completion"
+  ).length;
+  const structureErrorId = published.filter(
+    (question) => question.sectionSlug === "structure" && question.questionType === "structure_error_id"
+  ).length;
+  const reading = published.filter((question) => question.sectionSlug === "reading").length;
+
+  if (
+    structureCompletion < 15 ||
+    structureErrorId < 25 ||
+    reading < SECTION_META.reading.mockOfficialQuestionCount
+  ) {
+    redirect("/app/mock?error=inventory");
+  }
+}
+
+function isSectionExpired(section: MockSectionConfig, now = Date.now()): boolean {
+  return (
+    section.timeMode === "fixed" &&
+    section.startedAt !== null &&
+    section.timeLimitSec !== null &&
+    now - section.startedAt >= section.timeLimitSec * 1000
+  );
+}
+
+function chunk<T>(values: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < values.length; i += size) chunks.push(values.slice(i, i + size));
+  return chunks;
+}
+
 async function createAndEnterMockSession(
   db: ReturnType<typeof getDb>,
   userId: string,
   requests: MockSectionRequest[],
-  timeMode: MockTimeMode
+  timeMode: MockTimeMode,
+  enforceFixedAvailability = false
 ) {
+  if (enforceFixedAvailability) await assertFixedMockAvailability(db);
   const sections = await buildMockSections(requests, timeMode);
-  if (sections.length === 0) {
-    // 選択されたセクションに公開問題が1問もない場合は空のセッションを作らず開始画面に戻す
-    redirect("/app/mock");
+  if (
+    sections.length !== requests.length ||
+    sections.some((section, index) => section.questionIds.length !== requests[index]?.count)
+  ) {
+    redirect("/app/mock?error=inventory");
   }
   // 「模試を開始する」を押した時点で最初のセクションの計測も始め、
   // セッション作成後に別途「このセクションを開始する」を押させる中間画面を挟まない
@@ -61,23 +101,15 @@ export async function startMockTest(formData: FormData) {
   const db = getDb();
   await assertUnderSessionRateLimit(db, identity.userId);
 
-  const sectionChoiceRaw = formData.get("sectionChoice");
-  const sectionChoice: SectionChoice =
-    sectionChoiceRaw === "structure" || sectionChoiceRaw === "reading" ? sectionChoiceRaw : "both";
+  const rawTimeMode = formData.get("timeMode");
+  if (rawTimeMode !== "fixed" && rawTimeMode !== "stopwatch") redirect("/app/mock");
+  const requests: MockSectionRequest[] = MOCK_SECTION_ORDER.map((sectionSlug) => ({
+    sectionSlug,
+    count: SECTION_META[sectionSlug].mockOfficialQuestionCount,
+  }));
+  const timeMode = rawTimeMode as MockTimeMode;
 
-  const includedSlugs: SectionSlug[] =
-    sectionChoice === "both" ? MOCK_SECTION_ORDER : MOCK_SECTION_ORDER.filter((s) => s === sectionChoice);
-
-  const requests: MockSectionRequest[] = includedSlugs.map((slug) => {
-    const rawCount = Number(formData.get(`count_${slug}`));
-    const count =
-      Number.isFinite(rawCount) && rawCount > 0 ? Math.round(rawCount) : SECTION_META[slug].mockOfficialQuestionCount;
-    return { sectionSlug: slug, count };
-  });
-
-  const timeMode: MockTimeMode = formData.get("timeMode") === "stopwatch" ? "stopwatch" : "fixed";
-
-  await createAndEnterMockSession(db, identity.userId, requests, timeMode);
+  await createAndEnterMockSession(db, identity.userId, requests, timeMode, true);
 }
 
 // 完了済みセッションと同じセクション構成・出題数・時間の測り方で新しいセッションを作る
@@ -93,13 +125,19 @@ export async function restartMockTest(sessionId: string) {
   await assertUnderSessionRateLimit(db, identity.userId);
 
   const prevSections = prevSession.sections as MockSectionConfig[];
-  const requests: MockSectionRequest[] = prevSections.map((s) => ({
-    sectionSlug: s.sectionSlug as SectionSlug,
-    count: s.questionIds.length,
-  }));
+  const requests: MockSectionRequest[] =
+    prevSession.status === "completed"
+      ? MOCK_SECTION_ORDER.map((sectionSlug) => ({
+          sectionSlug,
+          count: SECTION_META[sectionSlug].mockOfficialQuestionCount,
+        }))
+      : prevSections.map((s) => ({
+          sectionSlug: s.sectionSlug as SectionSlug,
+          count: s.questionIds.length,
+        }));
   const timeMode: MockTimeMode = prevSections[0]?.timeMode ?? "fixed";
 
-  await createAndEnterMockSession(db, identity.userId, requests, timeMode);
+  await createAndEnterMockSession(db, identity.userId, requests, timeMode, prevSession.status === "completed");
 }
 
 async function loadOwnedSession(sessionId: string) {
@@ -109,7 +147,7 @@ async function loadOwnedSession(sessionId: string) {
   const session = await db.query.mockSessions.findFirst({
     where: eq(mockSessions.id, sessionId),
   });
-  if (!session || session.userId !== identity.userId) throw new Error("not found");
+  if (!session || session.userId !== identity.userId || session.status !== "in_progress") throw new Error("not found");
   return { db, identity, session };
 }
 
@@ -141,10 +179,11 @@ export async function answerMockQuestion(
 
   const { db, session } = await loadOwnedSession(sessionId);
   const sections = session.sections as MockSectionConfig[];
-  const allQuestionIds = new Set(sections.flatMap((s) => s.questionIds));
-  if (!allQuestionIds.has(questionId)) {
+  const current = sections[session.currentSectionIndex];
+  if (!current || !current.questionIds.includes(questionId)) {
     throw new Error("question not in this mock session");
   }
+  if (current.startedAt === null || isSectionExpired(current)) throw new Error("section time expired");
 
   const question = await db.query.questions.findFirst({ where: eq(questions.id, questionId) });
   if (!question || selectedIndex >= question.choices.length) {
@@ -168,6 +207,7 @@ export async function toggleMockFlag(sessionId: string, questionId: string) {
   if (!current.questionIds.includes(questionId)) {
     throw new Error("question not in current section");
   }
+  if (current.startedAt === null || isSectionExpired(current)) throw new Error("section time expired");
 
   const flags = current.flags ?? [];
   current.flags = flags.includes(questionId)
@@ -183,6 +223,9 @@ export async function submitMockSection(sessionId: string): Promise<{ done: bool
   const idx = session.currentSectionIndex;
   const current = sections[idx];
   if (!current) return { done: true };
+
+  if (current.submittedAt !== null) return { done: session.status === "completed" };
+  if (current.startedAt === null) throw new Error("section has not started");
 
   if (current.submittedAt === null) {
     current.submittedAt = Date.now();
@@ -201,17 +244,18 @@ export async function submitMockSection(sessionId: string): Promise<{ done: bool
         .from(questions)
         .where(inArray(questions.id, answeredIds));
 
-      await db.insert(attempts).values(
-        answeredQuestions.map((q) => ({
-          id: crypto.randomUUID(),
-          userId: identity.userId,
-          questionId: q.id,
-          selectedIndex: answers[q.id],
-          isCorrect: answers[q.id] === q.correctIndex,
-          mode: "mock" as const,
-          mockSessionId: sessionId,
-        }))
-      );
+      const attemptValues = answeredQuestions.map((q) => ({
+        id: crypto.randomUUID(),
+        userId: identity.userId,
+        questionId: q.id,
+        selectedIndex: answers[q.id],
+        isCorrect: answers[q.id] === q.correctIndex,
+        mode: "mock" as const,
+        mockSessionId: sessionId,
+      }));
+      for (const values of chunk(attemptValues, MAX_INSERT_ROWS)) {
+        await db.insert(attempts).values(values);
+      }
     }
 
     await db

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FlagIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { QuestionStem } from "@/components/question-stem";
+import { formatSessionTime, useSessionTimer } from "@/components/use-session-timer";
 import { cn } from "@/lib/utils";
 import { answerMockQuestion, submitMockSection, toggleMockFlag } from "@/app/app/mock/actions";
 
@@ -15,16 +16,6 @@ export type MockRunnerQuestion = {
   questionType: string;
   passage?: { id: string; title: string; body: string } | null;
 };
-
-function formatTime(sec: number) {
-  const m = Math.floor(sec / 60)
-    .toString()
-    .padStart(2, "0");
-  const s = Math.floor(sec % 60)
-    .toString()
-    .padStart(2, "0");
-  return `${m}:${s}`;
-}
 
 export function MockSectionRunner({
   sessionId,
@@ -48,9 +39,6 @@ export function MockSectionRunner({
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>(initialAnswers);
   const [flagged, setFlagged] = useState<Set<string>>(() => new Set(initialFlags));
-  // 初期値はサーバーとクライアントで一致する静的な値にしておき(SSR時とhydration時でDate.now()の
-  // 結果が食い違うハイドレーションエラーを避ける)、正しい経過/残り時間はマウント後にeffect内で補正する
-  const [displaySec, setDisplaySec] = useState<number>(() => (isStopwatch ? 0 : (timeLimitSec ?? 0)));
   const [timeUpMessage, setTimeUpMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submittingRef = useRef(false);
@@ -79,29 +67,20 @@ export function MockSectionRunner({
     [answers, questions.length, router, sessionId]
   );
 
-  useEffect(() => {
-    function tick() {
-      const elapsed = Math.floor((Date.now() - startedAtMs) / 1000);
-      if (isStopwatch) {
-        setDisplaySec(elapsed);
-        return true;
-      }
-      const remaining = Math.max(0, (timeLimitSec ?? 0) - elapsed);
-      setDisplaySec(remaining);
-      if (remaining <= 0) {
-        setTimeUpMessage(true);
-        setTimeout(() => void handleSubmit({ skipConfirm: true }), 1500);
-        return false;
-      }
-      return true;
-    }
+  const timeoutRef = useRef<number | null>(null);
+  const timer = useSessionTimer({
+    mode: isStopwatch ? "stopwatch" : "fixed",
+    timeLimitSec,
+    startedAtMs,
+    onTimeout: () => {
+      setTimeUpMessage(true);
+      timeoutRef.current = window.setTimeout(() => void handleSubmit({ skipConfirm: true }), 1500);
+    },
+  });
 
-    tick(); // マウント直後に正しい経過/残り時間へ即座に補正する
-    const interval = setInterval(() => {
-      if (!tick()) clearInterval(interval);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [handleSubmit, isStopwatch, startedAtMs, timeLimitSec]);
+  useEffect(() => () => {
+    if (timeoutRef.current !== null) window.clearTimeout(timeoutRef.current);
+  }, []);
 
   // タブを閉じる/戻る操作で進行中の模試から離脱しようとした場合に警告する
   useEffect(() => {
@@ -116,7 +95,7 @@ export function MockSectionRunner({
   const current = questions[index];
 
   async function handleSelect(choiceIndex: number) {
-    if (!current) return;
+    if (!current || isSubmitting || timeUpMessage) return;
     setAnswers((prev) => ({ ...prev, [current.id]: choiceIndex }));
     try {
       await answerMockQuestion(sessionId, current.id, choiceIndex);
@@ -126,7 +105,7 @@ export function MockSectionRunner({
   }
 
   async function toggleFlag() {
-    if (!current) return;
+    if (!current || isSubmitting || timeUpMessage) return;
     const questionId = current.id;
     setFlagged((prev) => {
       const next = new Set(prev);
@@ -158,7 +137,7 @@ export function MockSectionRunner({
     <div>
       <div className="sticky top-0 z-10 -mx-6 mb-6 flex items-center justify-between border-b border-border bg-background px-6 py-3">
         <span className="font-[family-name:var(--font-geist-mono)] text-lg font-bold text-foreground">
-          {isStopwatch ? "経過" : "残り"} {formatTime(displaySec)}
+          {isStopwatch ? "経過" : "残り"} {formatSessionTime(isStopwatch ? timer.elapsedSec : timer.remainingSec)}
         </span>
         <span className="text-sm text-muted-foreground">{sectionLabel}</span>
       </div>
