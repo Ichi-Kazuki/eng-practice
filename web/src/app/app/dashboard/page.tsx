@@ -1,7 +1,8 @@
-import { eq } from "drizzle-orm";
+import { eq, and, desc, inArray } from "drizzle-orm";
+import Link from "next/link";
 import { PencilSimpleLineIcon, BookOpenIcon, HeadphonesIcon } from "@phosphor-icons/react/ssr";
 import { getDb } from "@/db";
-import { attempts, questions } from "@/db/schema";
+import { attempts, questions, mockSessions, type MockSectionConfig } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { SECTION_META, QUESTION_TYPE_LABEL_JA, type SectionSlug } from "@/lib/section-meta";
 import { percentToScaledScore, estimateProvisionalTotalScore } from "@/lib/mock-scoring";
@@ -76,6 +77,42 @@ export default async function DashboardPage() {
     .filter((x) => x.stat && x.stat.total > 0)
     .sort((a, b) => a.stat!.correct / a.stat!.total - b.stat!.correct / b.stat!.total)[0];
 
+  const completedMocks = await db.query.mockSessions.findMany({
+    where: and(eq(mockSessions.userId, user.userId), eq(mockSessions.status, "completed")),
+    orderBy: [desc(mockSessions.completedAt)],
+  });
+
+  const mockQuestionIds = Array.from(
+    new Set(
+      completedMocks.flatMap((session) =>
+        (session.sections as MockSectionConfig[]).flatMap((s) => s.questionIds)
+      )
+    )
+  );
+  const correctIndexById = new Map<string, number>();
+  if (mockQuestionIds.length > 0) {
+    const qRows = await db
+      .select({ id: questions.id, correctIndex: questions.correctIndex })
+      .from(questions)
+      .where(inArray(questions.id, mockQuestionIds));
+    for (const q of qRows) correctIndexById.set(q.id, q.correctIndex);
+  }
+
+  const mockHistory = completedMocks.map((session) => {
+    const sections = session.sections as MockSectionConfig[];
+    const answers = session.answers as Record<string, number>;
+    const sectionScores = sections.map((s) => {
+      const total = s.questionIds.length;
+      const correct = s.questionIds.filter((id) => answers[id] === correctIndexById.get(id)).length;
+      const scaled = total > 0 ? percentToScaledScore((correct / total) * 100) : null;
+      return { sectionSlug: s.sectionSlug as SectionSlug, scaled };
+    });
+    const total = estimateProvisionalTotalScore(
+      sectionScores.filter((s) => s.scaled !== null).map((s) => s.scaled as number)
+    );
+    return { id: session.id, completedAt: session.completedAt, sectionScores, total };
+  });
+
   return (
     <div>
       <JaHeading className="text-xl font-bold text-foreground" text="スコアダッシュボード" />
@@ -144,6 +181,46 @@ export default async function DashboardPage() {
         })}
         {byType.size === 0 && (
           <p className="text-sm text-muted-foreground">まだ演習記録がありません。</p>
+        )}
+      </div>
+
+      <h2 className="mt-10 text-lg font-bold text-foreground">模試の受験履歴</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        本番と同じ問題数・制限時間で受けた模試のスコアです。回を重ねた伸びの確認に使えます。
+      </p>
+      <div className="mt-4 space-y-2">
+        {mockHistory.map((session) => (
+          <Link
+            key={session.id}
+            href={`/app/mock/${session.id}/result`}
+            className="flex items-center justify-between rounded-lg border border-border p-4 transition-colors hover:bg-accent"
+          >
+            <span className="text-sm text-muted-foreground">
+              {session.completedAt
+                ? new Date(session.completedAt).toLocaleDateString("ja-JP", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                  })
+                : "-"}
+            </span>
+            <span className="flex items-center gap-4">
+              {session.sectionScores.map((s) => (
+                <span key={s.sectionSlug} className="text-xs text-muted-foreground">
+                  {SECTION_META[s.sectionSlug].nameEn}{" "}
+                  <span className="font-[family-name:var(--font-geist-mono)] font-medium text-foreground">
+                    {s.scaled ?? "-"}
+                  </span>
+                </span>
+              ))}
+              <span className="font-[family-name:var(--font-geist-mono)] text-lg font-bold text-primary">
+                {session.total}
+              </span>
+            </span>
+          </Link>
+        ))}
+        {mockHistory.length === 0 && (
+          <p className="text-sm text-muted-foreground">まだ模試の受験記録がありません。</p>
         )}
       </div>
     </div>
