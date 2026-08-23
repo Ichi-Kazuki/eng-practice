@@ -52,6 +52,9 @@ export async function startMockTest(formData: FormData) {
     // 選択されたセクションに公開問題が1問もない場合は空のセッションを作らず開始画面に戻す
     redirect("/app/mock");
   }
+  // 「模試を開始する」を押した時点で最初のセクションの計測も始め、
+  // セッション作成後に別途「このセクションを開始する」を押させる中間画面を挟まない
+  sections[0].startedAt = Date.now();
   const id = crypto.randomUUID();
   await db.insert(mockSessions).values({
     id,

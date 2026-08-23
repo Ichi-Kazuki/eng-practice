@@ -55,18 +55,29 @@ export function MockSectionRunner({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submittingRef = useRef(false);
 
-  const handleSubmit = useCallback(async () => {
-    if (submittingRef.current) return;
-    submittingRef.current = true;
-    setIsSubmitting(true);
-    const result = await submitMockSection(sessionId);
-    if (result.done) {
-      router.push(`/app/mock/${sessionId}/result`);
-    } else {
-      router.push(`/app/mock/${sessionId}`);
-      router.refresh();
-    }
-  }, [router, sessionId]);
+  const handleSubmit = useCallback(
+    async (opts?: { skipConfirm?: boolean }) => {
+      if (submittingRef.current) return;
+      if (!opts?.skipConfirm) {
+        const unansweredCount = questions.length - Object.keys(answers).length;
+        const confirmMessage =
+          unansweredCount > 0
+            ? `未解答の問題が${unansweredCount}問あります。このまま提出しますか？`
+            : "提出すると、このセクションの解答は変更できなくなります。よろしいですか？";
+        if (!window.confirm(confirmMessage)) return;
+      }
+      submittingRef.current = true;
+      setIsSubmitting(true);
+      const result = await submitMockSection(sessionId);
+      if (result.done) {
+        router.push(`/app/mock/${sessionId}/result`);
+      } else {
+        router.push(`/app/mock/${sessionId}`);
+        router.refresh();
+      }
+    },
+    [answers, questions.length, router, sessionId]
+  );
 
   useEffect(() => {
     function tick() {
@@ -79,7 +90,7 @@ export function MockSectionRunner({
       setDisplaySec(remaining);
       if (remaining <= 0) {
         setTimeUpMessage(true);
-        setTimeout(() => void handleSubmit(), 1500);
+        setTimeout(() => void handleSubmit({ skipConfirm: true }), 1500);
         return false;
       }
       return true;
