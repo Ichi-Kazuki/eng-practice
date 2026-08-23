@@ -46,7 +46,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           本文へスキップ
         </a>
-        {children}
+        <div className="flex flex-1 flex-col">{children}</div>
         <SiteFooter />
       </body>
     </html>
