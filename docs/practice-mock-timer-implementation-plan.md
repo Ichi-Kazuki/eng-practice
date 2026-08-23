@@ -58,7 +58,7 @@
 Grammar設定:
 
 - 問題タイプは文法補充、誤り指摘、両方。
-- 問題数は選択中typeごとに 5 / 10 / 20 / 30 / 。
+- 問題数は文法補充が 5 / 10 / 15 / 20、誤り指摘が 5 / 10 / 20 / 25。
 - 両方では文法補充数と誤り指摘数を独立設定し、合計を表示する。
 - Timerはタイマーなし、経過時間、制限時間。
 - 初期値は両方、5問＋5問、タイマーなし。
@@ -66,7 +66,7 @@ Grammar設定:
 Reading設定:
 
 - 問題タイプ選択は設けない。
-- 問題数は 5 / 10 / 20 / 30 / 。
+- 問題数は 5 / 10 / 20 / 50。
 - 問題数は厳密に守るため、最後のパッセージは一部設問になる場合がある。
 - 初期値は10問・タイマーなし。
 
@@ -128,7 +128,7 @@ Reading設定:
 
 - sectionはroute segmentを正とし、structure/reading以外は404。
 - Grammarのqueryは type=structure_completion / structure_error_id / both、completionCount、errorCount、timer。
-- Readingのqueryは count、timer。値は5、10、20、30、allだけを許可する。
+- Readingのqueryは count、timer。値は5、10、20、50だけを許可する。GrammarのcompletionCountは5、10、15、20、errorCountは5、10、20、25だけを許可する。
 - 共通timer型は none / stopwatch / fixed。模試はfixed / stopwatchだけ。
 - 演習answersはQuestionRunner内の Record<questionId, selectedIndex>。
 - noneは回答ごとに保存、stopwatchとfixedは提出時に一括保存する。
@@ -142,7 +142,7 @@ Reading設定:
 
 1. typeごとにpublished問題を取得する。
 2. 各type配列をシャッフルする。
-3. 指定数またはallまで切り出す。
+3. 指定数まで切り出す。
 4. 両方は結合後に再シャッフルする。
 5. 一方の不足を他方で補完せず、利用可能数を表示して開始を止める。
 6. queryの任意件数・過大件数・未知typeは拒否する。
@@ -154,8 +154,6 @@ Reading設定:
 3. passage順と各passage内の設問順をシャッフルする。
 4. 平坦化後、先頭から指定問数を厳密に切り出す。
 5. 同一passageの設問は連続表示し、最後のpassageの部分選択を許容する。
-6. allは全公開Reading問題を対象にする。
-
 模試の既存Reading抽出は、設定UI削除とは分けて維持する。問題単位抽出でpassageが断片化する点は別リスクとする。
 
 ## 7. タイマー設計
@@ -229,7 +227,7 @@ Reading設定:
 
 - 文法補充のみ、誤り指摘のみ、両方を開始できる。
 - 両方のtype別設定数と総数が一致する。
-- 各typeで5/10/20/30/を検証する。
+- 文法補充で5/10/15/20、誤り指摘で5/10/20/25を検証する。
 - 過大count、未知type、非公開問題混入を拒否する。
 - 両方の出題順がtype別ブロックにならない。
 
@@ -258,7 +256,7 @@ Reading設定:
 
 ### Reading
 
-- 5/10/20/30/を厳密に抽出する。
+- 5/10/20/50を厳密に抽出する。
 - 同一passageの設問が連続する。
 - 部分passageでも本文・設問対応が崩れない。
 - タイマーなしはimmediate、経過時間と制限時間はdeferred feedbackになることを検証する。
@@ -293,7 +291,7 @@ Reading設定:
 
 - 演習timeoutは即時提出して結果へ進む。
 - Grammarの「両方」は自動比率ではなくtypeごとに問題数を設定する。
-- Readingは5/10/20/30/を厳密に守り、部分passageを許容する。
+- Readingは5/10/20/50を厳密に守り、部分passageを許容する。
 - 演習に問題番号グリッドと見直しフラグは含めない。
 - 演習session永続化は行わず、URLには設定だけ残す。
 - 設定routeは既存 /app/practice/[section] とqueryを使う。

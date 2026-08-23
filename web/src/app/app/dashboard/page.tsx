@@ -62,7 +62,11 @@ export default async function DashboardPage() {
     const sections = session.sections as MockSectionConfig[];
     return MOCK_SECTION_ORDER.every((slug) => {
       const sec = sections.find((s) => s.sectionSlug === slug);
-      return sec && sec.questionIds.length === SECTION_META[slug].mockOfficialQuestionCount;
+      return (
+        sec &&
+        sec.timeMode === "fixed" &&
+        sec.questionIds.length === SECTION_META[slug].mockOfficialQuestionCount
+      );
     });
   });
 

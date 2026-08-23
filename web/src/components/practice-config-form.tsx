@@ -3,7 +3,9 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  PRACTICE_COUNT_PRESETS,
+  GRAMMAR_COMPLETION_COUNT_PRESETS,
+  GRAMMAR_ERROR_COUNT_PRESETS,
+  READING_COUNT_PRESETS,
   type GrammarPracticeType,
   type PracticeCountSelection,
   type PracticeTimerMode,
@@ -55,24 +57,26 @@ function RadioTile({
 function CountTiles({
   name,
   value,
+  presets,
   available,
   onChange,
 }: {
   name: string;
   value: PracticeCountSelection;
+  presets: readonly PracticeCountSelection[];
   available: number;
   onChange: (value: PracticeCountSelection) => void;
 }) {
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-      {PRACTICE_COUNT_PRESETS.map((preset) => {
-        const isAvailable = preset === "all" ? available > 0 : preset <= available;
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      {presets.map((preset) => {
+        const isAvailable = preset <= available;
         return (
           <RadioTile
             key={preset}
             name={name}
             value={String(preset)}
-            label={preset === "all" ? "すべて" : `${preset}問`}
+            label={`${preset}問`}
             checked={value === preset}
             disabled={!isAvailable}
             onChange={() => onChange(preset)}
@@ -108,17 +112,15 @@ export function PracticeConfigForm({
   const readingAvailable = availableByType.reading_comprehension ?? 0;
 
   const selectedCount = useMemo(() => {
-    const resolve = (value: PracticeCountSelection, available: number) =>
-      value === "all" ? available : value;
-    if (section === "reading") return resolve(readingCount, readingAvailable);
-    if (grammarType === "structure_completion") return resolve(completionCount, completionAvailable);
-    if (grammarType === "structure_error_id") return resolve(errorCount, errorAvailable);
-    return resolve(completionCount, completionAvailable) + resolve(errorCount, errorAvailable);
-  }, [completionAvailable, completionCount, errorAvailable, errorCount, grammarType, readingAvailable, readingCount, section]);
+    const resolve = (value: PracticeCountSelection) => value;
+    if (section === "reading") return resolve(readingCount);
+    if (grammarType === "structure_completion") return resolve(completionCount);
+    if (grammarType === "structure_error_id") return resolve(errorCount);
+    return resolve(completionCount) + resolve(errorCount);
+  }, [completionCount, errorCount, grammarType, readingCount, section]);
 
   const selectionIsAvailable = useMemo(() => {
-    const isCountAvailable = (value: PracticeCountSelection, available: number) =>
-      value === "all" ? available > 0 : value <= available;
+    const isCountAvailable = (value: PracticeCountSelection, available: number) => value <= available;
     if (section === "reading") return isCountAvailable(readingCount, readingAvailable);
     if (grammarType === "structure_completion") return isCountAvailable(completionCount, completionAvailable);
     if (grammarType === "structure_error_id") return isCountAvailable(errorCount, errorAvailable);
@@ -167,6 +169,7 @@ export function PracticeConfigForm({
               <CountTiles
                 name="completionCount"
                 value={completionCount}
+                presets={GRAMMAR_COMPLETION_COUNT_PRESETS}
                 available={completionAvailable}
                 onChange={setCompletionCount}
               />
@@ -178,7 +181,13 @@ export function PracticeConfigForm({
               <legend className="text-sm font-medium text-foreground">
                 誤り指摘の問題数
               </legend>
-              <CountTiles name="errorCount" value={errorCount} available={errorAvailable} onChange={setErrorCount} />
+              <CountTiles
+                name="errorCount"
+                value={errorCount}
+                presets={GRAMMAR_ERROR_COUNT_PRESETS}
+                available={errorAvailable}
+                onChange={setErrorCount}
+              />
             </fieldset>
           )}
         </>
@@ -187,7 +196,13 @@ export function PracticeConfigForm({
           <legend className="text-sm font-medium text-foreground">
             Readingの問題数
           </legend>
-          <CountTiles name="count" value={readingCount} available={readingAvailable} onChange={setReadingCount} />
+          <CountTiles
+            name="count"
+            value={readingCount}
+            presets={READING_COUNT_PRESETS}
+            available={readingAvailable}
+            onChange={setReadingCount}
+          />
           <p className="text-xs text-muted-foreground">
             パッセージはまとまりを保って並び、最後のパッセージは一部の設問だけになる場合があります。
           </p>
