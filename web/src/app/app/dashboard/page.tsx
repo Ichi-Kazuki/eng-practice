@@ -1,25 +1,15 @@
 import { eq, and, desc, inArray } from "drizzle-orm";
 import Link from "next/link";
-import { PencilSimpleLineIcon, BookOpenIcon, HeadphonesIcon } from "@phosphor-icons/react/ssr";
 import { getDb } from "@/db";
 import { attempts, questions, mockSessions, type MockSectionConfig } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import { SECTION_META, QUESTION_TYPE_LABEL_JA, type SectionSlug } from "@/lib/section-meta";
+import { SECTION_META, MOCK_SECTION_ORDER, QUESTION_TYPE_LABEL_JA, type SectionSlug } from "@/lib/section-meta";
 import { percentToScaledScore, estimateProvisionalTotalScore } from "@/lib/mock-scoring";
-import { Card } from "@/components/ui/card";
 import { LoginRequired } from "@/components/login-required";
-import { ScoreDisclaimerBadge } from "@/components/score-disclaimer-badge";
 import { AccuracyBar } from "@/components/accuracy-bar";
 import { JaHeading } from "@/components/ja-heading";
-import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
-
-const SECTION_ICON: Record<SectionSlug, { icon: typeof PencilSimpleLineIcon; color: string }> = {
-  structure: { icon: PencilSimpleLineIcon, color: "text-primary" },
-  reading: { icon: BookOpenIcon, color: "text-sky-600 dark:text-sky-400" },
-  listening: { icon: HeadphonesIcon, color: "text-emerald-600 dark:text-emerald-400" },
-};
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -55,22 +45,6 @@ export default async function DashboardPage() {
   }
 
   const scoredSections: SectionSlug[] = ["structure", "reading"];
-  const sectionScaled: Record<string, number | null> = {};
-  const scaledScores: number[] = [];
-  for (const s of scoredSections) {
-    const stat = bySection.get(s);
-    if (!stat || stat.total === 0) {
-      sectionScaled[s] = null;
-      continue;
-    }
-    const pct = (stat.correct / stat.total) * 100;
-    const scaled = percentToScaledScore(pct);
-    sectionScaled[s] = scaled;
-    scaledScores.push(scaled);
-  }
-
-  const hasAnyData = scaledScores.length > 0;
-  const totalScore = hasAnyData ? estimateProvisionalTotalScore(scaledScores) : null;
 
   const weakest = scoredSections
     .map((s) => ({ section: s, stat: bySection.get(s) }))
@@ -82,9 +56,19 @@ export default async function DashboardPage() {
     orderBy: [desc(mockSessions.completedAt)],
   });
 
+  // 伸びの記録としての意味を持たせるため、Structure40問・Reading50問の本番相当を
+  // 両セクションとも解いたフルレングスの模試のみ履歴に表示する
+  const fullLengthMocks = completedMocks.filter((session) => {
+    const sections = session.sections as MockSectionConfig[];
+    return MOCK_SECTION_ORDER.every((slug) => {
+      const sec = sections.find((s) => s.sectionSlug === slug);
+      return sec && sec.questionIds.length === SECTION_META[slug].mockOfficialQuestionCount;
+    });
+  });
+
   const mockQuestionIds = Array.from(
     new Set(
-      completedMocks.flatMap((session) =>
+      fullLengthMocks.flatMap((session) =>
         (session.sections as MockSectionConfig[]).flatMap((s) => s.questionIds)
       )
     )
@@ -102,7 +86,7 @@ export default async function DashboardPage() {
     for (const q of qRows) correctIndexById.set(q.id, q.correctIndex);
   }
 
-  const mockHistory = completedMocks.map((session) => {
+  const mockHistory = fullLengthMocks.map((session) => {
     const sections = session.sections as MockSectionConfig[];
     const answers = session.answers as Record<string, number>;
     const sectionScores = sections.map((s) => {
@@ -121,42 +105,6 @@ export default async function DashboardPage() {
     <div>
       <JaHeading className="text-xl font-bold text-foreground" text="スコアダッシュボード" />
 
-      <Card className="mt-6 border-2 p-6">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm font-medium text-foreground">予想スコア(目安)</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Listeningを含まない暫定スコアです。公式スコアではありません。
-            </p>
-          </div>
-          <ScoreDisclaimerBadge />
-        </div>
-
-        <div className="mt-5 grid grid-cols-3 gap-4 border-t border-border pt-5 text-center">
-          {(["structure", "reading", "listening"] as SectionSlug[]).map((s) => {
-            const { icon: Icon, color } = SECTION_ICON[s];
-            return (
-              <div key={s}>
-                <p className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
-                  <Icon className={cn("size-3.5", color)} weight="bold" />
-                  {SECTION_META[s].nameEn}
-                </p>
-                <p className="mt-1 font-[family-name:var(--font-geist-mono)] text-2xl font-bold text-foreground">
-                  {s === "listening" ? "準備中" : (sectionScaled[s] ?? "-")}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
-          <span className="text-sm text-muted-foreground">推定合計スコア(2セクション暫定)</span>
-          <span className="font-[family-name:var(--font-geist-mono)] text-3xl font-bold text-primary">
-            {totalScore ?? "-"}
-          </span>
-        </div>
-      </Card>
-
       {weakest && (
         <p className="mt-4 text-sm text-muted-foreground">
           現在の弱点セクションは
@@ -167,7 +115,11 @@ export default async function DashboardPage() {
 
       <h2 className="mt-10 text-lg font-bold text-foreground">分野別正答率</h2>
       <div className="mt-4 space-y-4">
-        {Array.from(byType.entries()).map(([type, stat]) => {
+        {[
+          ...Object.keys(QUESTION_TYPE_LABEL_JA).filter((type) => byType.has(type)),
+          ...Array.from(byType.keys()).filter((type) => !(type in QUESTION_TYPE_LABEL_JA)),
+        ].map((type) => {
+          const stat = byType.get(type)!;
           const pct = Math.round((stat.correct / stat.total) * 100);
           return (
             <div key={type}>
