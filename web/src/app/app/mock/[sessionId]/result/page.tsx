@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { ScoreDisclaimerBadge } from "@/components/score-disclaimer-badge";
 import { JaHeading } from "@/components/ja-heading";
 import { QuestionStem } from "@/components/question-stem";
+import { restartMockTest } from "@/app/app/mock/actions";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -88,11 +89,21 @@ export default async function MockResultPage({
           </div>
         </Card>
 
-        <div className="mt-6 flex justify-center gap-3">
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Button variant="outline" render={<Link href="/app/dashboard" />}>
             ダッシュボードを見る
           </Button>
-          <Button render={<Link href="/app/mock" />}>もう一度模試を受ける</Button>
+          <Button variant="outline" render={<Link href="/app/mock" />}>
+            トップに戻る
+          </Button>
+          <form
+            action={async () => {
+              "use server";
+              await restartMockTest(sessionId);
+            }}
+          >
+            <Button type="submit">もう一度模試を受ける</Button>
+          </form>
         </div>
       </div>
 

@@ -18,18 +18,48 @@ const MAX_ID_LENGTH = 200;
 // (通常利用でこの回数に達することはない)。
 const MAX_SESSIONS_PER_HOUR = 20;
 
-export async function startMockTest(formData: FormData) {
-  const identity = await getOrCreateActiveIdentity();
-
-  const db = getDb();
+async function assertUnderSessionRateLimit(db: ReturnType<typeof getDb>, userId: string) {
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
   const [{ count: recentSessionCount }] = await db
     .select({ count: sql<number>`count(*)` })
     .from(mockSessions)
-    .where(and(eq(mockSessions.userId, identity.userId), gte(mockSessions.createdAt, oneHourAgo)));
+    .where(and(eq(mockSessions.userId, userId), gte(mockSessions.createdAt, oneHourAgo)));
   if (recentSessionCount >= MAX_SESSIONS_PER_HOUR) {
     redirect("/app/mock");
   }
+}
+
+async function createAndEnterMockSession(
+  db: ReturnType<typeof getDb>,
+  userId: string,
+  requests: MockSectionRequest[],
+  timeMode: MockTimeMode
+) {
+  const sections = await buildMockSections(requests, timeMode);
+  if (sections.length === 0) {
+    // 選択されたセクションに公開問題が1問もない場合は空のセッションを作らず開始画面に戻す
+    redirect("/app/mock");
+  }
+  // 「模試を開始する」を押した時点で最初のセクションの計測も始め、
+  // セッション作成後に別途「このセクションを開始する」を押させる中間画面を挟まない
+  sections[0].startedAt = Date.now();
+  const id = crypto.randomUUID();
+  await db.insert(mockSessions).values({
+    id,
+    userId,
+    status: "in_progress",
+    sections,
+    currentSectionIndex: 0,
+    answers: {},
+  });
+
+  redirect(`/app/mock/${id}`);
+}
+
+export async function startMockTest(formData: FormData) {
+  const identity = await getOrCreateActiveIdentity();
+  const db = getDb();
+  await assertUnderSessionRateLimit(db, identity.userId);
 
   const sectionChoiceRaw = formData.get("sectionChoice");
   const sectionChoice: SectionChoice =
@@ -47,25 +77,29 @@ export async function startMockTest(formData: FormData) {
 
   const timeMode: MockTimeMode = formData.get("timeMode") === "stopwatch" ? "stopwatch" : "fixed";
 
-  const sections = await buildMockSections(requests, timeMode);
-  if (sections.length === 0) {
-    // 選択されたセクションに公開問題が1問もない場合は空のセッションを作らず開始画面に戻す
-    redirect("/app/mock");
-  }
-  // 「模試を開始する」を押した時点で最初のセクションの計測も始め、
-  // セッション作成後に別途「このセクションを開始する」を押させる中間画面を挟まない
-  sections[0].startedAt = Date.now();
-  const id = crypto.randomUUID();
-  await db.insert(mockSessions).values({
-    id,
-    userId: identity.userId,
-    status: "in_progress",
-    sections,
-    currentSectionIndex: 0,
-    answers: {},
-  });
+  await createAndEnterMockSession(db, identity.userId, requests, timeMode);
+}
 
-  redirect(`/app/mock/${id}`);
+// 完了済みセッションと同じセクション構成・出題数・時間の測り方で新しいセッションを作る
+export async function restartMockTest(sessionId: string) {
+  const identity = await getOrCreateActiveIdentity();
+  const db = getDb();
+
+  const prevSession = await db.query.mockSessions.findFirst({
+    where: eq(mockSessions.id, sessionId),
+  });
+  if (!prevSession || prevSession.userId !== identity.userId) throw new Error("not found");
+
+  await assertUnderSessionRateLimit(db, identity.userId);
+
+  const prevSections = prevSession.sections as MockSectionConfig[];
+  const requests: MockSectionRequest[] = prevSections.map((s) => ({
+    sectionSlug: s.sectionSlug as SectionSlug,
+    count: s.questionIds.length,
+  }));
+  const timeMode: MockTimeMode = prevSections[0]?.timeMode ?? "fixed";
+
+  await createAndEnterMockSession(db, identity.userId, requests, timeMode);
 }
 
 async function loadOwnedSession(sessionId: string) {
