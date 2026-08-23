@@ -20,5 +20,15 @@
       "database_name": "english-db",
       "database_id": "7b35a676-02f7-40e1-b754-e175dd26ed00"
     }
+  ],
+  "ratelimits": [
+    {
+      "name": "ATTEMPTS_RATE_LIMITER",
+      "namespace_id": "1001",
+      "simple": {
+        "limit": 60,
+        "period": 60
+      }
+    }
   ]
 }

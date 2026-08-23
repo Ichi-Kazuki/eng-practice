@@ -91,7 +91,16 @@ export default function PrivacyPage() {
       <section className="mt-8">
         <h2 className="text-base font-bold text-foreground">お問い合わせ</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          [運営者の問い合わせ先を設定してください]
+          本サービスに関するお問い合わせ、問題・解説の誤り、不具合、個人データの削除等については、Googleフォームで作成した
+          <a
+            href="https://forms.gle/5zwhwUpvW87Lxp3B9"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline"
+          >
+            お問い合わせフォーム
+          </a>
+          よりご連絡ください。
         </p>
       </section>
 

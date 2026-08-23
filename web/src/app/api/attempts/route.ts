@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { and, eq } from "drizzle-orm";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/db";
 import { attempts, questions, mockSessions } from "@/db/schema";
 import { getOrCreateActiveIdentity } from "@/lib/auth/active-identity";
@@ -40,6 +41,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "入力内容が正しくありません。" }, { status: 400 });
     }
     throw err;
+  }
+
+  const { env } = getCloudflareContext();
+  const clientIp = request.headers.get("cf-connecting-ip") ?? "unknown";
+  const { success: withinRateLimit } = await env.ATTEMPTS_RATE_LIMITER.limit({ key: clientIp });
+  if (!withinRateLimit) {
+    return NextResponse.json({ error: "リクエストが多すぎます。しばらくしてから再試行してください。" }, { status: 429 });
   }
 
   const db = getDb();
