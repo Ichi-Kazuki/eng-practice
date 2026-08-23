@@ -26,15 +26,12 @@ export default function TermsPage() {
         <li>
           <span className="font-medium text-foreground">コンテンツについて</span>
           <br />
-          本サービスに掲載する問題・解説・パッセージは、いずれも独自に作成したオリジナルコンテンツです。TOEFL
-          ITPの公式問題を転載したものではありません。TOEFL・ITPはETS(Educational Testing
-          Service)の登録商標であり、本サービスはETSと提携・提携関係にありません。
+          本サービスに掲載する問題・解説・パッセージは、いずれも独自に作成したオリジナルコンテンツです。
         </li>
         <li>
           <span className="font-medium text-foreground">内容の正確性について</span>
           <br />
-          問題・解説の内容および表示される推定スコアについて、正確性・完全性を保証するものではありません。表示されるスコアはあくまで独自の目安であり、公式のTOEFL
-          ITPスコアではありません。
+          問題・解説の内容および表示される推定スコアについて、正確性・完全性を保証するものではありません。表示されるスコアはあくまで独自の目安です。
         </li>
         <li>
           <span className="font-medium text-foreground">サービスの変更・停止</span>
