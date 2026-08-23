@@ -90,11 +90,15 @@ export default async function DashboardPage() {
     )
   );
   const correctIndexById = new Map<string, number>();
-  if (mockQuestionIds.length > 0) {
+  // D1は1クエリあたり最大100個のバインドパラメータまでしか受け付けないため、
+  // 受験履歴が増えて出題IDの合計が100を超える場合はチャンクに分けて問い合わせる
+  const D1_MAX_BOUND_PARAMS = 100;
+  for (let i = 0; i < mockQuestionIds.length; i += D1_MAX_BOUND_PARAMS) {
+    const chunk = mockQuestionIds.slice(i, i + D1_MAX_BOUND_PARAMS);
     const qRows = await db
       .select({ id: questions.id, correctIndex: questions.correctIndex })
       .from(questions)
-      .where(inArray(questions.id, mockQuestionIds));
+      .where(inArray(questions.id, chunk));
     for (const q of qRows) correctIndexById.set(q.id, q.correctIndex);
   }
 
