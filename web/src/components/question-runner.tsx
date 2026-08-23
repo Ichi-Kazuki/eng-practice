@@ -242,7 +242,8 @@ export function QuestionRunner({
                   onClick={() => void handleSelect(i)}
                   className={cn(
                     "flex w-full items-start gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-colors",
-                    !showFeedback && "cursor-pointer border-border hover:border-primary hover:bg-secondary/40",
+                    !showFeedback && !isSelected && "cursor-pointer border-border hover:border-primary hover:bg-secondary/40",
+                    !showFeedback && isSelected && "cursor-pointer border-primary bg-primary/10 ring-1 ring-primary/20",
                     showFeedback && isCorrectChoice && "border-success bg-success/10",
                     showFeedback && isSelected && !isCorrectChoice && "border-destructive bg-destructive/10",
                     showFeedback && !isSelected && !isCorrectChoice && "border-border opacity-60"
@@ -254,6 +255,9 @@ export function QuestionRunner({
                   <span className="flex-1 text-foreground" lang="en">
                     {choice}
                   </span>
+                  {isDeferred && isSelected && (
+                    <CheckCircleIcon className="size-5 shrink-0 text-primary" weight="fill" aria-hidden="true" />
+                  )}
                   {showFeedback && isCorrectChoice && (
                     <CheckCircleIcon className="size-5 shrink-0 text-success" weight="fill" />
                   )}

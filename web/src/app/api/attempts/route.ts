@@ -51,7 +51,6 @@ function parseSubmission(body: Record<string, unknown>): ParsedSubmission {
 
   if (body.answers !== undefined) {
     const answers = parseAnswers(body.answers);
-    if (Object.keys(answers).length === 0) throw new ValidationError("answers must not be empty");
     return { mode, mockSessionId, answers, isLegacySingle: false };
   }
 

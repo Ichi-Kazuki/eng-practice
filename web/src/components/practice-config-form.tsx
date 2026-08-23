@@ -146,7 +146,6 @@ export function PracticeConfigForm({
                 name="type"
                 value="structure_completion"
                 label="文法補充"
-                sublabel={`${completionAvailable}問公開中`}
                 checked={grammarType === "structure_completion"}
                 onChange={() => setGrammarType("structure_completion")}
               />
@@ -154,7 +153,6 @@ export function PracticeConfigForm({
                 name="type"
                 value="structure_error_id"
                 label="誤り指摘"
-                sublabel={`${errorAvailable}問公開中`}
                 checked={grammarType === "structure_error_id"}
                 onChange={() => setGrammarType("structure_error_id")}
               />
@@ -165,7 +163,6 @@ export function PracticeConfigForm({
             <fieldset className="space-y-2.5 rounded-lg border border-border p-4">
               <legend className="text-sm font-medium text-foreground">
                 文法補充の問題数
-                <span className="ml-1 font-normal text-muted-foreground">({completionAvailable}問公開中)</span>
               </legend>
               <CountTiles
                 name="completionCount"
@@ -180,7 +177,6 @@ export function PracticeConfigForm({
             <fieldset className="space-y-2.5 rounded-lg border border-border p-4">
               <legend className="text-sm font-medium text-foreground">
                 誤り指摘の問題数
-                <span className="ml-1 font-normal text-muted-foreground">({errorAvailable}問公開中)</span>
               </legend>
               <CountTiles name="errorCount" value={errorCount} available={errorAvailable} onChange={setErrorCount} />
             </fieldset>
@@ -190,7 +186,6 @@ export function PracticeConfigForm({
         <fieldset className="space-y-2.5 rounded-lg border border-border p-4">
           <legend className="text-sm font-medium text-foreground">
             Readingの問題数
-            <span className="ml-1 font-normal text-muted-foreground">({readingAvailable}問公開中)</span>
           </legend>
           <CountTiles name="count" value={readingCount} available={readingAvailable} onChange={setReadingCount} />
           <p className="text-xs text-muted-foreground">

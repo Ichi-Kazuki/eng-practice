@@ -4,7 +4,6 @@ import { useMemo, useState, useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/button";
 import { SECTION_META } from "@/lib/section-meta";
 import { startMockTest } from "@/app/app/mock/actions";
-import { cn } from "@/lib/utils";
 
 type TimeMode = "fixed" | "stopwatch";
 const STORAGE_KEY = "mockConfig";
@@ -104,39 +103,17 @@ export function MockConfigForm({
           <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
             文法補充15問 + 誤り指摘25問
           </p>
-          <p
-            className={cn(
-              "mt-3 text-xs",
-              availableStructureByType.structure_completion >= 15 && availableStructureByType.structure_error_id >= 25
-                ? "text-muted-foreground"
-                : "font-medium text-destructive"
-            )}
-          >
-            公開中: 文法補充{availableStructureByType.structure_completion}問 / 誤り指摘
-            {availableStructureByType.structure_error_id}問
-          </p>
         </div>
         <div className="rounded-lg border border-border p-4">
           <p className="text-sm font-medium text-foreground">{SECTION_META.reading.nameJa}</p>
           <p className="mt-1 font-[family-name:var(--font-geist-mono)] text-lg font-bold text-foreground">
             {requiredReading}問 / {SECTION_META.reading.mockTimeLimitSec / 60}分
           </p>
-          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">公開Reading問題から無作為に出題します。</p>
-          <p
-            className={cn(
-              "mt-3 text-xs",
-              (availableBySection.reading ?? 0) >= requiredReading
-                ? "text-muted-foreground"
-                : "font-medium text-destructive"
-            )}
-          >
-            公開中: {availableBySection.reading ?? 0}問
-          </p>
         </div>
       </div>
 
       <p className="text-sm leading-relaxed text-muted-foreground">
-        GrammarからReadingの順に進む2セクション構成です。Listeningは現在利用できません。進行状況は保存されるため、通信が切れても続きから再開できます。
+        GrammarからReadingの順に進む2セクション構成です。Listeningは現在利用できません。
       </p>
 
       <fieldset className="space-y-2">
