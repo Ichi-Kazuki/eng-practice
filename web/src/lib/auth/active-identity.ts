@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { users } from "@/db/schema";
@@ -6,6 +6,19 @@ import { getCurrentUser } from "./current-user";
 
 export const GUEST_COOKIE_NAME = "guest_id";
 const GUEST_MAX_AGE_SEC = 60 * 60 * 24 * 365; // 1年
+
+/**
+ * Route Handler/Server Actionではリクエストの生プロトコルに直接アクセスできないため、
+ * Cloudflareが付与するx-forwarded-protoで判定し、無ければビルド時のNODE_ENVにフォールバックする
+ * (session cookie発行側のrequest.nextUrl.protocol判定と同じ意図を、requestオブジェクトが無い
+ * コンテキストでも安全に再現するため)。
+ */
+async function isHttpsRequest(): Promise<boolean> {
+  const h = await headers();
+  const proto = h.get("x-forwarded-proto");
+  if (proto) return proto.split(",")[0].trim() === "https";
+  return process.env.NODE_ENV === "production";
+}
 
 export type ActiveIdentity = {
   userId: string;
@@ -44,6 +57,7 @@ export async function getOrCreateActiveIdentity(): Promise<ActiveIdentity> {
     guestId = crypto.randomUUID();
     cookieStore.set(GUEST_COOKIE_NAME, guestId, {
       httpOnly: true,
+      secure: await isHttpsRequest(),
       sameSite: "lax",
       path: "/",
       maxAge: GUEST_MAX_AGE_SEC,

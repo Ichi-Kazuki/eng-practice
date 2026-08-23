@@ -16,6 +16,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </Link>
           <AppNav />
           <div className="flex items-center gap-3">
+            <Link
+              href="/app/settings"
+              className="text-sm text-muted-foreground underline-offset-4 hover:underline"
+            >
+              設定
+            </Link>
             {user ? (
               <>
                 <span className="hidden text-sm text-muted-foreground sm:inline">{user.name}</span>

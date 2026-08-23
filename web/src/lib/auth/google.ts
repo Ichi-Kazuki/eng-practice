@@ -40,7 +40,10 @@ export async function exchangeCodeForTokens(params: {
   });
 
   if (!response.ok) {
-    throw new Error(`Google token exchange failed: ${response.status} ${await response.text()}`);
+    // Googleのレスポンス本文には機微な情報が含まれる可能性があるため、
+    // エラーメッセージには含めずステータスコードのみサーバーログに残す。
+    console.error(`Google token exchange failed with status ${response.status}`);
+    throw new Error("GOOGLE_TOKEN_EXCHANGE_FAILED");
   }
 
   return (await response.json()) as {

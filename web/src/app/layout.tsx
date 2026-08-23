@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Sans_JP } from "next/font/google";
+import { SiteFooter } from "@/components/site-footer";
 import "./globals.css";
 
 // 日本語UI本文の既定フォント(ナビ・ボタン・説明文)
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           本文へスキップ
         </a>
         {children}
+        <SiteFooter />
       </body>
     </html>
   );

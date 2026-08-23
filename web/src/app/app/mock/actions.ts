@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { eq, inArray } from "drizzle-orm";
+import { and, eq, gte, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import { mockSessions, attempts, questions } from "@/db/schema";
 import { getOrCreateActiveIdentity } from "@/lib/auth/active-identity";
@@ -12,8 +12,24 @@ import type { MockSectionConfig } from "@/db/schema";
 
 type SectionChoice = "both" | SectionSlug;
 
+const MAX_ID_LENGTH = 200;
+// 個人運営の無料サイトを想定した粗い濫用対策。1時間に大量の模試セッションを
+// 自動生成されるとD1の行数が無制限に増えるため、常識的な上限だけ設ける
+// (通常利用でこの回数に達することはない)。
+const MAX_SESSIONS_PER_HOUR = 20;
+
 export async function startMockTest(formData: FormData) {
   const identity = await getOrCreateActiveIdentity();
+
+  const db = getDb();
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+  const [{ count: recentSessionCount }] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(mockSessions)
+    .where(and(eq(mockSessions.userId, identity.userId), gte(mockSessions.createdAt, oneHourAgo)));
+  if (recentSessionCount >= MAX_SESSIONS_PER_HOUR) {
+    redirect("/app/mock");
+  }
 
   const sectionChoiceRaw = formData.get("sectionChoice");
   const sectionChoice: SectionChoice =
@@ -31,7 +47,6 @@ export async function startMockTest(formData: FormData) {
 
   const timeMode: MockTimeMode = formData.get("timeMode") === "stopwatch" ? "stopwatch" : "fixed";
 
-  const db = getDb();
   const sections = await buildMockSections(requests, timeMode);
   if (sections.length === 0) {
     // 選択されたセクションに公開問題が1問もない場合は空のセッションを作らず開始画面に戻す
@@ -80,16 +95,42 @@ export async function answerMockQuestion(
   questionId: string,
   selectedIndex: number
 ) {
+  if (typeof questionId !== "string" || questionId.length === 0 || questionId.length > MAX_ID_LENGTH) {
+    throw new Error("invalid questionId");
+  }
+  if (!Number.isInteger(selectedIndex) || selectedIndex < 0) {
+    throw new Error("invalid selectedIndex");
+  }
+
   const { db, session } = await loadOwnedSession(sessionId);
+  const sections = session.sections as MockSectionConfig[];
+  const allQuestionIds = new Set(sections.flatMap((s) => s.questionIds));
+  if (!allQuestionIds.has(questionId)) {
+    throw new Error("question not in this mock session");
+  }
+
+  const question = await db.query.questions.findFirst({ where: eq(questions.id, questionId) });
+  if (!question || selectedIndex >= question.choices.length) {
+    throw new Error("invalid selectedIndex");
+  }
+
   const answers = { ...(session.answers as Record<string, number>), [questionId]: selectedIndex };
   await db.update(mockSessions).set({ answers }).where(eq(mockSessions.id, sessionId));
 }
 
 export async function toggleMockFlag(sessionId: string, questionId: string) {
+  if (typeof questionId !== "string" || questionId.length === 0 || questionId.length > MAX_ID_LENGTH) {
+    throw new Error("invalid questionId");
+  }
+
   const { db, session } = await loadOwnedSession(sessionId);
   const sections = session.sections as MockSectionConfig[];
   const current = sections[session.currentSectionIndex];
   if (!current) return;
+
+  if (!current.questionIds.includes(questionId)) {
+    throw new Error("question not in current section");
+  }
 
   const flags = current.flags ?? [];
   current.flags = flags.includes(questionId)

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { isAdminUser } from "@/lib/auth/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -11,8 +11,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   // 案内画面を挟まず即座にログインへ誘導している(意図的な差異)。
   if (!user) redirect("/api/auth/login");
 
-  const { env } = getCloudflareContext();
-  if (user.email !== env.ADMIN_EMAIL) {
+  if (!(await isAdminUser(user))) {
     redirect("/app");
   }
 
