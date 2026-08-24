@@ -35,6 +35,10 @@ export function QuestionRunner({
   sectionLabel,
   backHref,
   backLabel,
+  emptyMessage = "問題がありません。",
+  completionTitle = "演習完了",
+  completionDescription,
+  allowRetry = true,
 }: {
   items: RunnerItem[];
   mode: "practice" | "mock";
@@ -44,6 +48,11 @@ export function QuestionRunner({
   sectionLabel?: string;
   backHref: string;
   backLabel: string;
+  emptyMessage?: string;
+  completionTitle?: string;
+  completionDescription?: string;
+  /** 「もう一度解く」を出すか。出題内容がサーバ側の解答状況から導出される画面ではリロードで別のセットになるためfalseにする */
+  allowRetry?: boolean;
 }) {
   const isDeferred = timerMode === "stopwatch" || timerMode === "fixed";
   const [index, setIndex] = useState(0);
@@ -169,22 +178,34 @@ export function QuestionRunner({
   }
 
   if (items.length === 0) {
-    return <p className="text-sm text-muted-foreground">問題がありません。</p>;
+    return (
+      <div className="mx-auto max-w-md rounded-xl border border-dashed border-border px-5 py-10 text-center">
+        <p className="text-sm leading-relaxed text-muted-foreground">{emptyMessage}</p>
+        <Button nativeButton={false} render={<Link href={backHref} />} variant="outline" className="mt-5">
+          {backLabel}
+        </Button>
+      </div>
+    );
   }
 
   if (isFinished) {
     return (
       <div className="mx-auto max-w-md text-center">
-        <h2 className="text-lg font-bold text-foreground">演習完了</h2>
+        <h2 className="text-lg font-bold text-foreground">{completionTitle}</h2>
         <p className="mt-2 font-[family-name:var(--font-geist-mono)] text-3xl font-bold text-foreground">
           {correctCount} / {items.length}
         </p>
         <p className="mt-1 text-sm text-muted-foreground">正答</p>
+        {completionDescription && (
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{completionDescription}</p>
+        )}
         <div className="mt-6 flex justify-center gap-3">
-          <Button variant="outline" onClick={() => location.reload()}>
-            もう一度解く
-          </Button>
-          <Button render={<Link href={backHref} />}>{backLabel}</Button>
+          {allowRetry && (
+            <Button variant="outline" onClick={() => location.reload()}>
+              もう一度解く
+            </Button>
+          )}
+          <Button nativeButton={false} render={<Link href={backHref} />}>{backLabel}</Button>
         </div>
       </div>
     );
@@ -197,6 +218,7 @@ export function QuestionRunner({
         selections={selections}
         correctCount={correctCount}
         elapsedSec={timer.elapsedSec}
+        allowRetry={allowRetry}
         timedOut={timedOut}
         submissionError={submissionError}
         onRetry={() => void handleSubmit({ skipConfirm: true })}
@@ -368,6 +390,7 @@ function PracticeResult({
   onRetry,
   backHref,
   backLabel,
+  allowRetry,
 }: {
   items: RunnerItem[];
   selections: Record<string, number>;
@@ -378,6 +401,7 @@ function PracticeResult({
   onRetry: () => void;
   backHref: string;
   backLabel: string;
+  allowRetry: boolean;
 }) {
   const unansweredCount = items.length - Object.keys(selections).length;
 
@@ -413,10 +437,12 @@ function PracticeResult({
           </div>
         )}
         <div className="mt-6 flex justify-center gap-3">
-          <Button variant="outline" onClick={() => location.reload()}>
-            もう一度解く
-          </Button>
-          <Button render={<Link href={backHref} />}>{backLabel}</Button>
+          {allowRetry && (
+            <Button variant="outline" onClick={() => location.reload()}>
+              もう一度解く
+            </Button>
+          )}
+          <Button nativeButton={false} render={<Link href={backHref} />}>{backLabel}</Button>
         </div>
       </div>
 

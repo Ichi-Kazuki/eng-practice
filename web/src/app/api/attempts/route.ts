@@ -14,6 +14,7 @@ const MAX_BATCH_ANSWERS = 200;
 const ATTEMPT_INSERT_PARAM_COUNT = 7;
 const MAX_INSERT_ROWS = Math.floor(D1_MAX_BOUND_PARAMS / ATTEMPT_INSERT_PARAM_COUNT);
 const DEDUP_WINDOW_MS = 5 * 60 * 1000; // covers a manual "retry save" click, not just an instant client retry
+const SINGLE_DEDUP_WINDOW_MS = 5 * 1000; // 1問ずつの即時保存用。通信断による即時の再送だけを弾く長さ
 
 type ParsedSubmission = {
   mode: (typeof MODES)[number];
@@ -155,18 +156,23 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // 1問ずつの即時保存は、5分の重複排除だと「同じ問題を同じ選択肢で解き直す」復習ノートの
+  // 流れまで握りつぶしてしまうため、窓を数秒に狭める。クライアントの二重送信ガードは
+  // hasAnswered(state)ベースで、保存が成功した直後に応答だけ失われた場合は選択が巻き戻り
+  // 同じ解答が再送されうるので、完全に外すことはしない。
+  const dedupWindowMs = submission.isLegacySingle ? SINGLE_DEDUP_WINDOW_MS : DEDUP_WINDOW_MS;
+  const recentKeys = new Set<string>();
   const recentAttempts = await db.query.attempts.findMany({
     where: and(
       eq(attempts.userId, identity.userId),
       eq(attempts.mode, submission.mode),
-      gte(attempts.createdAt, new Date(Date.now() - DEDUP_WINDOW_MS))
+      gte(attempts.createdAt, new Date(Date.now() - dedupWindowMs))
     ),
   });
-  const recentKeys = new Set(
-    recentAttempts
-      .filter((attempt) => attempt.mockSessionId === submission.mockSessionId)
-      .map((attempt) => `${attempt.questionId}:${attempt.selectedIndex}`)
-  );
+  for (const attempt of recentAttempts) {
+    if (attempt.mockSessionId !== submission.mockSessionId) continue;
+    recentKeys.add(`${attempt.questionId}:${attempt.selectedIndex}`);
+  }
 
   const values = ids
     .filter((questionId) => !recentKeys.has(`${questionId}:${submission.answers[questionId]}`))

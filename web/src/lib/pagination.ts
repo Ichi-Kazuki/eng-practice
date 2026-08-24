@@ -1,5 +1,5 @@
-export function parsePage(value: string | undefined): number {
-  if (!value || !/^\d+$/.test(value)) return 1;
+export function parsePage(value: string | string[] | undefined): number {
+  if (typeof value !== "string" || !/^\d+$/.test(value)) return 1;
 
   const page = Number(value);
   return Number.isSafeInteger(page) && page > 0 ? Math.min(page, 100_000) : 1;
