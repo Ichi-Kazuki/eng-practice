@@ -8,6 +8,7 @@ import {
   mockSessions,
   attempts,
   questions,
+  passages,
   type MockResultSnapshot,
   type MockSectionConfig,
 } from "@/db/schema";
@@ -279,6 +280,13 @@ async function buildMockResultSnapshot(
   const questionById = new Map(rows.map((question) => [question.id, question]));
   if (questionById.size !== new Set(allQuestionIds).size) throw new Error("mock question is missing");
 
+  const passageIds = [...new Set(rows.map((question) => question.passageId).filter((id): id is string => !!id))];
+  const passageRows = [];
+  for (const passageIdChunk of chunk(passageIds, D1_MAX_BOUND_PARAMS)) {
+    passageRows.push(...(await db.select().from(passages).where(inArray(passages.id, passageIdChunk))));
+  }
+  const passageById = new Map(passageRows.map((passage) => [passage.id, passage]));
+
   const resultSections = sections.map((section) => {
     const questionSnapshots = section.questionIds.map((questionId) => {
       const question = questionById.get(questionId);
@@ -293,6 +301,7 @@ async function buildMockResultSnapshot(
         questionType: question.questionType,
         selectedIndex,
         isCorrect: selectedIndex !== null && selectedIndex === question.correctIndex,
+        passage: question.passageId ? passageById.get(question.passageId) ?? null : null,
       };
     });
     const correct = questionSnapshots.filter((question) => question.isCorrect).length;

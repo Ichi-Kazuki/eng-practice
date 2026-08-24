@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { QuestionStem } from "@/components/question-stem";
+import { ResultQuestionReview } from "@/components/result-question-review";
 import { useSessionTimer, formatSessionTime } from "@/components/use-session-timer";
 import type { PracticeTimerMode } from "@/lib/practice-config";
 import { cn } from "@/lib/utils";
@@ -380,6 +381,12 @@ function PracticeResult({
 }) {
   const unansweredCount = items.length - Object.keys(selections).length;
 
+  const resultQuestions = items.map((item) => ({
+    ...item.question,
+    selectedIndex: selections[item.question.id] ?? null,
+    passage: item.passage,
+  }));
+
   return (
     <div>
       <div className="mx-auto max-w-2xl text-center">
@@ -415,71 +422,13 @@ function PracticeResult({
 
       <div className="mx-auto mt-10 max-w-3xl">
         <h3 className="text-lg font-bold text-foreground">問題ごとの結果</h3>
-        <div className="mt-3 space-y-3">
-          {items.map((item, itemIndex) => {
-            const selected = selections[item.question.id];
-            const isAnswered = selected !== undefined;
-            const isCorrect = isAnswered && selected === item.question.correctIndex;
-            return (
-              <details key={item.question.id} className="rounded-lg border border-border">
-                <summary className="flex cursor-pointer list-none items-center gap-3 p-3 [&::-webkit-details-marker]:hidden">
-                  <span className="w-7 shrink-0 font-[family-name:var(--font-geist-mono)] text-xs text-muted-foreground">
-                    {itemIndex + 1}
-                  </span>
-                  {isAnswered ? (
-                    isCorrect ? (
-                      <CheckCircleIcon weight="fill" className="size-5 shrink-0 text-success" />
-                    ) : (
-                      <XCircleIcon weight="fill" className="size-5 shrink-0 text-destructive" />
-                    )
-                  ) : (
-                    <span className="shrink-0 text-xs text-muted-foreground">未解答</span>
-                  )}
-                  <span className="flex-1 truncate text-sm text-foreground" lang="en">
-                    {item.question.stem}
-                  </span>
-                </summary>
-                <div className="border-t border-border p-4">
-                  <QuestionStem
-                    className="text-sm leading-relaxed text-foreground"
-                    stem={item.question.stem}
-                    choices={item.question.choices}
-                    questionType={item.question.questionType}
-                  />
-                  <div className="mt-4 space-y-1.5">
-                    {item.question.choices.map((choice, choiceIndex) => {
-                      const isSelected = selected === choiceIndex;
-                      const isCorrectChoice = choiceIndex === item.question.correctIndex;
-                      return (
-                        <div
-                          key={choiceIndex}
-                          className={cn(
-                            "flex items-start gap-2 rounded-md border px-3 py-2 text-sm",
-                            isCorrectChoice && "border-success bg-success/10",
-                            isSelected && !isCorrectChoice && "border-destructive bg-destructive/10",
-                            !isSelected && !isCorrectChoice && "border-border opacity-60"
-                          )}
-                        >
-                          <span className="font-[family-name:var(--font-geist-mono)] font-medium text-muted-foreground">
-                            {String.fromCharCode(65 + choiceIndex)}
-                          </span>
-                          <span className="flex-1 text-foreground" lang="en">
-                            {choice}
-                          </span>
-                          {isCorrectChoice && <CheckCircleIcon weight="fill" className="size-4 text-success" />}
-                          {isSelected && !isCorrectChoice && (
-                            <XCircleIcon weight="fill" className="size-4 text-destructive" />
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{item.question.explanation}</p>
-                </div>
-              </details>
-            );
-          })}
-        </div>
+        <p className="mt-1 text-sm text-muted-foreground">
+          番号または問題行を選ぶと、選択肢ごとの正解・不正解と解説を確認できます。
+        </p>
+        <ResultQuestionReview
+          className="mt-4"
+          sections={[{ id: "practice", questions: resultQuestions }]}
+        />
       </div>
     </div>
   );

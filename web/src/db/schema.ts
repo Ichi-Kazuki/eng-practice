@@ -94,6 +94,11 @@ export type MockQuestionSnapshot = {
   questionType: string;
   selectedIndex: number | null;
   isCorrect: boolean;
+  passage: {
+    id: string;
+    title: string;
+    body: string;
+  } | null;
 };
 
 export type MockSectionResultSnapshot = {
