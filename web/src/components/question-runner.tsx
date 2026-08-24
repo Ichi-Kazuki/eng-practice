@@ -102,6 +102,7 @@ export function QuestionRunner({
   const timer = useSessionTimer({
     mode: timerMode,
     timeLimitSec,
+    running: phase === "running",
     onTimeout: () => submitHandlerRef.current({ skipConfirm: true, timedOut: true }),
   });
 

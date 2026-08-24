@@ -333,7 +333,6 @@ export async function submitMockSection(sessionId: string): Promise<{ done: bool
     if (!isLastSection) {
       const next = sections[index + 1];
       if (!next) throw new Error("invalid next mock section");
-      next.startedAt = submittedAt;
       const updated = await updateSessionIfCurrent(db, sessionId, session.revision, {
         sections,
         currentSectionIndex: index + 1,

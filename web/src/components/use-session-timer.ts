@@ -16,14 +16,16 @@ export function useSessionTimer({
   mode,
   timeLimitSec,
   startedAtMs,
+  running = true,
   onTimeout,
 }: {
   mode: PracticeTimerMode;
   timeLimitSec: number | null;
   startedAtMs?: number | null;
+  running?: boolean;
   onTimeout?: () => void;
 }) {
-  const isActive = mode === "stopwatch" || mode === "fixed";
+  const isActive = (mode === "stopwatch" || mode === "fixed") && running;
   const [effectiveStartedAtMs, setEffectiveStartedAtMs] = useState<number | null>(startedAtMs ?? null);
   const [elapsedSec, setElapsedSec] = useState(0);
   const [remainingSec, setRemainingSec] = useState(timeLimitSec ?? 0);
