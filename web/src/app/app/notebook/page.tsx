@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import { getMistakesForUser } from "@/lib/notebook";
+import { getMistakesPageForUser } from "@/lib/notebook";
+import { parsePage } from "@/lib/pagination";
 import { SECTION_META, QUESTION_TYPE_LABEL_JA, type SectionSlug } from "@/lib/section-meta";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LoginRequired } from "@/components/login-required";
 import { JaHeading } from "@/components/ja-heading";
+import { PaginationControls } from "@/components/pagination-controls";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -19,15 +21,21 @@ const DATE_RANGES = [
 export default async function NotebookPage({
   searchParams,
 }: {
-  searchParams: Promise<{ section?: string; range?: string }>;
+  searchParams: Promise<{ section?: string; range?: string; page?: string }>;
 }) {
-  const { section, range } = await searchParams;
+  const { section, range, page: pageParam } = await searchParams;
   const user = await getCurrentUser();
   if (!user) {
     return <LoginRequired message="復習ノートは誤答をアカウントに記録して表示するため、ログインが必要です。" />;
   }
 
-  const mistakes = await getMistakesForUser({ userId: user.userId, section, range });
+  const mistakePage = await getMistakesPageForUser({
+    userId: user.userId,
+    section,
+    range,
+    page: parsePage(pageParam),
+  });
+  const mistakes = mistakePage.items;
   const activeRange = DATE_RANGES.find((r) => r.key === range) ?? DATE_RANGES[0];
   const sections: SectionSlug[] = ["structure", "reading"];
 
@@ -70,7 +78,7 @@ export default async function NotebookPage({
       ) : (
         <>
           <div className="mt-6 flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">{mistakes.length}問</p>
+            <p className="text-sm text-muted-foreground">{mistakePage.total}問</p>
             <Button
               render={
                 <Link
@@ -112,16 +120,23 @@ export default async function NotebookPage({
               </Card>
             ))}
           </div>
+          <PaginationControls
+            currentPage={mistakePage.currentPage}
+            pageCount={mistakePage.pageCount}
+            label="復習ノート"
+            buildHref={(nextPage) => buildHref(section, range, nextPage)}
+          />
         </>
       )}
     </div>
   );
 }
 
-function buildHref(section: string | undefined, range: string | undefined) {
+function buildHref(section: string | undefined, range: string | undefined, page?: number) {
   const params = new URLSearchParams();
   if (section) params.set("section", section);
   if (range && range !== "all") params.set("range", range);
+  if (page && page > 1) params.set("page", String(page));
   const qs = params.toString();
   return `/app/notebook${qs ? `?${qs}` : ""}`;
 }

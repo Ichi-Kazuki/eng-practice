@@ -5,16 +5,24 @@ import { attempts, questions, mockSessions, type MockSectionConfig } from "@/db/
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { SECTION_META, MOCK_SECTION_ORDER, QUESTION_TYPE_LABEL_JA, type SectionSlug } from "@/lib/section-meta";
 import { percentToScaledScore, estimateProvisionalTotalScore } from "@/lib/mock-scoring";
+import { getPageSlice, parsePage } from "@/lib/pagination";
 import { LoginRequired } from "@/components/login-required";
 import { AccuracyBar } from "@/components/accuracy-bar";
 import { JaHeading } from "@/components/ja-heading";
+import { PaginationControls } from "@/components/pagination-controls";
 
 export const dynamic = "force-dynamic";
 
 const MAX_D1_BOUND_PARAMS = 100;
 const MOCK_ID_CHUNK_SIZE = MAX_D1_BOUND_PARAMS - 2; // userId + mode
+const MOCK_HISTORY_PAGE_SIZE = 10;
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page: pageParam } = await searchParams;
   const user = await getCurrentUser();
   if (!user) {
     return (
@@ -62,7 +70,12 @@ export default async function DashboardPage() {
 
   const completedMocks = await db.query.mockSessions.findMany({
     where: and(eq(mockSessions.userId, user.userId), eq(mockSessions.status, "completed")),
-    orderBy: [desc(mockSessions.completedAt)],
+    orderBy: [desc(mockSessions.completedAt), desc(mockSessions.id)],
+    columns: {
+      id: true,
+      completedAt: true,
+      sections: true,
+    },
   });
 
   // 伸びの記録としての意味を持たせるため、Structure40問・Reading50問の本番相当を
@@ -79,7 +92,24 @@ export default async function DashboardPage() {
     });
   });
 
-  const fullMockIds = fullLengthMocks.map((session) => session.id);
+  const mockPage = getPageSlice(fullLengthMocks, parsePage(pageParam), MOCK_HISTORY_PAGE_SIZE);
+  const pageMockIds = mockPage.items.map((session) => session.id);
+  const pageSnapshots = pageMockIds.length
+    ? await db.query.mockSessions.findMany({
+        where: and(
+          eq(mockSessions.userId, user.userId),
+          eq(mockSessions.status, "completed"),
+          inArray(mockSessions.id, pageMockIds)
+        ),
+        columns: {
+          id: true,
+          resultSnapshot: true,
+        },
+      })
+    : [];
+  const resultSnapshotById = new Map(pageSnapshots.map((session) => [session.id, session.resultSnapshot]));
+
+  const fullMockIds = pageMockIds;
   const legacyMockAttempts = [];
   for (let i = 0; i < fullMockIds.length; i += MOCK_ID_CHUNK_SIZE) {
     const idChunk = fullMockIds.slice(i, i + MOCK_ID_CHUNK_SIZE);
@@ -104,17 +134,18 @@ export default async function DashboardPage() {
     legacyMockAttempts.map((attempt) => [`${attempt.mockSessionId}:${attempt.questionId}`, attempt.isCorrect])
   );
 
-  const mockHistory = fullLengthMocks.map((session) => {
+  const mockHistory = mockPage.items.map((session) => {
     const sections = session.sections as MockSectionConfig[];
-    if (session.resultSnapshot) {
+    const resultSnapshot = resultSnapshotById.get(session.id);
+    if (resultSnapshot) {
       return {
         id: session.id,
         completedAt: session.completedAt,
-        sectionScores: session.resultSnapshot.sections.map((section) => ({
+        sectionScores: resultSnapshot.sections.map((section) => ({
           sectionSlug: section.sectionSlug as SectionSlug,
           scaled: section.scaled,
         })),
-        total: session.resultSnapshot.totalScore,
+        total: resultSnapshot.totalScore,
       };
     }
 
@@ -196,6 +227,9 @@ export default async function DashboardPage() {
       <p className="mt-1 text-sm text-muted-foreground">
         本番と同じ問題数・制限時間で受けた模試のスコアです。回を重ねた伸びの確認に使えます。
       </p>
+      {fullLengthMocks.length > 0 && (
+        <p className="mt-3 text-xs text-muted-foreground">全{fullLengthMocks.length}件</p>
+      )}
       <div className="mt-4 space-y-2">
         {mockHistory.map((session) => (
           <Link
@@ -231,6 +265,16 @@ export default async function DashboardPage() {
           <p className="text-sm text-muted-foreground">まだ模試の受験記録がありません。</p>
         )}
       </div>
+      <PaginationControls
+        currentPage={mockPage.currentPage}
+        pageCount={mockPage.pageCount}
+        label="模試の受験履歴"
+        buildHref={(nextPage) => buildDashboardHref(nextPage)}
+      />
     </div>
   );
+}
+
+function buildDashboardHref(page: number) {
+  return page > 1 ? `/app/dashboard?page=${page}` : "/app/dashboard";
 }

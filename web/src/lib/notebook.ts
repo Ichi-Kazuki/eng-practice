@@ -1,6 +1,7 @@
 import { desc, eq, sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import { attempts, questions, passages } from "@/db/schema";
+import { getPageSlice } from "@/lib/pagination";
 
 async function queryAttemptRows(userId: string) {
   const db = getDb();
@@ -21,6 +22,8 @@ export type MistakeRow = AttemptRow & {
   // (連続2回正解で習得済み扱いにする仕様のため、streakは0か1のみ取りうる)
   pendingMastery: boolean;
 };
+
+export const NOTEBOOK_PAGE_SIZE = 20;
 
 export async function getMistakesForUser({
   userId,
@@ -64,4 +67,19 @@ export async function getMistakesForUser({
   }
 
   return result;
+}
+
+export async function getMistakesPageForUser({
+  userId,
+  section,
+  range,
+  page,
+}: {
+  userId: string;
+  section?: string;
+  range?: string;
+  page: number;
+}) {
+  const mistakes = await getMistakesForUser({ userId, section, range });
+  return getPageSlice(mistakes, page, NOTEBOOK_PAGE_SIZE);
 }
