@@ -149,6 +149,11 @@
     line-break: strict;
     text-align: left;
   }
+
+  body:has([data-question-solving]) > footer {
+    display: none;
+  }
+
   html {
     @apply font-sans;
   }

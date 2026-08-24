@@ -85,14 +85,16 @@ export default async function MockSessionPage({
   const initialFlags = (current.flags ?? []).filter((id) => current.questionIds.includes(id));
 
   return (
-    <MockSectionRunner
-      sessionId={sessionId}
-      sectionLabel={sectionMeta.nameJa}
-      timeLimitSec={current.timeLimitSec}
-      startedAtMs={current.startedAt}
-      questions={orderedQuestions}
-      initialAnswers={initialAnswers}
-      initialFlags={initialFlags}
-    />
+    <div data-question-solving>
+      <MockSectionRunner
+        sessionId={sessionId}
+        sectionLabel={sectionMeta.nameJa}
+        timeLimitSec={current.timeLimitSec}
+        startedAtMs={current.startedAt}
+        questions={orderedQuestions}
+        initialAnswers={initialAnswers}
+        initialFlags={initialFlags}
+      />
+    </div>
   );
 }

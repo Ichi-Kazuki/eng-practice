@@ -34,7 +34,7 @@ export default async function NotebookPracticePage({
   }));
 
   return (
-    <div>
+    <div data-question-solving>
       <JaHeading className="mb-6 text-xl font-bold text-foreground" text="誤答の解き直し" />
       <QuestionRunner items={items} mode="practice" backHref="/app/notebook" backLabel="復習ノートに戻る" />
     </div>

@@ -223,7 +223,9 @@ export default async function DashboardPage({
         )}
       </div>
 
-      <h2 className="mt-10 text-lg font-bold text-foreground">模試の受験履歴</h2>
+      <h2 id="mock-history" className="mt-10 text-lg font-bold text-foreground">
+        模試の受験履歴
+      </h2>
       <p className="mt-1 text-sm text-muted-foreground">
         本番と同じ問題数・制限時間で受けた模試のスコアです。回を重ねた伸びの確認に使えます。
       </p>
@@ -276,5 +278,5 @@ export default async function DashboardPage({
 }
 
 function buildDashboardHref(page: number) {
-  return page > 1 ? `/app/dashboard?page=${page}` : "/app/dashboard";
+  return page > 1 ? `/app/dashboard?page=${page}#mock-history` : "/app/dashboard#mock-history";
 }

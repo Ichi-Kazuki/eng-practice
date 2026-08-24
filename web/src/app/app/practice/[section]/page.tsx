@@ -110,7 +110,7 @@ export default async function PracticeSectionPage({
   }));
 
   return (
-    <div>
+    <div data-question-solving>
       <h1 className="mb-6 text-xl font-bold text-foreground">{SECTION_META[sectionSlug].nameJa}</h1>
       <QuestionRunner
         key={`${sectionSlug}-${JSON.stringify(rawSearchParams)}`}
