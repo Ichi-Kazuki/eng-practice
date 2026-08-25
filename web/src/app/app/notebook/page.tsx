@@ -93,9 +93,9 @@ export default async function NotebookPage({
                   key={count}
                   nativeButton={false}
                   render={<Link href={buildPracticeHref(filters, count as 5 | 10 | 20, page)} />}
-                  size={count === 10 ? "default" : "sm"}
-                  variant={count === 10 ? "default" : "outline"}
-                  className={count === 10 ? "bg-[#4F7A5A] text-white hover:bg-[#4F7A5A]/80" : undefined}
+                  size="sm"
+                  variant="outline"
+                  className="border-[#4F7A5A]/60"
                 >
                   {count === 10 ? "優先10問を復習" : `${count}問`}
                 </Button>
