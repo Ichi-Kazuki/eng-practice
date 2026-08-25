@@ -68,11 +68,11 @@ export default async function NotebookPage({
       {notebook.mistakes.length > 0 && (
         <section
           aria-labelledby="priority-review-heading"
-          className="mt-6 overflow-hidden rounded-xl border border-primary/20 bg-primary/[0.04]"
+          className="mt-6 overflow-hidden rounded-xl border border-[#4F7A5A]/20 bg-[#F3F8F4]"
         >
-          <div className="border-l-4 border-primary p-4 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-5">
+          <div className="border-l-4 border-[#4F7A5A] p-4 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-5">
             <div className="flex min-w-0 items-start gap-3">
-              <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
+              <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md bg-[#E2EFE5] text-[#3F6849]">
                 <TimerIcon className="size-4" weight="bold" aria-hidden="true" />
               </div>
               <div className="min-w-0">
@@ -95,6 +95,7 @@ export default async function NotebookPage({
                   render={<Link href={buildPracticeHref(filters, count as 5 | 10 | 20, page)} />}
                   size={count === 10 ? "default" : "sm"}
                   variant={count === 10 ? "default" : "outline"}
+                  className={count === 10 ? "bg-[#4F7A5A] text-white hover:bg-[#4F7A5A]/80" : undefined}
                 >
                   {count === 10 ? "優先10問を復習" : `${count}問`}
                 </Button>
