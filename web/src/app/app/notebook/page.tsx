@@ -97,7 +97,7 @@ export default async function NotebookPage({
                   variant="outline"
                   className="border-[#4F7A5A]/60"
                 >
-                  {count === 10 ? "優先10問を復習" : `${count}問`}
+                  {`${count}問`}
                 </Button>
               ))}
             </div>
