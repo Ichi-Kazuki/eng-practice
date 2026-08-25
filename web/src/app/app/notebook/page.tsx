@@ -18,6 +18,7 @@ import { LoginRequired } from "@/components/login-required";
 import { JaHeading } from "@/components/ja-heading";
 import { PaginationControls } from "@/components/pagination-controls";
 import { cn } from "@/lib/utils";
+import { TimerIcon } from "@phosphor-icons/react/ssr";
 
 export const dynamic = "force-dynamic";
 
@@ -65,66 +66,89 @@ export default async function NotebookPage({
       )}
 
       {notebook.mistakes.length > 0 && (
-        <div className="mt-4 flex flex-col gap-3 rounded-xl bg-secondary/60 p-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-semibold text-foreground">短時間で優先復習</p>
-            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-              要復習を先に、最終解答が古い順で出題します。
-            </p>
+        <section
+          aria-labelledby="priority-review-heading"
+          className="mt-6 overflow-hidden rounded-xl border border-primary/20 bg-primary/[0.04]"
+        >
+          <div className="border-l-4 border-primary p-4 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-5">
+            <div className="flex min-w-0 items-start gap-3">
+              <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
+                <TimerIcon className="size-4" weight="bold" aria-hidden="true" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <h2 id="priority-review-heading" className="text-sm font-bold text-foreground">
+                    短時間で優先復習
+                  </h2>
+                  <span className="text-xs text-muted-foreground">全{notebook.mistakes.length}問から</span>
+                </div>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  要復習を先に、最終解答が古い順で出題します。
+                </p>
+              </div>
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-2 sm:mt-0 sm:shrink-0">
+              {[5, 10, 20].map((count) => (
+                <Button
+                  key={count}
+                  nativeButton={false}
+                  render={<Link href={buildPracticeHref(filters, count as 5 | 10 | 20, page)} />}
+                  size={count === 10 ? "default" : "sm"}
+                  variant={count === 10 ? "default" : "outline"}
+                >
+                  {count === 10 ? "優先10問を復習" : `${count}問`}
+                </Button>
+              ))}
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {[5, 10, 20].map((count) => (
-              <Button
-                key={count}
-                nativeButton={false}
-                render={<Link href={buildPracticeHref(filters, count as 5 | 10 | 20, page)} />}
-                size={count === 10 ? "default" : "sm"}
-                variant={count === 10 ? "default" : "outline"}
-              >
-                {count === 10 ? "優先10問を復習" : `${count}問`}
-              </Button>
-            ))}
-          </div>
-        </div>
+        </section>
       )}
 
-      <div className="mt-6 grid gap-4 rounded-xl border border-border bg-card p-4 sm:grid-cols-3">
-        <FilterGroup label="セクション">
-          <FilterLink href={buildNotebookHref({ ...filters, section: undefined }, 1)} active={!filters.section} label="すべて" />
-          {sections.map((section) => (
+      <section aria-labelledby="notebook-filter-heading" className="mt-6 border-t border-border pt-5">
+        <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+          <h2 id="notebook-filter-heading" className="text-sm font-bold text-foreground">
+            一覧を絞り込む
+          </h2>
+          <p className="text-xs text-muted-foreground">セクション・状態・最終解答日</p>
+        </div>
+        <div className="grid gap-4 rounded-xl border border-border bg-card p-4 sm:grid-cols-3">
+          <FilterGroup label="セクション">
+            <FilterLink href={buildNotebookHref({ ...filters, section: undefined }, 1)} active={!filters.section} label="すべて" />
+            {sections.map((section) => (
+              <FilterLink
+                key={section}
+                href={buildNotebookHref({ ...filters, section }, 1)}
+                active={filters.section === section}
+                label={SECTION_META[section].nameJa}
+              />
+            ))}
+          </FilterGroup>
+          <FilterGroup label="状態">
+            <FilterLink href={buildNotebookHref({ ...filters, status: undefined }, 1)} active={!filters.status} label="すべて" />
             <FilterLink
-              key={section}
-              href={buildNotebookHref({ ...filters, section }, 1)}
-              active={filters.section === section}
-              label={SECTION_META[section].nameJa}
+              href={buildNotebookHref({ ...filters, status: "needs_review" }, 1)}
+              active={filters.status === "needs_review"}
+              label="要復習"
             />
-          ))}
-        </FilterGroup>
-        <FilterGroup label="状態">
-          <FilterLink href={buildNotebookHref({ ...filters, status: undefined }, 1)} active={!filters.status} label="すべて" />
-          <FilterLink
-            href={buildNotebookHref({ ...filters, status: "needs_review" }, 1)}
-            active={filters.status === "needs_review"}
-            label="要復習"
-          />
-          <FilterLink
-            href={buildNotebookHref({ ...filters, status: "one_more" }, 1)}
-            active={filters.status === "one_more"}
-            label="あと1回"
-          />
-        </FilterGroup>
-        <FilterGroup label="最終解答日">
-          <FilterLink href={buildNotebookHref({ ...filters, range: undefined }, 1)} active={!filters.range} label="すべて" />
-          <FilterLink href={buildNotebookHref({ ...filters, range: "7" }, 1)} active={filters.range === "7"} label="直近7日" />
-          <FilterLink href={buildNotebookHref({ ...filters, range: "30" }, 1)} active={filters.range === "30"} label="直近30日" />
-        </FilterGroup>
-      </div>
+            <FilterLink
+              href={buildNotebookHref({ ...filters, status: "one_more" }, 1)}
+              active={filters.status === "one_more"}
+              label="あと1回"
+            />
+          </FilterGroup>
+          <FilterGroup label="最終解答日">
+            <FilterLink href={buildNotebookHref({ ...filters, range: undefined }, 1)} active={!filters.range} label="すべて" />
+            <FilterLink href={buildNotebookHref({ ...filters, range: "7" }, 1)} active={filters.range === "7"} label="直近7日" />
+            <FilterLink href={buildNotebookHref({ ...filters, range: "30" }, 1)} active={filters.range === "30"} label="直近30日" />
+          </FilterGroup>
+        </div>
+      </section>
 
       {mistakePage.total === 0 ? (
         <EmptyNotebookState hasFilters={hasFilters && notebook.allCount > 0} />
       ) : (
         <>
-          <div className="mt-6 flex flex-wrap items-baseline justify-between gap-2">
+          <div id="notebook-list-summary" className="mt-6 flex flex-wrap items-baseline justify-between gap-2">
             <p className="text-sm text-muted-foreground">
               全{mistakePage.total}問中 {mistakePage.items.length}問を表示
               {hasFilters && <span className="ml-2 text-xs">絞り込み中</span>}
@@ -142,6 +166,7 @@ export default async function NotebookPage({
             pageCount={mistakePage.pageCount}
             label="復習ノート"
             buildHref={(nextPage) => buildNotebookHref(filters, nextPage)}
+            scrollTargetId="notebook-list-summary"
           />
         </>
       )}
@@ -171,6 +196,7 @@ function FilterLink({ href, active, label }: { href: string; active: boolean; la
   return (
     <Link
       href={href}
+      scroll={false}
       aria-current={active ? "page" : undefined}
       className={cn(
         "rounded-md px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring",

@@ -6,6 +6,7 @@ type PaginationControlsProps = {
   pageCount: number;
   buildHref: (page: number) => string;
   label: string;
+  scrollTargetId?: string;
 };
 
 export function PaginationControls({
@@ -13,8 +14,14 @@ export function PaginationControls({
   pageCount,
   buildHref,
   label,
+  scrollTargetId,
 }: PaginationControlsProps) {
   if (pageCount <= 1) return null;
+
+  const getPageHref = (page: number) => {
+    const href = buildHref(page);
+    return scrollTargetId ? `${href}#${scrollTargetId}` : href;
+  };
 
   return (
     <nav
@@ -23,7 +30,7 @@ export function PaginationControls({
     >
       {currentPage > 1 ? (
         <Button
-          render={<Link href={buildHref(currentPage - 1)} />}
+          render={<Link href={getPageHref(currentPage - 1)} />}
           nativeButton={false}
           variant="outline"
           size="sm"
@@ -40,7 +47,7 @@ export function PaginationControls({
 
       {currentPage < pageCount ? (
         <Button
-          render={<Link href={buildHref(currentPage + 1)} />}
+          render={<Link href={getPageHref(currentPage + 1)} />}
           nativeButton={false}
           variant="outline"
           size="sm"
